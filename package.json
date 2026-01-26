@@ -1,0 +1,29 @@
+{
+    "name": "pioneers-api",
+    "version": "1.0.0",
+    "description": "",
+    "scripts": {
+        "dev": "node --watch src/index.ts",
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix",
+        "format": "prettier --write .",
+        "format:check": "prettier --check ."
+    },
+    "keywords": [],
+    "author": "Anthony Rompré & Michaël Panadis-Boisclair",
+    "license": "ISC",
+    "type": "module",
+    "devDependencies": {
+        "@types/express": "^5.0.6",
+        "@types/node": "^25.0.10",
+        "@typescript-eslint/eslint-plugin": "^8.54.0",
+        "@typescript-eslint/parser": "^8.54.0",
+        "eslint": "^9.39.2",
+        "eslint-config-prettier": "^10.1.8",
+        "prettier": "^3.8.1",
+        "typescript": "^5.9.3"
+    },
+    "dependencies": {
+        "express": "^5.2.1"
+    }
+}
