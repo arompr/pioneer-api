@@ -1,4 +1,7 @@
 import express, { type Request, type Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
+import { gameRestService } from './api/games/gamesRestService.ts';
+
 
 export function createApp() {
     const app = express();
@@ -6,12 +9,11 @@ export function createApp() {
     app.use(express.json());
 
     app.get('/health', (_req: Request, res: Response) => {
-        res.json({ status: 'ok' });
+        res.status(StatusCodes.OK).json({ status: 'ok' });
     });
 
-    app.get('/', (_req, res) => {
-        res.send('Hello');
-    });
+    app.use('/games', gameRestService);
+
 
     return app;
 }
