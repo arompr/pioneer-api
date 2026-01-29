@@ -4,6 +4,7 @@
     "description": "",
     "scripts": {
         "dev": "node --watch src/index.ts",
+        "test": "vitest",
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
         "format": "prettier --write .",
@@ -21,7 +22,8 @@
         "eslint": "^9.39.2",
         "eslint-config-prettier": "^10.1.8",
         "prettier": "^3.8.1",
-        "typescript": "^5.9.3"
+        "typescript": "^5.9.3",
+        "vitest": "^4.0.18"
     },
     "dependencies": {
         "express": "^5.2.1"
