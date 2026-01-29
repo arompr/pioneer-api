@@ -1,4 +1,5 @@
 import { Direction } from '../Direction.ts';
+import { Distance } from '../Distance.ts';
 
 type AxialOffset = readonly [dq: number, dr: number];
 
@@ -35,36 +36,45 @@ export class HexCoordinate {
     public readonly q: number;
     public readonly r: number;
 
+    /**
+     * Creates a new {@link HexCoordinate}.
+     *
+     * This constructor is private. Use {@link HexCoordinate.of} to create instances.
+     *
+     * @param q - The axial q coordinate.
+     * @param r - The axial r coordinate.
+     */
     private constructor(q: number, r: number) {
         this.q = q;
         this.r = r;
     }
 
     /**
-     * Factory method to create a Coordinate.
+     * Creates a {@link HexCoordinate} from q and r Axial coordinates.
      *
      * @param q Axial q coordinate
      * @param r Axial r coordinate
-     * @returns Coordinate instance
+     * @returns A new {@link HexCoordinate} instance.
      */
     public static of(q: number, r: number): HexCoordinate {
         return new HexCoordinate(q, r);
     }
     /**
      * Computes the distance to another coordinate using cube distance.
-     * @param other Another Coordinate
+     * @param other Other {@link HexCoordinate}
      * @returns Distance (number of hexes)
      */
-    public distanceTo(other: HexCoordinate): number {
-        return (
-            (Math.abs(this.q - other.q) + Math.abs(this.r - other.r) + Math.abs(this.s - other.s)) /
-            2
-        );
+    public distanceTo(other: HexCoordinate): Distance {
+        return Distance.fromHexes(this.calculateDistance(other.q, other.r, other.s));
+    }
+
+    private calculateDistance(q: number, r: number, s: number): number {
+        return (Math.abs(this.q - q) + Math.abs(this.r - r) + Math.abs(this.s - s)) / 2;
     }
 
     /**
-     * Returns all six neighboring coordinates in axial directions 0..5.
-     * @returns Array of neighboring Coordinates
+     * Returns all six neighboring coordinates in axial directions.
+     * @returns Array of neighboring {@link HexCoordinate}
      */
     public neighbors(): HexCoordinate[] {
         return HexCoordinate.DIRECTIONS.map((direction) => this.neighbor(direction));
@@ -72,9 +82,8 @@ export class HexCoordinate {
 
     /**
      * Returns the neighbor in a specific direction.
-     * @param direction Direction index 0..5
-     * @returns Neighboring Coordinate
-     * @throws Error if direction is out of bounds
+     * @param direction - The {@link Direction} of the neighbor.
+     * @returns Neighboring {@link HexCoordinate}
      */
     public neighbor(direction: Direction): HexCoordinate {
         const offset = HexCoordinate.DIRECTION_OFFSETS[direction];
@@ -90,8 +99,8 @@ export class HexCoordinate {
 
     /**
      * Checks value equality with another coordinate.
-     * @param other Other Coordinate
-     * @returns True if coordinates are equal
+     * @param other - The coordinate to compare against.
+     * @returns {@code true} if coordinates represent the same point.
      */
     public equals(other: HexCoordinate): boolean {
         return this.q === other.q && this.r === other.r;
