@@ -26,6 +26,7 @@
     "dependencies": {
         "express": "^5.2.1",
         "express-validator": "^7.3.1",
-        "http-status-codes": "^2.3.0"
+        "http-status-codes": "^2.3.0",
+        "uuid": "^13.0.0"
     }
 }

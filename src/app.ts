@@ -1,7 +1,6 @@
 import express, { type Request, type Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { gameRestService } from './api/games/gamesRestService.ts';
-
+import { lobbyRestService } from './matchmaking/api/lobby/lobbyRestService.ts';
 
 export function createApp() {
     const app = express();
@@ -12,8 +11,7 @@ export function createApp() {
         res.status(StatusCodes.OK).json({ status: 'ok' });
     });
 
-    app.use('/games', gameRestService);
-
+    app.use('/lobby', lobbyRestService);
 
     return app;
 }
