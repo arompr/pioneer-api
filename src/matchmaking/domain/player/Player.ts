@@ -68,4 +68,14 @@ export class Player {
     isReady(): boolean {
         return this.ready;
     }
+
+    /**
+     * Compares this player with another player.
+     *
+     * @param {Player} other - The other player to compare.
+     * @returns {boolean} True if the players are the same entity.
+     */
+    equals(other: Player): boolean {
+        return this.playerId.equals(other.getPlayerId());
+    }
 }

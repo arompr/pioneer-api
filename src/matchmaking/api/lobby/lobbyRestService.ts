@@ -29,10 +29,8 @@ lobbyRestService.post(
     async (req: Request<{}, {}, CreateLobbyRequest>, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(StatusCodes.BAD_REQUEST).json({
-                errors: errors.array().map((e) => ({
-                    message: e.msg,
-                })),
+            return res.status(StatusCodes.BAD_REQUEST).send({
+                errors: errors.array(),
             });
         }
 

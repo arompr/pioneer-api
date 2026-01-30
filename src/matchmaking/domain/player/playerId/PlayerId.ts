@@ -22,4 +22,14 @@ export class PlayerId {
     toString(): string {
         return this.id;
     }
+
+    /**
+     * Compares this PlayerId with another for equality.
+     *
+     * @param {PlayerId} other - The other ID to compare.
+     * @returns {boolean} True if the IDs are identical.
+     */
+    equals(other: PlayerId): boolean {
+        return this.id === other.toString();
+    }
 }
