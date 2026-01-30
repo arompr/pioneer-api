@@ -1,8 +1,7 @@
+import { NegativeDistanceError } from './errors/NegativeDistanceError.ts';
+
 /**
  * Represents a distance expressed as a non-negative number of hexes.
- *
- * {@link Distance} is a value object. Instances are immutable and compared
- * by value, not by identity.
  */
 export class Distance {
     private readonly hexes: number;
@@ -17,7 +16,7 @@ export class Distance {
      */
     private constructor(hexes: number) {
         if (hexes < 0) {
-            throw new Error(`Distance cannot be negative: ${hexes}`);
+            throw new NegativeDistanceError(hexes);
         }
 
         this.hexes = hexes;

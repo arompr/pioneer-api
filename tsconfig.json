@@ -18,6 +18,9 @@
         "types": ["node"],
         "allowImportingTsExtensions": true,
         "verbatimModuleSyntax": true,
+        "paths": {
+            "@/*": ["./src/*"]
+        },
         "incremental": true
     },
     "include": ["src"],
