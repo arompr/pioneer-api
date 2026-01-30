@@ -15,18 +15,14 @@
         "outDir": "dist",
         "rootDir": "src",
         "noEmit": true,
-        "types": [
-            "node"
-        ],
+        "types": ["node"],
         "allowImportingTsExtensions": true,
         "verbatimModuleSyntax": true,
+        "paths": {
+            "@/*": ["./src/*"]
+        },
         "incremental": true
     },
-    "include": [
-        "src"
-    ],
-    "exclude": [
-        "node_modules",
-        "dist"
-    ]
+    "include": ["src"],
+    "exclude": ["node_modules", "dist"]
 }

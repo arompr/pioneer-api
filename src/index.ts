@@ -10,9 +10,7 @@ server.listen(PORT, () => {
     console.log(`🚀 Server listening on http://localhost:${PORT}`);
 });
 
-/**
- * Graceful shutdown (SIGTERM, SIGINT)
- */
+/** Graceful shutdown (SIGTERM, SIGINT) */
 function shutdown(signal: string) {
     console.log(`\nReceived ${signal}. Shutting down...`);
     server.close(() => {
