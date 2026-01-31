@@ -6,7 +6,7 @@ export function createApp() {
     app.use(express.json());
 
     app.get('/health', (_req: Request, res: Response) => {
-        res.json({ status: 'ok' });
+        res.json({ status: 'ok test' });
     });
 
     app.get('/', (_req, res) => {
