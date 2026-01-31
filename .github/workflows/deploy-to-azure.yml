@@ -1,0 +1,44 @@
+name: Trigger auto deployment for pioneers-api
+
+# When this action will be executed
+on:
+    # Automatically trigger it when detected changes in repo
+    push:
+        branches:
+            - ci-cd
+        paths:
+            - '**'
+            - '.github/workflows/pioneers-api-AutoDeployTrigger-527316fb-b8b5-448b-a956-3a31ef3ca12d.yml'
+
+    # Allow manual trigger
+    workflow_dispatch:
+
+jobs:
+    build-and-deploy:
+        runs-on: ubuntu-latest
+        permissions:
+            id-token: write # Required for requesting the OIDC JWT Token
+            contents: read # Required when GH token is used to authenticate with private repo
+
+        steps:
+            - name: Checkout to the branch
+              uses: actions/checkout@v4 # Updated to v4 for better performance
+
+            - name: Azure Login
+              uses: azure/login@v2
+              with:
+                  client-id: ${{ secrets.PIONEERSAPI_AZURE_CLIENT_ID }}
+                  tenant-id: ${{ secrets.PIONEERSAPI_AZURE_TENANT_ID }}
+                  subscription-id: ${{ secrets.PIONEERSAPI_AZURE_SUBSCRIPTION_ID }}
+
+            - name: Build and push container image to registry
+              uses: azure/container-apps-deploy-action@v2
+              with:
+                  appSourcePath: ${{ github.workspace }}
+                  dockerfilePath: Containerfile # Pointing directly to your filename
+                  registryUrl: 'docker.io'
+                  registryUsername: ${{ secrets.PIONEERSAPI_REGISTRY_USERNAME }}
+                  registryPassword: ${{ secrets.PIONEERSAPI_REGISTRY_PASSWORD }}
+                  containerAppName: pioneers-api
+                  resourceGroup: pioneer
+                  imageToBuild: docker.io/${{ secrets.PIONEERSAPI_REGISTRY_USERNAME }}/pioneers-api:${{ github.sha }}
