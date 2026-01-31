@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { HexCoordinate } from './HexCoordinate.ts';
 import { Direction } from '../Direction.ts';
+import { Distance } from '../distance/Distance.ts';
 
 describe('HexCoordinate', () => {
     describe('of()', () => {
@@ -20,8 +21,11 @@ describe('HexCoordinate', () => {
             it('returns the correct distance', () => {
                 const a = HexCoordinate.of(0, 0);
                 const b = HexCoordinate.of(2, -1);
+                const expectedDistance = Distance.fromHexes(2);
 
-                expect(a.distanceTo(b)).toBe(2);
+                const distance = a.distanceTo(b);
+
+                expect(distance.equals(expectedDistance)).toBe(true);
             });
         });
     });

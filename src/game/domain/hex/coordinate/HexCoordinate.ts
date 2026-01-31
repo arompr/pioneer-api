@@ -1,5 +1,5 @@
 import { Direction } from '../Direction.ts';
-import { Distance } from '../Distance.ts';
+import { Distance } from '../distance/Distance.ts';
 
 type AxialOffset = readonly [dq: number, dr: number];
 
