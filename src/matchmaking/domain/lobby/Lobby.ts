@@ -3,32 +3,30 @@ import { MinPlayersExceedsMaxPlayersError } from './errors/MinPlayersExceedsMaxP
 import { InvalidMinPlayersError } from './errors/InvalidMinPlayersError.ts';
 import type { LobbyId } from './lobbyId/LobbyId.ts';
 import { LobbyStatus } from './LobbyStatus.ts';
+import { LobbyPlayers } from './LobbyPlayers.ts';
+import type { LobbyConfig } from './LobbyConfig/LobbyConfig.ts';
 
 /**
  * Represents a matchmaking lobby.
  */
 export class Lobby {
     private readonly id: LobbyId;
-    private readonly players: Player[] = [];
-    private readonly maxPlayers: number;
-    private readonly minPlayers: number;
+    private readonly players: LobbyPlayers = new LobbyPlayers();
+    private readonly config: LobbyConfig;
     private status: LobbyStatus = LobbyStatus.WAITING_FOR_PLAYERS;
 
     /**
      * Creates a new Lobby instance.
      *
      * @param {LobbyId} id - Unique identifier for the lobby.
-     * @param {number} minPlayers - Minimum number of players required.
-     * @param {number} maxPlayers - Maximum number of players allowed.
+     * @param {LobbyConfig} config - The configuration containing mode and limits.
      *
      * @throws {InvalidMinPlayersError} If `minPlayers` is less than 1.
      * @throws {MinPlayersExceedsMaxPlayersError} If `maxPlayers` is less than `minPlayers`.
      */
-    constructor(id: LobbyId, minPlayers: number, maxPlayers: number) {
-        this.validatePlayerLimits(minPlayers, maxPlayers);
+    constructor(id: LobbyId, config: LobbyConfig) {
         this.id = id;
-        this.minPlayers = minPlayers;
-        this.maxPlayers = maxPlayers;
+        this.config = config;
     }
 
     /**
@@ -41,39 +39,11 @@ export class Lobby {
     }
 
     /**
-     * Gets the minimum number of players required in the lobby.
-     *
-     * @returns {number} Minimum players
-     */
-    getMinPlayers(): number {
-        return this.minPlayers;
-    }
-
-    /**
-     * Gets the maximum number of players allowed in the lobby.
-     *
-     * @returns {number} Maximum players
-     */
-    getMaxPlayers(): number {
-        return this.maxPlayers;
-    }
-
-    /**
      * Returns the current status of the lobby.
      *
      * @returns {LobbyStatus} LobbyStatus (e.g., WAITING_FOR_PLAYERS, ALL_PLAYERS_READY)
      */
     getStatus(): LobbyStatus {
         return this.status;
-    }
-
-    private validatePlayerLimits(minPlayers: number, maxPlayers: number): void {
-        if (minPlayers < 1) {
-            throw new InvalidMinPlayersError(minPlayers);
-        }
-
-        if (maxPlayers < minPlayers) {
-            throw new MinPlayersExceedsMaxPlayersError(minPlayers, maxPlayers);
-        }
     }
 }
