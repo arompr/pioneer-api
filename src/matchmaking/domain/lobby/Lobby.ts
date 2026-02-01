@@ -1,6 +1,3 @@
-import type { Player } from '../player/Player.ts';
-import { MinPlayersExceedsMaxPlayersError } from './errors/MinPlayersExceedsMaxPlayersError.ts';
-import { InvalidMinPlayersError } from './errors/InvalidMinPlayersError.ts';
 import type { LobbyId } from './lobbyId/LobbyId.ts';
 import { LobbyStatus } from './LobbyStatus.ts';
 import { LobbyPlayers } from './LobbyPlayers.ts';

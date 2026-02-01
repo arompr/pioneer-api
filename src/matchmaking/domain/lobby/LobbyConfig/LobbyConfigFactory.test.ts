@@ -18,7 +18,7 @@ describe('LobbyConfigFactory', () => {
                 const unsupportedMode = 'nonexistent-mode' as LobbyGameMode;
 
                 expect(() => LobbyConfigFactory.createFromGameMode(unsupportedMode)).toThrow(
-                    UnsupportedGameModeError,
+                    UnsupportedGameModeError
                 );
             });
         });

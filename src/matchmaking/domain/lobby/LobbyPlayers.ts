@@ -8,10 +8,6 @@ import { PlayerNotFoundError } from './errors/PlayerNotFoundInLobbyError.ts';
  */
 export class LobbyPlayers {
     private readonly items: Player[] = [];
-    /**
-     * Creates a new LobbyPlayers collection.
-     */
-    constructor() {}
 
     /**
      * Adds a player to the collection.
