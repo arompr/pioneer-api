@@ -1,4 +1,5 @@
 import express, { type Request, type Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
 
 export function createApp() {
     const app = express();
@@ -11,6 +12,7 @@ export function createApp() {
 
     app.get('/', (_req, res) => {
         res.send('Hello');
+        res.status(StatusCodes.OK).json({ status: 'ok' });
     });
 
     return app;
