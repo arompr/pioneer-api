@@ -1,4 +1,5 @@
 import type { PlayerId } from './playerId/PlayerId.ts';
+import { PlayerStatus } from './PlayerStatus.ts';
 
 /**
  * Represents a player in a matchmaking lobby.
@@ -12,10 +13,11 @@ export class Player {
 
     /**
      * Indicates whether the player is ready to start the game.
-     * @type {boolean}
+     *
+     * @type {PlayerStatus}
      * @private
      */
-    private ready = false;
+    private status: PlayerStatus = PlayerStatus.Idle;
 
     /**
      * Creates a new Player instance.
@@ -50,14 +52,14 @@ export class Player {
      * Marks the player as ready.
      */
     markReady() {
-        this.ready = true;
+        this.status = PlayerStatus.Ready;
     }
 
     /**
-     * Marks the player as not ready.
+     * Marks the player as idle.
      */
-    markNotReady() {
-        this.ready = false;
+    markIdle() {
+        this.status = PlayerStatus.Idle;
     }
 
     /**
@@ -66,7 +68,7 @@ export class Player {
      * @returns {boolean} `true` if the player is ready, otherwise `false`.
      */
     isReady(): boolean {
-        return this.ready;
+        return this.status === PlayerStatus.Ready;
     }
 
     /**

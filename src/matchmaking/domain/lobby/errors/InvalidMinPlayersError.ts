@@ -1,4 +1,4 @@
-import { DomainError } from '@/common/domain/DomainError.ts';
+import { DomainError } from '#common/domain/DomainError.ts';
 
 export class InvalidMinPlayersError extends DomainError {
     public readonly min: number;

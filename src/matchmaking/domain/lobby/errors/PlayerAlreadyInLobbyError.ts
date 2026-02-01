@@ -1,5 +1,4 @@
-import { DomainError } from '@/common/domain/DomainError.ts';
-import type { Player } from '../../player/Player.ts';
+import { DomainError } from '#common/domain/DomainError.ts';
 
 export class PlayerAlreadyInLobbyError extends DomainError {
     constructor() {

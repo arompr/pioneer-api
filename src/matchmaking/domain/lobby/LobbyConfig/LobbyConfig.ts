@@ -19,7 +19,7 @@ export class LobbyConfig {
      * @throws {MinPlayersExceedsMaxPlayersError} If maxPlayers is less than minPlayers.
      */
     constructor(mode: LobbyGameMode, minPlayers: number, maxPlayers: number) {
-        this.validate();
+        this.validate(minPlayers, maxPlayers);
         this.mode = mode;
         this.minPlayers = minPlayers;
         this.maxPlayers = maxPlayers;
@@ -52,9 +52,9 @@ export class LobbyConfig {
         return this.maxPlayers;
     }
 
-    private validate(): void {
-        if (this.minPlayers < 1) throw new InvalidMinPlayersError(this.minPlayers);
-        if (this.maxPlayers < this.minPlayers)
-            throw new MinPlayersExceedsMaxPlayersError(this.minPlayers, this.maxPlayers);
+    private validate(minPlayers: number, maxPlayers: number): void {
+        if (minPlayers < 1) throw new InvalidMinPlayersError(minPlayers);
+        if (maxPlayers < minPlayers)
+            throw new MinPlayersExceedsMaxPlayersError(minPlayers, maxPlayers);
     }
 }
