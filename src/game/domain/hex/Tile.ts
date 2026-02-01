@@ -1,4 +1,5 @@
 import type { HexCoordinate } from './coordinate/HexCoordinate.ts';
+import type { Distance } from './distance/Distance.ts';
 
 export class Tile {
     private readonly coordinates: HexCoordinate;
@@ -13,7 +14,7 @@ export class Tile {
      * @param other - The target `Tile` to which the distance is calculated
      * @returns The number of hexes between this tile and the `other` tile
      */
-    public distanceTo(other: Tile): number {
+    public distanceTo(other: Tile): Distance {
         return this.coordinates.distanceTo(other.coordinates);
     }
 }

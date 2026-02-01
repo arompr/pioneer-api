@@ -1,11 +1,12 @@
-import js from '@eslint/js';
+import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
-import prettier from 'eslint-config-prettier';
+import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 
 export default [
-    js.configs.recommended,
+    { ignores: ['dist', 'node_modules', 'bin'] },
 
-    ...tseslint.configs.recommendedTypeChecked,
+    eslint.configs.recommended,
+    ...tseslint.configs.strictTypeChecked,
 
     {
         languageOptions: {
@@ -14,13 +15,13 @@ export default [
                 tsconfigRootDir: import.meta.dirname,
             },
         },
-    },
-
-    {
         rules: {
             '@typescript-eslint/consistent-type-imports': 'error',
-            '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+            '@typescript-eslint/no-explicit-any': 'error',
+            'no-console': ['warn', { allow: ['warn', 'error'] }],
         },
     },
-    prettier,
+
+    // This MUST be last
+    eslintPluginPrettierRecommended,
 ];

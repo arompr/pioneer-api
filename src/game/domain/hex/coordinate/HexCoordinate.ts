@@ -111,6 +111,6 @@ export class HexCoordinate {
      * @returns `Coordinate(q, r, s)` string
      */
     public toString(): string {
-        return `Coordinate(q=${this.q}, r=${this.r}, s=${this.s})`;
+        return `Coordinate(q=${this.q.toString()}, r=${this.r.toString()}, s=${this.s.toString()})`;
     }
 }
