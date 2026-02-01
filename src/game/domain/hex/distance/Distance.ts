@@ -92,6 +92,6 @@ export class Distance {
      * @returns A string representation of the distance (e.g. "1 hex", "2 hexes").
      */
     public toString(): string {
-        return `${this.hexes} hex${this.hexes !== 1 ? 'es' : ''}`;
+        return `${this.hexes.toString()} hex${this.hexes !== 1 ? 'es' : ''}`;
     }
 }

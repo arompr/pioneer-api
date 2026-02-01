@@ -1,13 +1,16 @@
 name: Trigger auto deployment for pioneers-api
 
 on:
-    push:
-        branches: [ci-cd]
+    workflow_run:
+        workflows: ['Validate Code Quality']
+        types:
+            - completed
     workflow_dispatch:
 
 jobs:
     build-and-deploy:
         runs-on: ubuntu-latest
+        if: ${{ github.event.workflow_run.conclusion == 'success' }}
         permissions:
             id-token: write
             contents: read
@@ -29,11 +32,10 @@ jobs:
               with:
                   appSourcePath: ${{ github.workspace }}
                   dockerfilePath: Containerfile
-                  # Use GitHub's built-in registry
+                  # Use GitHub's registry
                   registryUrl: ghcr.io
                   registryUsername: ${{ github.actor }}
                   registryPassword: ${{ secrets.GITHUB_TOKEN }} # Automatically provided by GitHub
                   containerAppName: pioneers-api
                   resourceGroup: pioneer
-                  # This tags the image specifically for your GitHub account
                   imageToBuild: ghcr.io/${{ github.repository_owner }}/pioneers-api:${{ github.sha }}
