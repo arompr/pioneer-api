@@ -1,6 +1,3 @@
-import type { Player } from '../player/Player.ts';
-import { MinPlayersExceedsMaxPlayersError } from './errors/MinPlayersExceedsMaxPlayersError.ts';
-import { InvalidMinPlayersError } from './errors/InvalidMinPlayersError.ts';
 import type { LobbyId } from './lobbyId/LobbyId.ts';
 import { LobbyStatus } from './LobbyStatus.ts';
 import { LobbyPlayers } from './LobbyPlayers.ts';
@@ -21,8 +18,6 @@ export class Lobby {
      * @param {LobbyId} id - Unique identifier for the lobby.
      * @param {LobbyConfig} config - The configuration containing mode and limits.
      *
-     * @throws {InvalidMinPlayersError} If `minPlayers` is less than 1.
-     * @throws {MinPlayersExceedsMaxPlayersError} If `maxPlayers` is less than `minPlayers`.
      */
     constructor(id: LobbyId, config: LobbyConfig) {
         this.id = id;

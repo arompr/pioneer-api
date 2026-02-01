@@ -6,9 +6,7 @@ import { UnsupportedGameModeError } from '../errors/UnsupportedGameModeError.ts'
  * Factory responsible for creating LobbyConfig instances based on Game mode.
  */
 export class LobbyConfigFactory {
-    private static readonly SETUPS = {
-        [LobbyGameMode.BASE]: { min: 3, max: 4 },
-    };
+    private readonly SETUPS = new Map([[LobbyGameMode.BASE, { min: 3, max: 4 }]]);
 
     /**
      * Creates a configuration specific to an existing game mode.
@@ -17,8 +15,8 @@ export class LobbyConfigFactory {
      * @returns {LobbyConfig} The corresponding lobby configuration.
      * @throws {UnsupportedGameModeError} If the game mode is not supported.
      */
-    public static createFromGameMode(mode: LobbyGameMode): LobbyConfig {
-        const setup = this.SETUPS[mode];
+    public createFromGameMode(mode: LobbyGameMode): LobbyConfig {
+        const setup = this.SETUPS.get(mode);
 
         if (!setup) {
             throw new UnsupportedGameModeError(mode);

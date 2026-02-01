@@ -7,11 +7,7 @@ import { PlayerNotFoundError } from './errors/PlayerNotFoundInLobbyError.ts';
  * Encapsulates the collection of players within a lobby.
  */
 export class LobbyPlayers {
-    private readonly items: Player[] = [];
-    /**
-     * Creates a new LobbyPlayers collection.
-     */
-    constructor() {}
+    private readonly players: Player[] = [];
 
     /**
      * Adds a player to the collection.
@@ -24,7 +20,7 @@ export class LobbyPlayers {
             throw new PlayerAlreadyInLobbyError();
         }
 
-        this.items.push(player);
+        this.players.push(player);
     }
 
     /**
@@ -35,7 +31,7 @@ export class LobbyPlayers {
      * @throws {PlayerNotFoundError} Error if the player is not found.
      */
     findById(playerId: PlayerId): Player {
-        const player = this.items.find((player) => player.getPlayerId().equals(playerId));
+        const player = this.players.find((player) => player.getPlayerId().equals(playerId));
         if (!player) {
             throw new PlayerNotFoundError();
         }
@@ -49,7 +45,7 @@ export class LobbyPlayers {
      * @returns {boolean} True if the player is in the collection, false otherwise.
      */
     contains(player: Player): boolean {
-        return this.items.some((p: Player) => p.equals(player));
+        return this.players.some((p: Player) => p.equals(player));
     }
 
     /**
@@ -58,7 +54,7 @@ export class LobbyPlayers {
      * @returns {boolean} True if all conditions are met.
      */
     areAllReady(): boolean {
-        return this.items.every((player) => player.isReady());
+        return this.players.every((player) => player.isReady());
     }
 
     /**
@@ -67,6 +63,6 @@ export class LobbyPlayers {
      * @returns {number}
      */
     get count(): number {
-        return this.items.length;
+        return this.players.length;
     }
 }
