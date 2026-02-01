@@ -9,8 +9,6 @@ export class LobbyConfigFactory {
         [LobbyGameMode.BASE]: { min: 3, max: 4 },
     };
 
-    private constructor() {} // This tells ESLint: "I know I'm not instantiating this"
-
     /**
      * Creates a configuration specific to an existing game mode.
      *
