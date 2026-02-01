@@ -29,7 +29,7 @@ jobs:
               run: npm run lint
 
             - name: TypeScript Type Check
-                run: npm run type:check
+              run: npm run type:check
 
             - name: Run Tests
               run: npm test
