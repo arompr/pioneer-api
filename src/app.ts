@@ -7,6 +7,11 @@ export function createApp() {
     app.use(express.json());
 
     app.get('/health', (_req: Request, res: Response) => {
+        res.json({ status: 'ok' });
+    });
+
+    app.get('/', (_req, res) => {
+        res.send('Hello');
         res.status(StatusCodes.OK).json({ status: 'ok' });
     });
 
