@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { createServer } from 'node:http';
 import { createApp } from './app.ts';
 
