@@ -2,9 +2,9 @@ name: Validate Code Quality
 
 on:
     push:
-        branches: [develop]
+        branches: [develop, ci-cd]
     pull_request:
-        branches: [develop]
+        branches: [develop, ci-cd]
     workflow_dispatch:
 
 jobs:
