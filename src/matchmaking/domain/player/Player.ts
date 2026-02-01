@@ -8,7 +8,8 @@ import { PlayerStatus } from './PlayerStatus.ts';
  * The player can also be marked as "ready" to indicate they are ready to start the game.
  */
 export class Player {
-    private playerId: PlayerId;
+    private secretId: PlayerId;
+    private publicId: PlayerId;
     private name: string;
 
     /**
@@ -22,21 +23,32 @@ export class Player {
     /**
      * Creates a new Player instance.
      *
-     * @param {PlayerId} playerId - Unique and secret identifier for the player.
+     * @param {PlayerId} secretId - Unique and secret identifier for the player.
+     * @param {PlayerId} playerId - Unique identifier for the player.
      * @param {string} name - Name chosen by the player.
      */
-    constructor(playerId: PlayerId, name: string) {
-        this.playerId = playerId;
+    constructor(secretId: PlayerId, playerId: PlayerId, name: string) {
+        this.secretId = secretId;
+        this.publicId = playerId;
         this.name = name;
     }
 
     /**
-     * Accessor for the PlayerId.
+     * Accessor for the public id.
      *
-     * @returns {PlayerId} The unique identifier of the player.
+     * @returns {PlayerId} The unique public identifier of the player.
      */
-    getPlayerId(): PlayerId {
-        return this.playerId;
+    getPublicId(): PlayerId {
+        return this.publicId;
+    }
+
+    /**
+     * Accessor for the secret id.
+     *
+     * @returns {PlayerId} The unique secret identifier of the player.
+     */
+    getSecretId(): PlayerId {
+        return this.secretId;
     }
 
     /**
@@ -78,6 +90,6 @@ export class Player {
      * @returns {boolean} True if the players are the same entity.
      */
     equals(other: Player): boolean {
-        return this.playerId.equals(other.getPlayerId());
+        return this.secretId.equals(other.getSecretId());
     }
 }
