@@ -17,7 +17,7 @@ export class Player {
      * @type {PlayerStatus}
      * @private
      */
-    private status: PlayerStatus = PlayerStatus.Idle;
+    private status: PlayerStatus = PlayerStatus.Pending;
 
     /**
      * Creates a new Player instance.
@@ -56,10 +56,10 @@ export class Player {
     }
 
     /**
-     * Marks the player as idle.
+     * Marks the player as pending.
      */
-    markIdle() {
-        this.status = PlayerStatus.Idle;
+    markPending() {
+        this.status = PlayerStatus.Pending;
     }
 
     /**

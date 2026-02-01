@@ -26,7 +26,7 @@ describe('Player', () => {
     });
 
     describe('markReady()', () => {
-        describe('when the player is idle', () => {
+        describe('when the player is pending', () => {
             it('should be ready', () => {
                 player.markReady();
 
@@ -43,20 +43,20 @@ describe('Player', () => {
         });
     });
 
-    describe('markIdle()', () => {
+    describe('markPending()', () => {
         describe('when the player is ready', () => {
             it('should not be ready', () => {
                 player.markReady();
 
-                player.markIdle();
+                player.markPending();
 
                 expect(player.isReady()).toBe(false);
             });
         });
 
-        describe('when the player is already idle', () => {
-            it('remains idle', () => {
-                player.markIdle();
+        describe('when the player is already pending', () => {
+            it('remains pending', () => {
+                player.markPending();
 
                 expect(player.isReady()).toBe(false);
             });

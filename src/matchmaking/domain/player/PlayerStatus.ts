@@ -1,4 +1,4 @@
 export enum PlayerStatus {
-    Idle = 'IDLE',
+    Pending = 'PENDING',
     Ready = 'READY',
 }
