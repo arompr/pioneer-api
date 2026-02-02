@@ -2,20 +2,28 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { PlayerId } from './playerId/PlayerId.ts';
 import { Player } from './Player.ts';
 
-const DEFAULT_PLAYER_ID = new PlayerId('player-id');
-const OTHER_PLAYER_ID = new PlayerId('other-player-id');
+const DEFAULT_PLAYER_PUBLIC_ID = new PlayerId('player-public-id');
+const DEFAULT_PLAYER_SECRET_ID = new PlayerId('player-secret-id');
+const OTHER_PLAYER_PUBLIC_ID = new PlayerId('other-player-id');
+const OTHER_PLAYER_SECRET_ID = new PlayerId('other-secret-id');
+
 const DEFAULT_PLAYER_NAME = 'player-name';
 let player: Player;
 
 describe('Player', () => {
     beforeEach(() => {
-        player = new Player(DEFAULT_PLAYER_ID, DEFAULT_PLAYER_NAME);
+        player = new Player(
+            DEFAULT_PLAYER_SECRET_ID,
+            DEFAULT_PLAYER_PUBLIC_ID,
+            DEFAULT_PLAYER_NAME
+        );
     });
 
     describe('creation', () => {
         describe('when a player is newly created', () => {
-            it('should have the correct id and name', () => {
-                expect(player.getPlayerId()).toEqual(DEFAULT_PLAYER_ID);
+            it('should have the correct ids and name', () => {
+                expect(player.getSecretId()).toEqual(DEFAULT_PLAYER_SECRET_ID);
+                expect(player.getPublicId()).toEqual(DEFAULT_PLAYER_PUBLIC_ID);
                 expect(player.getName()).toBe(DEFAULT_PLAYER_NAME);
             });
 
@@ -64,17 +72,25 @@ describe('Player', () => {
     });
 
     describe('equals()', () => {
-        describe('when two players have the same PlayerId', () => {
+        describe('when two players have the same secretId', () => {
             it('returns true', () => {
-                const playerWithSameId = new Player(DEFAULT_PLAYER_ID, DEFAULT_PLAYER_NAME);
+                const playerWithSameId = new Player(
+                    DEFAULT_PLAYER_SECRET_ID,
+                    DEFAULT_PLAYER_PUBLIC_ID,
+                    DEFAULT_PLAYER_NAME
+                );
 
                 expect(player.equals(playerWithSameId)).toBe(true);
             });
         });
 
-        describe('when two players have different PlayerIds', () => {
+        describe('when two players have different secretIds', () => {
             it('returns false', () => {
-                const playerWithSameId = new Player(OTHER_PLAYER_ID, DEFAULT_PLAYER_NAME);
+                const playerWithSameId = new Player(
+                    OTHER_PLAYER_SECRET_ID,
+                    OTHER_PLAYER_PUBLIC_ID,
+                    DEFAULT_PLAYER_NAME
+                );
 
                 expect(player.equals(playerWithSameId)).toBe(false);
             });

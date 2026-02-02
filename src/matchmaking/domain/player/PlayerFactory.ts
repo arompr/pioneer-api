@@ -14,6 +14,6 @@ export class PlayerFactory {
      * Creates a new Player.
      */
     create(name: string): Player {
-        return new Player(this.playerIdFactory.generate(), name);
+        return new Player(this.playerIdFactory.generate(), this.playerIdFactory.generate(), name);
     }
 }

@@ -15,7 +15,7 @@ describe('LobbyConfig', () => {
                 const config = new LobbyConfig(
                     DEFAULT_MODE,
                     DEFAULT_MIN_PLAYERS,
-                    DEFAULT_MAX_PLAYERS,
+                    DEFAULT_MAX_PLAYERS
                 );
 
                 expect(config.getGameMode()).toBe(DEFAULT_MODE);
@@ -29,7 +29,7 @@ describe('LobbyConfig', () => {
                 const config = new LobbyConfig(
                     DEFAULT_MODE,
                     DEFAULT_MAX_PLAYERS,
-                    DEFAULT_MAX_PLAYERS,
+                    DEFAULT_MAX_PLAYERS
                 );
 
                 expect(config.getGameMode()).toBe(DEFAULT_MODE);
@@ -41,7 +41,7 @@ describe('LobbyConfig', () => {
         describe('when minPlayers is less than 1', () => {
             it('throws InvalidMinPlayersError', () => {
                 expect(() => new LobbyConfig(DEFAULT_MODE, 0, DEFAULT_MAX_PLAYERS)).toThrow(
-                    InvalidMinPlayersError,
+                    InvalidMinPlayersError
                 );
             });
         });
@@ -49,7 +49,7 @@ describe('LobbyConfig', () => {
         describe('when minPlayers exceeds maxPlayers', () => {
             it('throws MinPlayersExceedsMaxPlayersError', () => {
                 expect(() => new LobbyConfig(DEFAULT_MODE, 5, 4)).toThrow(
-                    MinPlayersExceedsMaxPlayersError,
+                    MinPlayersExceedsMaxPlayersError
                 );
             });
         });
