@@ -78,10 +78,35 @@ export class LobbyPlayers {
     }
 
     /**
+     * Returns the first player in the lobby.
+     *
+     * @returns {Player} The first player.
+     * @throws {PlayerNotFoundInLobbyError} If the lobby is empty.
+     */
+    first(): Player {
+        const player = this.players.at(0);
+        if (!player) {
+            throw new PlayerNotFoundInLobbyError();
+        }
+        return player;
+    }
+
+    /**
      * Returns a copy of all players in the lobby.
+     *
+     * @returns {Player[]} The list of all the players in the lobby.
      */
     get all(): Player[] {
         return [...this.players];
+    }
+
+    /**
+     * Checks if the collection contains no players.
+     *
+     *  @returns {boolean} True if the lobby is empty, false otherwise.
+     */
+    isEmpty(): boolean {
+        return this.players.length === 0;
     }
 
     /**

@@ -10,14 +10,14 @@ let lobbyPlayers: LobbyPlayers;
 
 beforeEach(() => {
     lobbyPlayers = new LobbyPlayers();
-    player = new Player(new PlayerId('secret-id'), new PlayerId('public-id'), 'name');
+    player = createPlayer('1');
 });
 
 describe('LobbyPlayers', () => {
     describe('creation', () => {
         describe('when lobbyPlayer is created', () => {
             it('is empty', () => {
-                expect(lobbyPlayers.count).toBe(0);
+                expect(lobbyPlayers.isEmpty()).toBe(true);
             });
         });
     });
@@ -82,22 +82,6 @@ describe('LobbyPlayers', () => {
         });
     });
 
-    describe('contains()', () => {
-        describe('when the player exists in the lobby players', () => {
-            it('returns true', () => {
-                lobbyPlayers.add(player);
-
-                expect(lobbyPlayers.contains(player)).toBe(true);
-            });
-        });
-
-        describe('when the player does not exist in the lobby players', () => {
-            it('returns false', () => {
-                expect(lobbyPlayers.contains(player)).toBe(false);
-            });
-        });
-    });
-
     describe('markAsReady()', () => {
         describe('when the player exists in the lobby', () => {
             it('updates the player status to ready', () => {
@@ -146,12 +130,7 @@ describe('LobbyPlayers', () => {
         let secondPlayer: Player;
 
         beforeEach(() => {
-            secondPlayer = new Player(
-                new PlayerId('id-secret-2'),
-                new PlayerId('id-public-2'),
-                'Bob'
-            );
-
+            secondPlayer = createPlayer('2');
             lobbyPlayers.add(player);
             lobbyPlayers.add(secondPlayer);
         });
@@ -173,4 +152,47 @@ describe('LobbyPlayers', () => {
             });
         });
     });
+
+    describe('first()', () => {
+        describe('when the lobby is not empty', () => {
+            it('returns the first player added (the host)', () => {
+                const secondPlayer = createPlayer('2');
+                lobbyPlayers.add(player);
+                lobbyPlayers.add(secondPlayer);
+
+                const first = lobbyPlayers.first();
+
+                expect(first).toBe(player);
+                expect(first).not.toBe(secondPlayer);
+            });
+        });
+
+        describe('when the lobby is empty', () => {
+            it('throws a PlayerNotFoundInLobbyError', () => {
+                expect(() => {
+                    lobbyPlayers.first();
+                }).toThrow(PlayerNotFoundInLobbyError);
+            });
+        });
+    });
+
+    describe('contains()', () => {
+        describe('when the player exists in the lobby players', () => {
+            it('returns true', () => {
+                lobbyPlayers.add(player);
+
+                expect(lobbyPlayers.contains(player)).toBe(true);
+            });
+        });
+
+        describe('when the player does not exist in the lobby players', () => {
+            it('returns false', () => {
+                expect(lobbyPlayers.contains(player)).toBe(false);
+            });
+        });
+    });
 });
+
+const createPlayer = (id: string, name: string = 'Player') => {
+    return new Player(new PlayerId(`secret-${id}`), new PlayerId(`public-${id}`), name);
+};
