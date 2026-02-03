@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { Distance } from './Distance.ts';
-import { NegativeDistanceError } from './errors/NegativeDistanceError.ts';
+import { Distance } from './Distance';
+import { NegativeDistanceError } from './errors/NegativeDistanceError';
 
 describe('Distance', () => {
     describe('fromHexes()', () => {

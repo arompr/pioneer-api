@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { LobbyPlayers } from './LobbyPlayers.ts';
-import { Player } from '../player/Player.ts';
-import { PlayerId } from '../player/playerId/PlayerId.ts';
-import { PlayerAlreadyInLobbyError } from './errors/PlayerAlreadyInLobbyError.ts';
-import { PlayerNotFoundInLobbyError } from './errors/PlayerNotFoundInLobbyError.ts';
+import { LobbyPlayers } from './LobbyPlayers';
+import { Player } from '../player/Player';
+import { PlayerId } from '../player/playerId/PlayerId';
+import { PlayerAlreadyInLobbyError } from './errors/PlayerAlreadyInLobbyError';
+import { PlayerNotFoundInLobbyError } from './errors/PlayerNotFoundInLobbyError';
 
 let player: Player;
 let lobbyPlayers: LobbyPlayers;

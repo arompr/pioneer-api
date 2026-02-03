@@ -1,6 +1,6 @@
-import { DomainError } from '#common/domain/DomainError.ts';
-import type { PlayerId } from '../../player/playerId/PlayerId.ts';
-import type { LobbyId } from '../lobbyId/LobbyId.ts';
+import { DomainError } from '#common/domain/DomainError';
+import type { PlayerId } from '#matchmaking/domain/player/playerId/PlayerId';
+import type { LobbyId } from '../lobbyId/LobbyId';
 
 export class PlayerIsNotHostError extends DomainError {
     public readonly lobbyId: LobbyId;

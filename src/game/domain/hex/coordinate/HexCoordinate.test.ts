@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { HexCoordinate } from './HexCoordinate.ts';
-import { Direction } from '../Direction.ts';
-import { Distance } from '../distance/Distance.ts';
+import { HexCoordinate } from './HexCoordinate';
+import { Direction } from '../Direction';
+import { Distance } from '../distance/Distance';
 
 describe('HexCoordinate', () => {
     describe('of()', () => {
@@ -9,9 +9,9 @@ describe('HexCoordinate', () => {
             it('assigns the correct q, r, and s values', () => {
                 const coordinate = HexCoordinate.of(1, 2);
 
-                expect.soft(coordinate.q).toBe(1);
-                expect.soft(coordinate.r).toBe(2);
-                expect.soft(coordinate.s).toBe(-3);
+                expect(coordinate.q).toBe(1);
+                expect(coordinate.r).toBe(2);
+                expect(coordinate.s).toBe(-3);
             });
         });
     });

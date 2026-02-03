@@ -1,4 +1,4 @@
-import { Player } from './Player.ts';
+import { Player } from './Player';
 import type { PlayerIdFactory } from './playerId/PlayerIdFactory.ts';
 
 /**

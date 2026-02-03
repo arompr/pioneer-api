@@ -1,6 +1,6 @@
-import { InvalidMinPlayersError } from '../errors/InvalidMinPlayersError.ts';
-import { MinPlayersExceedsMaxPlayersError } from '../errors/MinPlayersExceedsMaxPlayersError.ts';
-import type { LobbyGameMode } from './LobbyGameMode.ts';
+import { InvalidMinPlayersError } from '../errors/InvalidMinPlayersError';
+import { MinPlayersExceedsMaxPlayersError } from '../errors/MinPlayersExceedsMaxPlayersError';
+import type { LobbyGameMode } from './LobbyGameMode';
 
 /**
  * Value object representing the configuration rules of a lobby.

@@ -1,6 +1,6 @@
-import { LobbyGameMode } from './LobbyGameMode.ts';
-import { LobbyConfig } from './LobbyConfig.ts';
-import { UnsupportedGameModeError } from '../errors/UnsupportedGameModeError.ts';
+import { LobbyGameMode } from './LobbyGameMode';
+import { LobbyConfig } from './LobbyConfig';
+import { UnsupportedGameModeError } from '../errors/UnsupportedGameModeError';
 
 /**
  * Factory responsible for creating LobbyConfig instances based on Game mode.

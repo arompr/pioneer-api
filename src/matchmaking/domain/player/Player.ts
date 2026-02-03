@@ -1,5 +1,5 @@
 import type { PlayerId } from './playerId/PlayerId.ts';
-import { PlayerStatus } from './PlayerStatus.ts';
+import { PlayerStatus } from './PlayerStatus';
 
 /**
  * Represents a player in a matchmaking lobby.

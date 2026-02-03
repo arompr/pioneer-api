@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { PlayerId } from './playerId/PlayerId.ts';
-import { Player } from './Player.ts';
+import { PlayerId } from './playerId/PlayerId';
+import { Player } from './Player';
 
 const DEFAULT_PLAYER_PUBLIC_ID = new PlayerId('player-public-id');
 const DEFAULT_PLAYER_SECRET_ID = new PlayerId('player-secret-id');
