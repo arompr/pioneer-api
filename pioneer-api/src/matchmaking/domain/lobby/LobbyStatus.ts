@@ -1,0 +1,5 @@
+export enum LobbyStatus {
+    WAITING_FOR_PLAYERS = 'WAITING_FOR_PLAYERS',
+    READY_TO_START = 'READY_TO_START',
+    IN_GAME = 'IN_GAME',
+}

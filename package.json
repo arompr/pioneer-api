@@ -14,7 +14,6 @@
     "keywords": [],
     "author": "Anthony Rompré & Michaël Panadis-Boisclair",
     "license": "ISC",
-    "type": "module",
     "imports": {
         "#common/*": "./src/common/*",
         "#game/*": "./src/game/*"
