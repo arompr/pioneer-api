@@ -12,7 +12,11 @@ let player: Player;
 
 describe('Player', () => {
     beforeEach(() => {
-        player = new Player(DEFAULT_PLAYER_SECRET_ID, DEFAULT_PLAYER_PUBLIC_ID, DEFAULT_PLAYER_NAME);
+        player = new Player(
+            DEFAULT_PLAYER_SECRET_ID,
+            DEFAULT_PLAYER_PUBLIC_ID,
+            DEFAULT_PLAYER_NAME
+        );
     });
 
     describe('creation', () => {

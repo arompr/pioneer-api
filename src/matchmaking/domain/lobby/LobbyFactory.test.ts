@@ -19,7 +19,11 @@ let lobby: Lobby;
 describe('LobbyFactory', () => {
     beforeEach(() => {
         lobbyFactory = new LobbyFactory(lobbyIdFactory);
-        hostPlayer = new Player(new PlayerId(`secret-id`), new PlayerId(`public-id`), 'player-name');
+        hostPlayer = new Player(
+            new PlayerId(`secret-id`),
+            new PlayerId(`public-id`),
+            'player-name'
+        );
 
         lobby = lobbyFactory.create(LOBBY_CONFIG, hostPlayer);
     });

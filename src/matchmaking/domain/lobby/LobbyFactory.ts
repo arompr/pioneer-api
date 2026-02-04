@@ -25,6 +25,13 @@ export class LobbyFactory {
         const players = new LobbyPlayers();
         players.add(host);
 
-        return new Lobby(lobbyId, config, host.getSecretId(), players, this.INITIAL_IN_GAME, this.INITIAL_IS_CLOSED);
+        return new Lobby(
+            lobbyId,
+            config,
+            host.getSecretId(),
+            players,
+            this.INITIAL_IN_GAME,
+            this.INITIAL_IS_CLOSED
+        );
     }
 }
