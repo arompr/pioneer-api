@@ -181,13 +181,13 @@ describe('LobbyPlayers', () => {
             it('returns true', () => {
                 lobbyPlayers.add(player);
 
-                expect(lobbyPlayers.contains(player)).toBe(true);
+                expect(lobbyPlayers.contains(player.getSecretId())).toBe(true);
             });
         });
 
         describe('when the player does not exist in the lobby players', () => {
             it('returns false', () => {
-                expect(lobbyPlayers.contains(player)).toBe(false);
+                expect(lobbyPlayers.contains(player.getSecretId())).toBe(false);
             });
         });
     });

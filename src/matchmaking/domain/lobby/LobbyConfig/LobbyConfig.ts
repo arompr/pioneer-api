@@ -54,7 +54,6 @@ export class LobbyConfig {
 
     private validate(minPlayers: number, maxPlayers: number): void {
         if (minPlayers < 1) throw new InvalidMinPlayersError(minPlayers);
-        if (maxPlayers < minPlayers)
-            throw new MinPlayersExceedsMaxPlayersError(minPlayers, maxPlayers);
+        if (maxPlayers < minPlayers) throw new MinPlayersExceedsMaxPlayersError(minPlayers, maxPlayers);
     }
 }

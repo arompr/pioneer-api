@@ -12,13 +12,16 @@ import { PlayerNotFoundInLobbyError } from './errors/PlayerNotFoundInLobbyError'
 import { LobbyAlreadyInGameError } from './errors/LobbyAlreadyInGameError';
 import { PlayerIsNotHostError } from './errors/PlayerIsNotHostError';
 import { LobbyNotReadyToStartError } from './errors/LobbyNotReadyToStartError';
+import { LobbyClosedError } from './errors/LobbyClosedError';
+import { LobbyPlayers } from './LobbyPlayers';
 
 const LOBBY_ID = new LobbyId('lobby-id');
 const LOBBY_MIN_CAPACITY = 2;
 const LOBBY_MAX_CAPACITY = 3;
 const LOBBY_CONFIG = new LobbyConfig(LobbyGameMode.BASE, LOBBY_MIN_CAPACITY, LOBBY_MAX_CAPACITY);
-let lobby: Lobby;
 
+let lobby: Lobby;
+let players: LobbyPlayers;
 let player1: Player;
 let player2: Player;
 let player3: Player;
@@ -26,18 +29,20 @@ let player4: Player;
 
 describe('Lobby', () => {
     beforeEach(() => {
-        lobby = new Lobby(LOBBY_ID, LOBBY_CONFIG);
         player1 = createPlayer('1');
         player2 = createPlayer('2');
         player3 = createPlayer('3');
         player4 = createPlayer('4');
+
+        players = new LobbyPlayers();
+        players.add(player1);
+        lobby = new Lobby(LOBBY_ID, LOBBY_CONFIG, player1.getSecretId(), players, false, false);
     });
 
     describe('creation', () => {
         describe('when Lobby is created', () => {
-            it('is empty', () => {
-                expect(lobby.isEmpty()).toBe(true);
-                expect(lobby.playerCount).toBe(0);
+            it('the lobby players are set', () => {
+                expect(lobby.playerCount).toBe(players.count);
             });
 
             it('has the provided ID', () => {
@@ -50,7 +55,7 @@ describe('Lobby', () => {
         });
     });
 
-    describe('status()', () => {
+    describe('status', () => {
         describe('when the game is in progress', () => {
             it('returns IN_GAME regardless of other conditions', () => {
                 setupStartedGame();
@@ -70,7 +75,6 @@ describe('Lobby', () => {
 
             describe('when at least one player is not ready', () => {
                 it('returns WAITING_FOR_PLAYER', () => {
-                    lobby.join(player1);
                     lobby.join(player2);
                     lobby.markAsReady(player1.getSecretId());
 
@@ -81,10 +85,17 @@ describe('Lobby', () => {
 
         describe('when the minimum capacity is not reached', () => {
             it('returns WAITING_FOR_PLAYER', () => {
-                lobby.join(player1);
                 lobby.markAsReady(player1.getSecretId());
 
                 expect(lobby.status).toBe(LobbyStatus.WAITING_FOR_PLAYERS);
+            });
+        });
+
+        describe('when the lobby is closed', () => {
+            it('returns CLOSED regardless of other conditions', () => {
+                setupClosedLobby();
+
+                expect(lobby.status).toBe(LobbyStatus.CLOSED);
             });
         });
     });
@@ -92,8 +103,6 @@ describe('Lobby', () => {
     describe('join()', () => {
         describe('when the lobby is not full', () => {
             it('adds the player in the lobby', () => {
-                lobby.join(player1);
-
                 expect(lobby.playerCount).toBe(1);
                 expect(lobby.allPlayers).toContain(player1);
             });
@@ -101,7 +110,6 @@ describe('Lobby', () => {
 
         describe('when the lobby if full ', () => {
             it('throws LobbyFullError', () => {
-                lobby.join(player1);
                 lobby.join(player2);
                 lobby.join(player3);
 
@@ -113,11 +121,19 @@ describe('Lobby', () => {
 
         describe('when the player in already in the lobby', () => {
             it('throws PlayerAlreadyInLobbyError', () => {
-                lobby.join(player1);
-
                 expect(() => {
                     lobby.join(player1);
                 }).toThrow(PlayerAlreadyInLobbyError);
+            });
+        });
+
+        describe('when the lobby is closed', () => {
+            it('throws LobbyClosedError', () => {
+                setupClosedLobby();
+
+                expect(() => {
+                    lobby.join(player1);
+                }).toThrow(LobbyClosedError);
             });
         });
 
@@ -135,8 +151,6 @@ describe('Lobby', () => {
     describe('leave()', () => {
         describe('when the player is in the lobby', () => {
             it('removes the player from the lobby', () => {
-                lobby.join(player1);
-
                 lobby.leave(player1.getSecretId());
 
                 expect(lobby.isEmpty()).toBe(true);
@@ -147,19 +161,37 @@ describe('Lobby', () => {
         describe('when the player is not in the lobby', () => {
             it('throws PlayerNotFoundInLobbyError', () => {
                 expect(() => {
-                    lobby.leave(player1.getSecretId());
+                    lobby.leave(player2.getSecretId());
                 }).toThrow(PlayerNotFoundInLobbyError);
             });
         });
 
         describe('when the host leaves', () => {
             it('transfers the host role to the next player', () => {
-                lobby.join(player1);
                 lobby.join(player2);
 
                 lobby.leave(player1.getSecretId());
 
                 expect(lobby.isHost(player2.getSecretId())).toBe(true);
+            });
+        });
+
+        describe('when a non-host player leaves', () => {
+            it('does not change the host', () => {
+                lobby.join(player2);
+
+                lobby.leave(player2.getSecretId());
+
+                expect(lobby.isHost(player1.getSecretId())).toBe(true);
+            });
+        });
+
+        describe('when the host leaves and no players remain', () => {
+            it('closes the lobby', () => {
+                lobby.leave(player1.getSecretId());
+
+                expect(lobby.status).toBe(LobbyStatus.CLOSED);
+                expect(lobby.isEmpty()).toBe(true);
             });
         });
     });
@@ -172,6 +204,16 @@ describe('Lobby', () => {
                 expect(() => {
                     lobby.start(player1.getSecretId());
                 }).toThrow(LobbyAlreadyInGameError);
+            });
+        });
+
+        describe('when the lobby is closed', () => {
+            it('throws LobbyClosedError', () => {
+                setupClosedLobby();
+
+                expect(() => {
+                    lobby.start(player1.getSecretId());
+                }).toThrow(LobbyClosedError);
             });
         });
 
@@ -190,7 +232,6 @@ describe('Lobby', () => {
 
                     describe('when at least one player is not ready', () => {
                         it('throws LobbyNotReadyToStartError', () => {
-                            lobby.join(player1);
                             lobby.join(player2);
                             lobby.markAsReady(player1.getSecretId());
 
@@ -203,7 +244,6 @@ describe('Lobby', () => {
 
                 describe('when the minimum capacity is not reached', () => {
                     it('throws LobbyNotReadyToStartError', () => {
-                        lobby.join(player1);
                         lobby.markAsReady(player1.getSecretId());
 
                         expect(() => {
@@ -228,7 +268,6 @@ describe('Lobby', () => {
     describe('markAsReady()', () => {
         describe('when the player is in the lobby', () => {
             it('contributes to the lobby becoming ready to start', () => {
-                lobby.join(player1);
                 lobby.join(player2);
 
                 lobby.markAsReady(player1.getSecretId());
@@ -241,8 +280,18 @@ describe('Lobby', () => {
         describe('when the player is not in the lobby', () => {
             it('updates the player status', () => {
                 expect(() => {
-                    lobby.markAsReady(player1.getSecretId());
+                    lobby.markAsReady(player2.getSecretId());
                 }).toThrow(PlayerNotFoundInLobbyError);
+            });
+        });
+
+        describe('when the lobby is closed', () => {
+            it('throws LobbyClosedError', () => {
+                setupClosedLobby();
+
+                expect(() => {
+                    lobby.markAsReady(player1.getSecretId());
+                }).toThrow(LobbyClosedError);
             });
         });
 
@@ -271,8 +320,18 @@ describe('Lobby', () => {
         describe('when the player is not in the lobby', () => {
             it('throws PlayerNotFoundInLobbyError', () => {
                 expect(() => {
-                    lobby.markAsPending(player1.getSecretId());
+                    lobby.markAsPending(player2.getSecretId());
                 }).toThrow(PlayerNotFoundInLobbyError);
+            });
+        });
+
+        describe('when the lobby is closed', () => {
+            it('throws LobbyClosedError', () => {
+                setupClosedLobby();
+
+                expect(() => {
+                    lobby.markAsPending(player1.getSecretId());
+                }).toThrow(LobbyClosedError);
             });
         });
 
@@ -290,7 +349,6 @@ describe('Lobby', () => {
     describe('canStart()', () => {
         describe('when there are enough players', () => {
             beforeEach(() => {
-                lobby.join(player1);
                 lobby.join(player2);
             });
 
@@ -314,7 +372,6 @@ describe('Lobby', () => {
 
         describe('when there are not enough players', () => {
             it('returns false', () => {
-                lobby.join(player1);
                 lobby.markAsReady(player1.getSecretId());
 
                 expect(lobby.canStart()).toBe(false);
@@ -332,15 +389,12 @@ describe('Lobby', () => {
     describe('isWaiting()', () => {
         describe('when at least one player is pending', () => {
             it('returns true', () => {
-                lobby.join(player1);
-
                 expect(lobby.isWaiting()).toBe(true);
             });
         });
 
         describe('when minimum player is reached', () => {
             beforeEach(() => {
-                lobby.join(player1);
                 lobby.join(player2);
             });
 
@@ -366,21 +420,20 @@ describe('Lobby', () => {
     describe('isHost()', () => {
         describe('when the lobby is empty', () => {
             it('returns false', () => {
+                setupClosedLobby();
+
                 expect(lobby.isHost(player1.getSecretId())).toBe(false);
             });
         });
 
         describe('when the player is the first to join', () => {
             it('returns true', () => {
-                lobby.join(player1);
-
                 expect(lobby.isHost(player1.getSecretId()));
             });
         });
 
         describe('when the player is not the first to join', () => {
             it('returns false', () => {
-                lobby.join(player1);
                 lobby.join(player2);
 
                 expect(lobby.isHost(player2.getSecretId()));
@@ -389,8 +442,6 @@ describe('Lobby', () => {
 
         describe('when the player is not in the lobby', () => {
             it('returns false', () => {
-                lobby.join(player1);
-
                 expect(lobby.isHost(player2.getSecretId())).toBe(false);
             });
         });
@@ -399,7 +450,6 @@ describe('Lobby', () => {
     describe('isFull()', () => {
         describe('when the lobby has reached max capacity', () => {
             it('returns true', () => {
-                lobby.join(player1);
                 lobby.join(player2);
                 lobby.join(player3);
 
@@ -409,15 +459,12 @@ describe('Lobby', () => {
 
         describe('when the lobby is not as max capacity', () => {
             it('returns false', () => {
-                lobby.join(player1);
-
                 expect(lobby.isFull()).toBe(false);
             });
         });
 
         describe('when a player leaves a full lobby', () => {
             it('returns false again', () => {
-                lobby.join(player1);
                 lobby.join(player2);
                 lobby.join(player3);
 
@@ -431,22 +478,20 @@ describe('Lobby', () => {
     describe('isEmpty()', () => {
         describe('when there is no player in the lobby', () => {
             it('returns true', () => {
+                setupClosedLobby();
+
                 expect(lobby.isEmpty()).toBe(true);
             });
         });
 
         describe('when the lobby contains at least one player', () => {
             it('returns false', () => {
-                lobby.join(player1);
-
                 expect(lobby.isEmpty()).toBe(false);
             });
         });
 
         describe('when the last player leave the lobby', () => {
             it('returns false again', () => {
-                lobby.join(player1);
-
                 lobby.leave(player1.getSecretId());
 
                 expect(lobby.isEmpty()).toBe(true);
@@ -457,7 +502,6 @@ describe('Lobby', () => {
     describe('hasReachedMinimum()', () => {
         describe('when the number of players exactly reaches the minimum', () => {
             it('returns true', () => {
-                lobby.join(player1);
                 lobby.join(player2);
 
                 expect(lobby.hasReachedMinimum()).toBe(true);
@@ -466,15 +510,12 @@ describe('Lobby', () => {
 
         describe('when the number of players is below the minimum', () => {
             it('returns true', () => {
-                lobby.join(player1);
-
                 expect(lobby.hasReachedMinimum()).toBe(false);
             });
         });
 
         describe('when the number of players exceeds the minimum', () => {
             it('returns true', () => {
-                lobby.join(player1);
                 lobby.join(player2);
                 lobby.join(player3);
 
@@ -486,21 +527,20 @@ describe('Lobby', () => {
     describe('remainingPlaces()', () => {
         describe('when the lobby is empty', () => {
             it('returns the maximum capacity', () => {
+                setupClosedLobby();
+
                 expect(lobby.remainingPlaces()).toBe(LOBBY_MAX_CAPACITY);
             });
         });
 
         describe('when players join the lobby', () => {
             it('decreases the count of remaining places', () => {
-                lobby.join(player1);
-
                 expect(lobby.remainingPlaces()).toBe(LOBBY_MAX_CAPACITY - 1);
             });
         });
 
         describe('when the lobby is full', () => {
             it('returns zero', () => {
-                lobby.join(player1);
                 lobby.join(player2);
                 lobby.join(player3);
 
@@ -510,7 +550,6 @@ describe('Lobby', () => {
 
         describe('when a player leaves', () => {
             it('inscreases the count of remaining place again', () => {
-                lobby.join(player1);
                 lobby.join(player2);
                 lobby.join(player3);
 
@@ -524,7 +563,6 @@ describe('Lobby', () => {
     describe('allPlayers()', () => {
         describe('when there are players in the lobby', () => {
             it('returns a list of all the players', () => {
-                lobby.join(player1);
                 lobby.join(player2);
 
                 const players = lobby.allPlayers;
@@ -537,6 +575,8 @@ describe('Lobby', () => {
 
         describe('when the lobby is empty', () => {
             it('returns an empty list of players', () => {
+                setupClosedLobby();
+
                 expect(lobby.allPlayers).toEqual([]);
                 expect(lobby.allPlayers).toHaveLength(0);
             });
@@ -546,7 +586,6 @@ describe('Lobby', () => {
     describe('playerCount()', () => {
         describe('when there are players in the lobby', () => {
             it('returns the number of player', () => {
-                lobby.join(player1);
                 lobby.join(player2);
 
                 expect(lobby.playerCount).toBe(2);
@@ -555,7 +594,6 @@ describe('Lobby', () => {
 
         describe('when a player leaves', () => {
             it('decreases the count', () => {
-                lobby.join(player1);
                 lobby.join(player2);
 
                 lobby.leave(player1.getSecretId());
@@ -566,6 +604,8 @@ describe('Lobby', () => {
 
         describe('when the lobby is empty', () => {
             it('returns zero', () => {
+                lobby.leave(player1.getSecretId());
+
                 expect(lobby.playerCount).toBe(0);
             });
         });
@@ -577,7 +617,6 @@ const createPlayer = (id: string) => {
 };
 
 const setupReadyLobby = () => {
-    lobby.join(player1);
     lobby.join(player2);
     lobby.markAsReady(player1.getSecretId());
     lobby.markAsReady(player2.getSecretId());
@@ -586,4 +625,8 @@ const setupReadyLobby = () => {
 const setupStartedGame = () => {
     setupReadyLobby();
     lobby.start(player1.getSecretId());
+};
+
+const setupClosedLobby = () => {
+    lobby.leave(player1.getSecretId());
 };
