@@ -16,7 +16,7 @@ export class LobbyPlayers {
      * @throws {PlayerAlreadyInLobbyError} Error if the player is already present.
      */
     add(player: Player): void {
-        if (this.contains(player)) {
+        if (this.contains(player.getSecretId())) {
             throw new PlayerAlreadyInLobbyError();
         }
 
@@ -112,11 +112,11 @@ export class LobbyPlayers {
     /**
      * Checks if a specific player is already present in the lobby.
      *
-     * @param {Player} player - The identifier of the player to check.
+     * @param {PlayerId} playerId - The identifier of the player to check.
      * @returns {boolean} True if the player is in the collection, false otherwise.
      */
-    contains(player: Player): boolean {
-        return this.players.some((p: Player) => p.equals(player));
+    contains(playerId: PlayerId): boolean {
+        return this.players.some((p: Player) => p.getSecretId().equals(playerId));
     }
 
     /**
