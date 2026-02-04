@@ -2,14 +2,14 @@
 FROM node:24-slim
 
 # Set the working directory
-WORKDIR /app
+WORKDIR /usr/src/app
 
 # Copy package files first to leverage Podman's layer caching
 COPY package*.json ./
 
 # Install only production dependencies
 # This keeps the image small and secure
-RUN npm install --omit=dev
+RUN npm install
 
 # Copy the rest of your source code
 COPY . .
@@ -18,11 +18,10 @@ COPY . .
 ENV NODE_ENV=production
 ENV PORT=3000
 
-# Use the 'node' user provided by the official image for better security
-USER node
+RUN npm run build
 
 # Expose the port your app runs on
 EXPOSE 3000
 
-# Execute using Node 24's native TypeScript stripping
-CMD ["node", "src/index.ts"]
+# Command to run the application
+CMD ["node", "dist/src/main.js"]

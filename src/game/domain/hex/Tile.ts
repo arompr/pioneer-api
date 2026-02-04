@@ -1,5 +1,5 @@
-import type { HexCoordinate } from './coordinate/HexCoordinate.ts';
-import type { Distance } from './distance/Distance.ts';
+import type { HexCoordinate } from './coordinate/HexCoordinate';
+import type { Distance } from './distance/Distance';
 
 export class Tile {
     private readonly coordinates: HexCoordinate;

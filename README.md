@@ -1,6 +1,6 @@
-# Pioneers API
+# Pioneer API
 
-Node 24 + TypeScript + Express backend.
+Node 24 + TypeScript + Nest backend.
 
 ## Scripts
 
@@ -25,7 +25,7 @@ npm run dev
 ### Build the Image
 
 ```bash
-podman build -t pioneers-api .
+podman build -t pioneer-api .
 ```
 
 ### Run the Container
@@ -33,9 +33,9 @@ podman build -t pioneers-api .
 ```bash
 # Runs the API on port 3000 in detached mode
 podman run -d \
-  --name pioneers-api-server \
+  --name pioneer-api-server \
   -p 3000:3000 \
-  pioneers-api
+  pioneer-api
 ```
 
 ## Test URLs

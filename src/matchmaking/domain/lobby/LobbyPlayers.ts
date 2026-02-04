@@ -1,7 +1,7 @@
 import type { Player } from '../player/Player.ts';
 import type { PlayerId } from '../player/playerId/PlayerId.ts';
-import { PlayerAlreadyInLobbyError } from './errors/PlayerAlreadyInLobbyError.ts';
-import { PlayerNotFoundInLobbyError } from './errors/PlayerNotFoundInLobbyError.ts';
+import { PlayerAlreadyInLobbyError } from './errors/PlayerAlreadyInLobbyError';
+import { PlayerNotFoundInLobbyError } from './errors/PlayerNotFoundInLobbyError';
 
 /**
  * Encapsulates the collection of players within a lobby.

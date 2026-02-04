@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { LobbyGameMode } from './LobbyGameMode.ts';
-import { LobbyConfig } from './LobbyConfig.ts';
-import { InvalidMinPlayersError } from '../errors/InvalidMinPlayersError.ts';
-import { MinPlayersExceedsMaxPlayersError } from '../errors/MinPlayersExceedsMaxPlayersError.ts';
+import { LobbyGameMode } from './LobbyGameMode';
+import { LobbyConfig } from './LobbyConfig';
+import { InvalidMinPlayersError } from '../errors/InvalidMinPlayersError';
+import { MinPlayersExceedsMaxPlayersError } from '../errors/MinPlayersExceedsMaxPlayersError';
 
 const DEFAULT_MODE: LobbyGameMode = LobbyGameMode.BASE;
 const DEFAULT_MIN_PLAYERS = 3;

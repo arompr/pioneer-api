@@ -1,13 +1,13 @@
-import type { LobbyId } from './lobbyId/LobbyId.ts';
-import { LobbyStatus } from './LobbyStatus.ts';
-import { LobbyPlayers } from './LobbyPlayers.ts';
-import type { LobbyConfig } from './LobbyConfig/LobbyConfig.ts';
-import type { Player } from '../player/Player.ts';
-import { LobbyFullError } from './errors/LobbyFullError.ts';
-import type { PlayerId } from '../player/playerId/PlayerId.ts';
-import { PlayerIsNotHostError } from './errors/PlayerIsNotHostError.ts';
-import { LobbyNotReadyToStartError } from './errors/LobbyNotReadyToStartError.ts';
-import { LobbyAlreadyInGameError } from './errors/LobbyAlreadyInGameError.ts';
+import type { LobbyId } from './lobbyId/LobbyId';
+import { LobbyStatus } from './LobbyStatus';
+import { LobbyPlayers } from './LobbyPlayers';
+import type { LobbyConfig } from './LobbyConfig/LobbyConfig';
+import type { Player } from '../player/Player';
+import { LobbyFullError } from './errors/LobbyFullError';
+import { PlayerIsNotHostError } from './errors/PlayerIsNotHostError';
+import { LobbyNotReadyToStartError } from './errors/LobbyNotReadyToStartError';
+import { LobbyAlreadyInGameError } from './errors/LobbyAlreadyInGameError';
+import type { PlayerId } from '../player/playerId/PlayerId';
 
 /**
  * Represents a matchmaking lobby.

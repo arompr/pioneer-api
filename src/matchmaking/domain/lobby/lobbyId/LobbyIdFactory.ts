@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { LobbyId } from './LobbyId.ts';
+import { LobbyId } from './LobbyId';
 
 /**
  * Factory responsible for generating LobbyId instances.

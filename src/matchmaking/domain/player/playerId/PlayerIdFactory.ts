@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { PlayerId } from './PlayerId.ts';
+import { PlayerId } from './PlayerId';
 
 /**
  * Factory responsible for generating PlayerId instances.

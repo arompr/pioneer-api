@@ -1,4 +1,4 @@
-import { NegativeDistanceError } from './errors/NegativeDistanceError.ts';
+import { NegativeDistanceError } from './errors/NegativeDistanceError';
 
 /**
  * Represents a distance expressed as a non-negative number of hexes.

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { LobbyConfigFactory } from './LobbyConfigFactory.ts';
-import { LobbyGameMode } from './LobbyGameMode.ts';
-import { UnsupportedGameModeError } from '../errors/UnsupportedGameModeError.ts';
+import { LobbyConfigFactory } from './LobbyConfigFactory';
+import { LobbyGameMode } from './LobbyGameMode';
+import { UnsupportedGameModeError } from '../errors/UnsupportedGameModeError';
 
 const factory = new LobbyConfigFactory();
 
