@@ -1,0 +1,42 @@
+name: Trigger auto deployment for pionner-api-staging
+
+on:
+    push:
+        branches: [develop]
+    workflow_dispatch:
+
+jobs:
+    # Call the validation workflow first
+    code-quality-check:
+        uses: ./.github/workflows/validate.yml
+
+    # Run deployment only if validation succeeds
+    build-and-deploy:
+        needs: code-quality-check
+        runs-on: ubuntu-latest
+        permissions:
+            id-token: write
+            contents: read
+            packages: write
+        steps:
+            - name: Checkout to the branch
+              uses: actions/checkout@v4
+
+            - name: Azure Login
+              uses: azure/login@v2
+              with:
+                  client-id: ${{ secrets.PIONNERAPISTAGING_AZURE_CLIENT_ID }}
+                  tenant-id: ${{ secrets.PIONNERAPISTAGING_AZURE_TENANT_ID }}
+                  subscription-id: ${{ secrets.PIONNERAPISTAGING_AZURE_SUBSCRIPTION_ID }}
+
+            - name: Build and push container image
+              uses: azure/container-apps-deploy-action@v2
+              with:
+                  appSourcePath: ${{ github.workspace }}
+                  dockerfilePath: Containerfile
+                  registryUrl: ghcr.io
+                  registryUsername: ${{ github.actor }}
+                  registryPassword: ${{ secrets.GITHUB_TOKEN }}
+                  containerAppName: pionner-api-staging
+                  resourceGroup: pioneer
+                  imageToBuild: ghcr.io/${{ github.repository_owner }}/pioneers-api:${{ github.sha }}

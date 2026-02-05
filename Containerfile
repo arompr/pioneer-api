@@ -1,27 +1,28 @@
-# Use the latest Node 24 slim image
-FROM node:24-slim
-
-# Set the working directory
+# --- Stage 1: Build ---
+FROM node:24-slim AS builder
 WORKDIR /usr/src/app
 
-# Copy package files first to leverage Podman's layer caching
 COPY package*.json ./
+# Install all deps so we have access to nest-cli
+RUN npm ci
 
-# Install only production dependencies
-# This keeps the image small and secure
-RUN npm install
-
-# Copy the rest of your source code
 COPY . .
-
-# Set environment variables
-ENV NODE_ENV=production
-ENV PORT=3000
-
+# This creates the /dist folder
 RUN npm run build
 
-# Expose the port your app runs on
-EXPOSE 3000
+# --- Stage 2: Production ---
+FROM node:24-slim AS runner
+WORKDIR /usr/src/app
 
-# Command to run the application
+ENV NODE_ENV=production
+
+# Only copy the production-ready JS files
+COPY --from=builder /usr/src/app/dist ./dist
+COPY --from=builder /usr/src/app/package*.json ./
+
+# Install ONLY production dependencies
+RUN npm ci --omit=dev
+
+EXPOSE 3000
+# Run the compiled JS directly with node
 CMD ["node", "dist/src/main.js"]
