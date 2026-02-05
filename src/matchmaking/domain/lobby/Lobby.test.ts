@@ -48,55 +48,6 @@ describe('Lobby', () => {
             it('has the provided ID', () => {
                 expect(lobby.getId()).toBe(LOBBY_ID);
             });
-
-            it('is in WAITING_FOR_PLAYERS status', () => {
-                expect(lobby.status).toBe(LobbyStatus.WAITING_FOR_PLAYERS);
-            });
-        });
-    });
-
-    describe('status', () => {
-        describe('when the game is in progress', () => {
-            it('returns IN_GAME regardless of other conditions', () => {
-                setupStartedGame();
-
-                expect(lobby.status).toBe(LobbyStatus.IN_GAME);
-            });
-        });
-
-        describe('when the minimum capacity is reached', () => {
-            describe('when all the players are ready', () => {
-                it('returns READY_TO_START', () => {
-                    setupReadyLobby();
-
-                    expect(lobby.status).toBe(LobbyStatus.READY_TO_START);
-                });
-            });
-
-            describe('when at least one player is not ready', () => {
-                it('returns WAITING_FOR_PLAYER', () => {
-                    lobby.join(player2);
-                    lobby.markAsReady(player1.getSecretId());
-
-                    expect(lobby.status).toBe(LobbyStatus.WAITING_FOR_PLAYERS);
-                });
-            });
-        });
-
-        describe('when the minimum capacity is not reached', () => {
-            it('returns WAITING_FOR_PLAYER', () => {
-                lobby.markAsReady(player1.getSecretId());
-
-                expect(lobby.status).toBe(LobbyStatus.WAITING_FOR_PLAYERS);
-            });
-        });
-
-        describe('when the lobby is closed', () => {
-            it('returns CLOSED regardless of other conditions', () => {
-                setupClosedLobby();
-
-                expect(lobby.status).toBe(LobbyStatus.CLOSED);
-            });
         });
     });
 
@@ -140,6 +91,8 @@ describe('Lobby', () => {
         describe('when the lobby is in game', () => {
             it('throws LobbyAlreadyStartedError', () => {
                 setupStartedGame();
+
+                console.log(lobby);
 
                 expect(() => {
                     lobby.join(player3);
