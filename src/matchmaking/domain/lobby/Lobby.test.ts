@@ -3,7 +3,6 @@ import { LobbyId } from './lobbyId/LobbyId';
 import { Lobby } from './Lobby';
 import { LobbyConfig } from './LobbyConfig/LobbyConfig';
 import { LobbyGameMode } from './LobbyConfig/LobbyGameMode';
-import { LobbyStatus } from './LobbyStatus';
 import { Player } from '../player/Player';
 import { PlayerId } from '../player/playerId/PlayerId';
 import { LobbyFullError } from './errors/LobbyFullError';
@@ -14,6 +13,7 @@ import { PlayerIsNotHostError } from './errors/PlayerIsNotHostError';
 import { LobbyNotReadyToStartError } from './errors/LobbyNotReadyToStartError';
 import { LobbyClosedError } from './errors/LobbyClosedError';
 import { LobbyPlayers } from './LobbyPlayers';
+import { WaitingForPlayersState } from './states/WaitingForPlayersState';
 
 const LOBBY_ID = new LobbyId('lobby-id');
 const LOBBY_MIN_CAPACITY = 2;
@@ -36,7 +36,13 @@ describe('Lobby', () => {
 
         players = new LobbyPlayers();
         players.add(player1);
-        lobby = new Lobby(LOBBY_ID, LOBBY_CONFIG, player1.getSecretId(), players, false, false);
+        lobby = new Lobby(
+            LOBBY_ID,
+            LOBBY_CONFIG,
+            player1.getSecretId(),
+            players,
+            new WaitingForPlayersState()
+        );
     });
 
     describe('creation', () => {
@@ -92,8 +98,6 @@ describe('Lobby', () => {
             it('throws LobbyAlreadyStartedError', () => {
                 setupStartedGame();
 
-                console.log(lobby);
-
                 expect(() => {
                     lobby.join(player3);
                 }).toThrow(LobbyAlreadyInGameError);
@@ -143,7 +147,6 @@ describe('Lobby', () => {
             it('closes the lobby', () => {
                 lobby.leave(player1.getSecretId());
 
-                expect(lobby.status).toBe(LobbyStatus.CLOSED);
                 expect(lobby.isEmpty()).toBe(true);
             });
         });
@@ -174,12 +177,14 @@ describe('Lobby', () => {
             describe('when the player attempting to start is the host', () => {
                 describe('when the minimum capacity is reached', () => {
                     describe('when all the players are ready', () => {
-                        it('transitions the lobby to IN_GAME status', () => {
+                        it('locks the lobby and starts the game', () => {
                             setupReadyLobby();
 
                             lobby.start(player1.getSecretId());
 
-                            expect(lobby.status).toBe(LobbyStatus.IN_GAME);
+                            expect(() => {
+                                lobby.join(player3);
+                            }).toThrow(LobbyAlreadyInGameError);
                         });
                     });
 
@@ -334,38 +339,10 @@ describe('Lobby', () => {
         describe('when the game has already started', () => {
             it('returns false (it cannot be started again)', () => {
                 setupStartedGame();
+
+                console.log(lobby);
+
                 expect(lobby.canStart()).toBe(false);
-            });
-        });
-    });
-
-    describe('isWaiting()', () => {
-        describe('when at least one player is pending', () => {
-            it('returns true', () => {
-                expect(lobby.isWaiting()).toBe(true);
-            });
-        });
-
-        describe('when minimum player is reached', () => {
-            beforeEach(() => {
-                lobby.join(player2);
-            });
-
-            describe('when at least one player is pending', () => {
-                it('returns true', () => {
-                    lobby.markAsReady(player1.getSecretId());
-
-                    expect(lobby.isWaiting()).toBe(true);
-                });
-            });
-
-            describe('when all player are ready', () => {
-                it('returns false', () => {
-                    lobby.markAsReady(player1.getSecretId());
-                    lobby.markAsReady(player2.getSecretId());
-
-                    expect(lobby.isWaiting()).toBe(false);
-                });
             });
         });
     });

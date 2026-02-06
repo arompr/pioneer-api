@@ -5,7 +5,6 @@ import type { Player } from '../player/Player';
 import type { PlayerId } from '../player/playerId/PlayerId';
 import { LobbyState } from './states/LobbyState';
 import { ClosedState } from './states/ClosedState';
-import { WaitingForPlayersState } from './states/WaitingForPlayersState';
 
 /**
  * Represents a matchmaking lobby.
@@ -15,7 +14,7 @@ export class Lobby {
     private readonly players: LobbyPlayers;
     private readonly config: LobbyConfig;
     private hostId: PlayerId;
-    private lobbyState: LobbyState = new WaitingForPlayersState(this);
+    private lobbyState: LobbyState;
 
     /**
      * Creates a new Lobby instance.
@@ -24,11 +23,19 @@ export class Lobby {
      * @param {LobbyConfig} config - The configuration containing mode and limits.
      *
      */
-    constructor(id: LobbyId, config: LobbyConfig, hostId: PlayerId, players: LobbyPlayers) {
+    constructor(
+        id: LobbyId,
+        config: LobbyConfig,
+        hostId: PlayerId,
+        players: LobbyPlayers,
+        lobbyState: LobbyState
+    ) {
         this.id = id;
         this.config = config;
         this.hostId = hostId;
         this.players = players;
+        this.lobbyState = lobbyState;
+        this.transitionTo(lobbyState);
     }
 
     /**
@@ -42,6 +49,7 @@ export class Lobby {
 
     transitionTo(lobbyState: LobbyState) {
         this.lobbyState = lobbyState;
+        this.lobbyState.setLobby(this);
     }
 
     /**
@@ -109,7 +117,7 @@ export class Lobby {
      * @returns {boolean} True if the lobby is ready to start, otherwise false.
      */
     canStart(): boolean {
-        return this.hasReachedMinimum() && this.players.areAllReady();
+        return this.lobbyState.canStart();
     }
 
     /**
@@ -176,12 +184,15 @@ export class Lobby {
         return this.players.count;
     }
 
-    addPlayer(player: Player): void {
-        this.players.add(player);
-    }
-
-    removePlayer(playerId: PlayerId): void {
-        this.players.remove(playerId);
+    /**
+     * Evaluates if the essential technical conditions are met to allow a match.
+     * 1. The player count must meet the minimum defined in the config.
+     * 2. Every player currently in the lobby must have marked themselves as ready.
+     *
+     * @returns {boolean} True if player count and readiness requirements are satisfied.
+     */
+    meetsRequirementsToStart(): boolean {
+        return this.hasReachedMinimum() && this.players.areAllReady();
     }
 
     /**
@@ -193,9 +204,9 @@ export class Lobby {
      * This method assumes the leaving player was the current host.
      * @private
      */
-    reassignHost(): void {
+    private reassignHost(): void {
         if (this.players.isEmpty()) {
-            this.transitionTo(new ClosedState(this));
+            this.transitionTo(new ClosedState());
         } else {
             this.assignNextHost();
         }
@@ -207,5 +218,20 @@ export class Lobby {
      */
     private assignNextHost() {
         this.hostId = this.players.first().getSecretId();
+    }
+
+    /** @internal */
+    _addPlayer(player: Player): void {
+        this.players.add(player);
+    }
+
+    /** @internal */
+    _markPlayerAsReady(id: PlayerId): void {
+        this.players.markAsReady(id);
+    }
+
+    /** @internal */
+    _markPlayerAsPending(id: PlayerId): void {
+        this.players.markAsPending(id);
     }
 }

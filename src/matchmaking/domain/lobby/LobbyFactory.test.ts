@@ -4,7 +4,6 @@ import { PlayerId } from '../player/playerId/PlayerId';
 import { LobbyConfig } from './LobbyConfig/LobbyConfig';
 import { LobbyGameMode } from './LobbyConfig/LobbyGameMode';
 import { LobbyIdFactory } from './lobbyId/LobbyIdFactory';
-import { LobbyStatus } from './LobbyStatus';
 import { Lobby } from './Lobby';
 import { LobbyFactory } from './LobbyFactory';
 
@@ -36,10 +35,6 @@ describe('LobbyFactory', () => {
 
             it('should set the host', () => {
                 expect(lobby.isHost(hostPlayer.getSecretId())).toBe(true);
-            });
-
-            it('should initialize the lobby in a waiting state', () => {
-                expect(lobby.status).toBe(LobbyStatus.WAITING_FOR_PLAYERS);
             });
         });
     });

@@ -1,16 +1,9 @@
 import { Player } from '#matchmaking/domain/player/Player';
 import { PlayerId } from '#matchmaking/domain/player/playerId/PlayerId';
 import { LobbyAlreadyInGameError } from '../errors/LobbyAlreadyInGameError';
-import { Lobby } from '../Lobby';
 import { LobbyState } from './LobbyState';
 
-export class InGameState implements LobbyState {
-    private lobby: Lobby;
-
-    constructor(lobby: Lobby) {
-        this.lobby = lobby;
-    }
-
+export class InGameState extends LobbyState {
     join(_player: Player): void {
         this.notAllowed();
     }
@@ -25,6 +18,10 @@ export class InGameState implements LobbyState {
 
     markAsPending(_playerId: PlayerId): void {
         this.notAllowed();
+    }
+
+    canStart(): boolean {
+        return false;
     }
 
     private notAllowed(): void {

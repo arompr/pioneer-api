@@ -4,11 +4,10 @@ import { LobbyConfig } from './LobbyConfig/LobbyConfig';
 import { LobbyId } from './lobbyId/LobbyId';
 import { LobbyIdFactory } from './lobbyId/LobbyIdFactory';
 import { LobbyPlayers } from './LobbyPlayers';
+import { WaitingForPlayersState } from './states/WaitingForPlayersState';
 
 export class LobbyFactory {
     private readonly lobbyIdFactory: LobbyIdFactory;
-    private readonly INITIAL_IN_GAME = false;
-    private readonly INITIAL_IS_CLOSED = false;
 
     constructor(lobbyIdFactory: LobbyIdFactory) {
         this.lobbyIdFactory = lobbyIdFactory;
@@ -30,8 +29,7 @@ export class LobbyFactory {
             config,
             host.getSecretId(),
             players,
-            this.INITIAL_IN_GAME,
-            this.INITIAL_IS_CLOSED
+            new WaitingForPlayersState()
         );
     }
 }

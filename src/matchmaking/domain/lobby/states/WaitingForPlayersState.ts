@@ -3,22 +3,15 @@ import { PlayerId } from '#matchmaking/domain/player/playerId/PlayerId';
 import { LobbyFullError } from '../errors/LobbyFullError';
 import { LobbyNotReadyToStartError } from '../errors/LobbyNotReadyToStartError';
 import { PlayerIsNotHostError } from '../errors/PlayerIsNotHostError';
-import { Lobby } from '../Lobby';
 import { LobbyState } from './LobbyState';
 import { ReadyToStartState } from './ReadyToStartState';
 
-export class WaitingForPlayersState implements LobbyState {
-    private lobby: Lobby;
-
-    constructor(lobby: Lobby) {
-        this.lobby = lobby;
-    }
-
+export class WaitingForPlayersState extends LobbyState {
     join(player: Player): void {
         if (this.lobby.isFull()) {
             throw new LobbyFullError(this.lobby.getId());
         }
-        this.lobby.addPlayer(player);
+        this.lobby._addPlayer(player);
     }
 
     start(playerId: PlayerId): void {
@@ -29,14 +22,18 @@ export class WaitingForPlayersState implements LobbyState {
     }
 
     markAsReady(playerId: PlayerId): void {
-        this.lobby.markAsReady(playerId);
+        this.lobby._markPlayerAsReady(playerId);
 
-        if (this.lobby.canStart()) {
-            this.lobby.transitionTo(new ReadyToStartState(this.lobby));
+        if (this.lobby.meetsRequirementsToStart()) {
+            this.lobby.transitionTo(new ReadyToStartState());
         }
     }
 
     markAsPending(playerId: PlayerId): void {
-        this.lobby.markAsPending(playerId);
+        this.lobby._markPlayerAsPending(playerId);
+    }
+
+    canStart(): boolean {
+        return false;
     }
 }
