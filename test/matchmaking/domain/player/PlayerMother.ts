@@ -1,17 +1,15 @@
 import { Player } from '#matchmaking/domain/player/Player';
 import { PlayerId } from '#matchmaking/domain/player/playerId/PlayerId';
+import { PlayerStatus } from '#matchmaking/domain/player/PlayerStatus';
 
 export class PlayerMother {
     static create(index: string | number, ready = false): Player {
         const player = new Player(
             new PlayerId(`secret-${index}`),
             new PlayerId(`public-${index}`),
-            `player-${index}`
+            `player-${index}`,
+            ready ? PlayerStatus.Ready : PlayerStatus.Pending
         );
-
-        if (ready) {
-            player.markReady();
-        }
 
         return player;
     }
