@@ -11,7 +11,12 @@ export class ReadyToStartState extends LobbyState {
         if (this.lobby.isFull()) {
             throw new LobbyFullError(this.lobby.getId());
         }
-        this.lobby._addPlayer(player);
+
+        this.lobby.internalAddPlayer(player);
+
+        if (!this.lobby.meetsRequirementsToStart()) {
+            this.lobby.transitionTo(new WaitingForPlayersState());
+        }
     }
 
     start(playerId: PlayerId): void {
@@ -19,15 +24,14 @@ export class ReadyToStartState extends LobbyState {
             throw new PlayerIsNotHostError(playerId, this.lobby.getId());
         }
         this.lobby.transitionTo(new InGameState());
-        console.log('Partie débuté!');
     }
 
     markAsReady(playerId: PlayerId): void {
-        this.lobby._markPlayerAsReady(playerId);
+        this.lobby.internalMarkAsReady(playerId);
     }
 
     markAsPending(playerId: PlayerId): void {
-        this.lobby._markPlayerAsPending(playerId);
+        this.lobby.internalMarkAsPending(playerId);
         if (!this.lobby.meetsRequirementsToStart()) {
             this.lobby.transitionTo(new WaitingForPlayersState());
         }

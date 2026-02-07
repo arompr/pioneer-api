@@ -11,7 +11,7 @@ export class WaitingForPlayersState extends LobbyState {
         if (this.lobby.isFull()) {
             throw new LobbyFullError(this.lobby.getId());
         }
-        this.lobby._addPlayer(player);
+        this.lobby.internalAddPlayer(player);
     }
 
     start(playerId: PlayerId): void {
@@ -22,7 +22,7 @@ export class WaitingForPlayersState extends LobbyState {
     }
 
     markAsReady(playerId: PlayerId): void {
-        this.lobby._markPlayerAsReady(playerId);
+        this.lobby.internalMarkAsReady(playerId);
 
         if (this.lobby.meetsRequirementsToStart()) {
             this.lobby.transitionTo(new ReadyToStartState());
@@ -30,7 +30,7 @@ export class WaitingForPlayersState extends LobbyState {
     }
 
     markAsPending(playerId: PlayerId): void {
-        this.lobby._markPlayerAsPending(playerId);
+        this.lobby.internalMarkAsPending(playerId);
     }
 
     canStart(): boolean {

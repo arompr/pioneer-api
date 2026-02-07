@@ -7,7 +7,8 @@
     "imports": {
         "#common/*": "./src/common/*.ts",
         "#matchmaking/*": "./src/matchmaking/*.ts",
-        "#game/*": "./src/game/*.ts"
+        "#game/*": "./src/game/*.ts",
+        "#test/*": "./test/*.ts"
     },
     "license": "UNLICENSED",
     "scripts": {

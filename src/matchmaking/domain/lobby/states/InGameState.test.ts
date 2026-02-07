@@ -1,35 +1,17 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { Lobby } from '../Lobby';
-import { LobbyPlayers } from '../LobbyPlayers';
 import { Player } from '#matchmaking/domain/player/Player';
-import { LobbyId } from '../lobbyId/LobbyId';
-import { LobbyConfig } from '../LobbyConfig/LobbyConfig';
-import { PlayerId } from '#matchmaking/domain/player/playerId/PlayerId';
-import { LobbyGameMode } from '../LobbyConfig/LobbyGameMode';
-import { InGameState } from './InGameState';
 import { LobbyAlreadyInGameError } from '../errors/LobbyAlreadyInGameError';
-
-const LOBBY_ID = new LobbyId('lobby-id');
-const LOBBY_MIN_CAPACITY = 2;
-const LOBBY_MAX_CAPACITY = 3;
-const LOBBY_CONFIG = new LobbyConfig(LobbyGameMode.BASE, LOBBY_MIN_CAPACITY, LOBBY_MAX_CAPACITY);
+import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
 
 let lobby: Lobby;
-let players: LobbyPlayers;
 let player1: Player;
 
 describe('InGameState', () => {
     beforeEach(() => {
-        players = new LobbyPlayers();
-        player1 = new Player(new PlayerId(`secret-1`), new PlayerId(`public-1`), `player-1`);
-        players.add(player1);
-        lobby = new Lobby(
-            LOBBY_ID,
-            LOBBY_CONFIG,
-            player1.getSecretId(),
-            players,
-            new InGameState()
-        );
+        const { lobby: l, players } = LobbyMother.inGameLobby();
+        lobby = l;
+        [player1] = players;
     });
 
     describe('join()', () => {

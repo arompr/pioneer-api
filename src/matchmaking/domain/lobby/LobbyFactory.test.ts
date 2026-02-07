@@ -4,8 +4,8 @@ import { PlayerId } from '../player/playerId/PlayerId';
 import { LobbyConfig } from './LobbyConfig/LobbyConfig';
 import { LobbyGameMode } from './LobbyConfig/LobbyGameMode';
 import { LobbyIdFactory } from './lobbyId/LobbyIdFactory';
-import { Lobby } from './Lobby';
 import { LobbyFactory } from './LobbyFactory';
+import ILobby from './ILobby';
 
 const LOBBY_MIN_CAPACITY = 2;
 const LOBBY_MAX_CAPACITY = 3;
@@ -13,7 +13,7 @@ const LOBBY_CONFIG = new LobbyConfig(LobbyGameMode.BASE, LOBBY_MIN_CAPACITY, LOB
 const lobbyIdFactory: LobbyIdFactory = new LobbyIdFactory();
 let lobbyFactory: LobbyFactory;
 let hostPlayer: Player;
-let lobby: Lobby;
+let lobby: ILobby;
 
 describe('LobbyFactory', () => {
     beforeEach(() => {

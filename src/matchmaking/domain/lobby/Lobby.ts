@@ -5,11 +5,12 @@ import type { Player } from '../player/Player';
 import type { PlayerId } from '../player/playerId/PlayerId';
 import { LobbyState } from './states/LobbyState';
 import { ClosedState } from './states/ClosedState';
+import ILobby from './ILobby';
 
 /**
  * Represents a matchmaking lobby.
  */
-export class Lobby {
+export class Lobby implements ILobby {
     private readonly id: LobbyId;
     private readonly players: LobbyPlayers;
     private readonly config: LobbyConfig;
@@ -185,6 +186,15 @@ export class Lobby {
     }
 
     /**
+     * Returns the number of players that are ready in the lobby.
+     *
+     * @returns {number} The count of ready players.
+     */
+    get readyPlayerCount(): number {
+        return this.players.readyCount;
+    }
+
+    /**
      * Evaluates if the essential technical conditions are met to allow a match.
      * 1. The player count must meet the minimum defined in the config.
      * 2. Every player currently in the lobby must have marked themselves as ready.
@@ -221,17 +231,17 @@ export class Lobby {
     }
 
     /** @internal */
-    _addPlayer(player: Player): void {
+    internalAddPlayer(player: Player): void {
         this.players.add(player);
     }
 
     /** @internal */
-    _markPlayerAsReady(id: PlayerId): void {
+    internalMarkAsReady(id: PlayerId): void {
         this.players.markAsReady(id);
     }
 
     /** @internal */
-    _markPlayerAsPending(id: PlayerId): void {
+    internalMarkAsPending(id: PlayerId): void {
         this.players.markAsPending(id);
     }
 }

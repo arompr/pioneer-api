@@ -1,4 +1,5 @@
 import { Player } from '../player/Player';
+import ILobby from './ILobby';
 import { Lobby } from './Lobby';
 import { LobbyConfig } from './LobbyConfig/LobbyConfig';
 import { LobbyId } from './lobbyId/LobbyId';
@@ -19,7 +20,7 @@ export class LobbyFactory {
      * @param hostName Optional name for the host. If not provided, a default name will be used.
      * @param config The configuration for the lobby.
      */
-    create(config: LobbyConfig, host: Player): Lobby {
+    create(config: LobbyConfig, host: Player): ILobby {
         const lobbyId: LobbyId = this.lobbyIdFactory.generate();
         const players = new LobbyPlayers();
         players.add(host);
