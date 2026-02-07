@@ -11,14 +11,7 @@ export class Player {
     private secretId: PlayerId;
     private publicId: PlayerId;
     private name: string;
-
-    /**
-     * Indicates whether the player is ready to start the game.
-     *
-     * @type {PlayerStatus}
-     * @private
-     */
-    private status: PlayerStatus = PlayerStatus.Pending;
+    private status: PlayerStatus;
 
     /**
      * Creates a new Player instance.
@@ -27,10 +20,11 @@ export class Player {
      * @param {PlayerId} playerId - Unique identifier for the player.
      * @param {string} name - Name chosen by the player.
      */
-    constructor(secretId: PlayerId, playerId: PlayerId, name: string) {
+    constructor(secretId: PlayerId, playerId: PlayerId, name: string, status: PlayerStatus) {
         this.secretId = secretId;
         this.publicId = playerId;
         this.name = name;
+        this.status = status;
     }
 
     /**
