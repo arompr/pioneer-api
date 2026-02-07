@@ -1,25 +1,21 @@
 import type { LobbyId } from './lobbyId/LobbyId';
-import { LobbyStatus } from './LobbyStatus';
 import { LobbyPlayers } from './LobbyPlayers';
 import type { LobbyConfig } from './LobbyConfig/LobbyConfig';
 import type { Player } from '../player/Player';
-import { LobbyFullError } from './errors/LobbyFullError';
-import { PlayerIsNotHostError } from './errors/PlayerIsNotHostError';
-import { LobbyNotReadyToStartError } from './errors/LobbyNotReadyToStartError';
-import { LobbyAlreadyInGameError } from './errors/LobbyAlreadyInGameError';
 import type { PlayerId } from '../player/playerId/PlayerId';
-import { LobbyClosedError } from './errors/LobbyClosedError';
+import { LobbyState } from './states/LobbyState';
+import { ClosedState } from './states/ClosedState';
+import ILobby from './ILobby';
 
 /**
  * Represents a matchmaking lobby.
  */
-export class Lobby {
+export class Lobby implements ILobby {
     private readonly id: LobbyId;
     private readonly players: LobbyPlayers;
     private readonly config: LobbyConfig;
     private hostId: PlayerId;
-    private inGame: boolean;
-    private isClosed: boolean;
+    private lobbyState: LobbyState;
 
     /**
      * Creates a new Lobby instance.
@@ -33,15 +29,14 @@ export class Lobby {
         config: LobbyConfig,
         hostId: PlayerId,
         players: LobbyPlayers,
-        inGame: boolean,
-        isClosed: boolean
+        lobbyState: LobbyState
     ) {
         this.id = id;
         this.config = config;
         this.hostId = hostId;
         this.players = players;
-        this.inGame = inGame;
-        this.isClosed = isClosed;
+        this.lobbyState = lobbyState;
+        this.transitionTo(lobbyState);
     }
 
     /**
@@ -53,17 +48,9 @@ export class Lobby {
         return this.id;
     }
 
-    /**
-     * Returns the current status of the lobby.
-     *
-     * @returns {LobbyStatus} LobbyStatus
-     */
-    get status(): LobbyStatus {
-        if (this.isClosed) return LobbyStatus.CLOSED;
-        if (this.inGame) return LobbyStatus.IN_GAME;
-        if (this.meetsRequirements()) return LobbyStatus.READY_TO_START;
-
-        return LobbyStatus.WAITING_FOR_PLAYERS;
+    transitionTo(lobbyState: LobbyState) {
+        this.lobbyState = lobbyState;
+        this.lobbyState.setLobby(this);
     }
 
     /**
@@ -74,13 +61,7 @@ export class Lobby {
      * @throws {PlayerAlreadyInLobbyError} If the player is already present in the lobby.
      */
     join(player: Player): void {
-        this.ensureNotInClosed();
-        this.ensureNotInGame();
-
-        if (this.isFull()) {
-            throw new LobbyFullError(this.id);
-        }
-        this.players.add(player);
+        this.lobbyState.join(player);
     }
 
     /**
@@ -108,18 +89,7 @@ export class Lobby {
      * @throws {LobbyNotReadyToStartError} If the lobby status is not READY_TO_START.
      */
     start(playerId: PlayerId): void {
-        this.ensureNotInClosed();
-        this.ensureNotInGame();
-
-        if (!this.isHost(playerId)) {
-            throw new PlayerIsNotHostError(playerId, this.id);
-        }
-
-        if (this.status !== LobbyStatus.READY_TO_START) {
-            throw new LobbyNotReadyToStartError(this.id);
-        }
-
-        this.inGame = true;
+        this.lobbyState.start(playerId);
     }
 
     /**
@@ -129,9 +99,7 @@ export class Lobby {
      * @throws {PlayerNotFoundInLobbyError} If the player is not in the lobby.
      */
     markAsReady(id: PlayerId): void {
-        this.ensureNotInClosed();
-        this.ensureNotInGame();
-        this.players.markAsReady(id);
+        this.lobbyState.markAsReady(id);
     }
 
     /**
@@ -141,9 +109,7 @@ export class Lobby {
      * @throws {PlayerNotFoundInLobbyError} If the player is not in the lobby.
      */
     markAsPending(id: PlayerId): void {
-        this.ensureNotInClosed();
-        this.ensureNotInGame();
-        this.players.markAsPending(id);
+        this.lobbyState.markAsPending(id);
     }
 
     /**
@@ -152,16 +118,7 @@ export class Lobby {
      * @returns {boolean} True if the lobby is ready to start, otherwise false.
      */
     canStart(): boolean {
-        return this.status === LobbyStatus.READY_TO_START;
-    }
-
-    /**
-     * Checks if the lobby is still waiting for more players or ready actions.
-     *
-     * @returns {boolean} True if the lobby is in waiting mode, false otherwise.
-     */
-    isWaiting(): boolean {
-        return this.status === LobbyStatus.WAITING_FOR_PLAYERS;
+        return this.lobbyState.canStart();
     }
 
     /**
@@ -229,39 +186,23 @@ export class Lobby {
     }
 
     /**
+     * Returns the number of players that are ready in the lobby.
+     *
+     * @returns {number} The count of ready players.
+     */
+    get readyPlayerCount(): number {
+        return this.players.readyCount;
+    }
+
+    /**
      * Evaluates if the essential technical conditions are met to allow a match.
      * 1. The player count must meet the minimum defined in the config.
      * 2. Every player currently in the lobby must have marked themselves as ready.
      *
      * @returns {boolean} True if player count and readiness requirements are satisfied.
-     * @private
      */
-    private meetsRequirements(): boolean {
+    meetsRequirementsToStart(): boolean {
         return this.hasReachedMinimum() && this.players.areAllReady();
-    }
-
-    /**
-     * Internal guard to ensure the lobby is not already in a match.
-     *
-     * @throws {LobbyAlreadyInGameError} If the game has already started.
-     * @private
-     */
-    private ensureNotInGame(): void {
-        if (this.status === LobbyStatus.IN_GAME) {
-            throw new LobbyAlreadyInGameError(this.id);
-        }
-    }
-
-    /**
-     * Internal guard to ensure the lobby is not already in a match.
-     *
-     * @throws {LobbyClosedError} If the game has already started.
-     * @private
-     */
-    private ensureNotInClosed(): void {
-        if (this.status === LobbyStatus.CLOSED) {
-            throw new LobbyClosedError(this.id);
-        }
     }
 
     /**
@@ -275,7 +216,7 @@ export class Lobby {
      */
     private reassignHost(): void {
         if (this.players.isEmpty()) {
-            this.closeLobby();
+            this.transitionTo(new ClosedState());
         } else {
             this.assignNextHost();
         }
@@ -289,13 +230,18 @@ export class Lobby {
         this.hostId = this.players.first().getSecretId();
     }
 
-    /**
-     * Closes the lobby when no players remain.
-     *
-     * A closed lobby can no longer accept players or actions.
-     * @private
-     */
-    private closeLobby() {
-        this.isClosed = true;
+    /** @internal */
+    internalAddPlayer(player: Player): void {
+        this.players.add(player);
+    }
+
+    /** @internal */
+    internalMarkAsReady(id: PlayerId): void {
+        this.players.markAsReady(id);
+    }
+
+    /** @internal */
+    internalMarkAsPending(id: PlayerId): void {
+        this.players.markAsPending(id);
     }
 }

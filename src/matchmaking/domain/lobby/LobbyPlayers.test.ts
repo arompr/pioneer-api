@@ -4,13 +4,14 @@ import { Player } from '../player/Player';
 import { PlayerId } from '../player/playerId/PlayerId';
 import { PlayerAlreadyInLobbyError } from './errors/PlayerAlreadyInLobbyError';
 import { PlayerNotFoundInLobbyError } from './errors/PlayerNotFoundInLobbyError';
+import { PlayerMother } from '#test/matchmaking/domain/player/PlayerMother';
 
 let player: Player;
 let lobbyPlayers: LobbyPlayers;
 
 beforeEach(() => {
     lobbyPlayers = new LobbyPlayers();
-    player = createPlayer('1');
+    player = PlayerMother.create('1');
 });
 
 describe('LobbyPlayers', () => {
@@ -130,7 +131,7 @@ describe('LobbyPlayers', () => {
         let secondPlayer: Player;
 
         beforeEach(() => {
-            secondPlayer = createPlayer('2');
+            secondPlayer = PlayerMother.create('2');
             lobbyPlayers.add(player);
             lobbyPlayers.add(secondPlayer);
         });
@@ -156,7 +157,7 @@ describe('LobbyPlayers', () => {
     describe('first()', () => {
         describe('when the lobby is not empty', () => {
             it('returns the first player added (the host)', () => {
-                const secondPlayer = createPlayer('2');
+                const secondPlayer = PlayerMother.create('2');
                 lobbyPlayers.add(player);
                 lobbyPlayers.add(secondPlayer);
 
@@ -192,7 +193,3 @@ describe('LobbyPlayers', () => {
         });
     });
 });
-
-const createPlayer = (id: string, name: string = 'Player') => {
-    return new Player(new PlayerId(`secret-${id}`), new PlayerId(`public-${id}`), name);
-};

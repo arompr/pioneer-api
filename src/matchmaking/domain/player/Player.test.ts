@@ -1,11 +1,13 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { PlayerId } from './playerId/PlayerId';
 import { Player } from './Player';
+import { PlayerStatus } from './PlayerStatus';
 
 const DEFAULT_PLAYER_PUBLIC_ID = new PlayerId('player-public-id');
 const DEFAULT_PLAYER_SECRET_ID = new PlayerId('player-secret-id');
 const OTHER_PLAYER_PUBLIC_ID = new PlayerId('other-player-id');
 const OTHER_PLAYER_SECRET_ID = new PlayerId('other-secret-id');
+const PENDING_STATUS = PlayerStatus.Pending;
 
 const DEFAULT_PLAYER_NAME = 'player-name';
 let player: Player;
@@ -15,7 +17,8 @@ describe('Player', () => {
         player = new Player(
             DEFAULT_PLAYER_SECRET_ID,
             DEFAULT_PLAYER_PUBLIC_ID,
-            DEFAULT_PLAYER_NAME
+            DEFAULT_PLAYER_NAME,
+            PENDING_STATUS
         );
     });
 
@@ -77,7 +80,8 @@ describe('Player', () => {
                 const playerWithSameId = new Player(
                     DEFAULT_PLAYER_SECRET_ID,
                     DEFAULT_PLAYER_PUBLIC_ID,
-                    DEFAULT_PLAYER_NAME
+                    DEFAULT_PLAYER_NAME,
+                    PENDING_STATUS
                 );
 
                 expect(player.equals(playerWithSameId)).toBe(true);
@@ -89,7 +93,8 @@ describe('Player', () => {
                 const playerWithSameId = new Player(
                     OTHER_PLAYER_SECRET_ID,
                     OTHER_PLAYER_PUBLIC_ID,
-                    DEFAULT_PLAYER_NAME
+                    DEFAULT_PLAYER_NAME,
+                    PENDING_STATUS
                 );
 
                 expect(player.equals(playerWithSameId)).toBe(false);
