@@ -1,18 +1,24 @@
 import HexCoordinate from '../coordinate/HexCoordinate';
 import Tile from '../tile/Tile';
+import TileAlreadyExistsError from './errors/TileAlreadyExistsError';
 
 type TileKey = `${number},${number},${number}`;
 
 export default class BoardTiles {
     private readonly _tiles: Map<TileKey, Tile>;
 
-    constructor(tiles: Map<TileKey, Tile>) {
-        this._tiles = tiles;
+    constructor(tiles: Tile[] = []) {
+        this._tiles = new Map<TileKey, Tile>();
+
+        for (const tile of tiles) {
+            const key = this.toTileKey(tile.coordinates);
+            this._tiles.set(key, tile);
+        }
     }
 
     public add(tile: Tile) {
         if (this.has(tile)) {
-            throw new Error('replace this error');
+            throw new TileAlreadyExistsError(tile);
         }
 
         this.set(tile);

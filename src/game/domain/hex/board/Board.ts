@@ -1,6 +1,7 @@
 import HexCoordinate from '../coordinate/HexCoordinate';
 import Tile from '../tile/Tile';
 import BoardTiles from './BoardTiles';
+import TileNotFoundError from './errors/TileNotFoundError';
 
 export class Board {
     private readonly _tiles: BoardTiles;
@@ -21,7 +22,7 @@ export class Board {
         const tile = this.getTile(coordinate);
 
         if (!tile) {
-            throw new Error('Replace this error');
+            throw new TileNotFoundError(coordinate);
         }
 
         return tile;
