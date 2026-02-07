@@ -10,7 +10,7 @@ export class PlayerMother {
         );
 
         if (ready) {
-            player.markReady(); // ou ta méthode interne pour marquer ready
+            player.markReady();
         }
 
         return player;
