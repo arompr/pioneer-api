@@ -5,6 +5,10 @@ import HexCoordinate from '../coordinate/HexCoordinate';
 import { RessourceType } from '../tile/RessourceType';
 import TileAlreadyExistsError from './errors/TileAlreadyExistsError';
 
+const ORIGIN_COORDINATES = HexCoordinate.of(0, 0);
+const ORIGIN_TILE: Tile = new Tile(ORIGIN_COORDINATES, RessourceType.ORE);
+const TILES = [ORIGIN_TILE];
+
 describe('BoardTiles', () => {
     describe('creation', () => {
         describe('when given an empty set of tiles', () => {
@@ -28,12 +32,10 @@ describe('BoardTiles', () => {
         });
     });
 
-    describe('add()', () => {
+    describe('add(tile)', () => {
         let boardTiles: BoardTiles;
-        const ORIGIN_COORDINATES = HexCoordinate.of(0, 0);
         beforeEach(() => {
-            const tiles = [new Tile(ORIGIN_COORDINATES, RessourceType.BRICK)];
-            boardTiles = new BoardTiles(tiles);
+            boardTiles = new BoardTiles(TILES);
         });
 
         describe('when adding a new tile', () => {
@@ -43,8 +45,8 @@ describe('BoardTiles', () => {
 
                 boardTiles.add(newTile);
 
-                expect(boardTiles.getFromCoordinates(coordinates)).toBeDefined();
-                expect(boardTiles.getFromCoordinates(coordinates)).toEqual(newTile);
+                expect(boardTiles.getTile(coordinates)).toBeDefined();
+                expect(boardTiles.getTile(coordinates)).toEqual(newTile);
             });
         });
 
@@ -56,43 +58,75 @@ describe('BoardTiles', () => {
             });
 
             it(`the tile isn't added`, () => {
-                const originalTile = new Tile(HexCoordinate.of(5, 5), RessourceType.SHEEP);
-                const duplicateCoordinatesTile = new Tile(ORIGIN_COORDINATES, RessourceType.ORE);
+                const duplicateOriginTile = new Tile(ORIGIN_COORDINATES, RessourceType.ORE);
 
                 try {
-                    boardTiles.add(duplicateCoordinatesTile);
+                    boardTiles.add(duplicateOriginTile);
                 } catch (_error) {
                     // do nothing
                 }
 
-                const tile = boardTiles.getFromCoordinates(ORIGIN_COORDINATES);
-                expect(tile).toEqual(originalTile);
+                const tile = boardTiles.getTile(ORIGIN_COORDINATES);
+                expect(tile).toEqual(ORIGIN_TILE);
             });
         });
     });
 
-    // 2. add(tile)
-    // Happy path
-    //
-    // should add a tile when it does not already exist
-    //
-    // After add(tile), has(tile) is true
-    //
-    // get(tile) returns the same tile instance
-    //
-    // Error cases
-    //
-    // should throw TileAlreadyExistsError when adding a tile with existing coordinates
-    //
-    // Map already contains a tile with the same (q, r, s)
-    //
-    // add(tile) throws TileAlreadyExistsError
-    //
-    // Side-effect safety
-    //
-    // should not modify the tiles map when TileAlreadyExistsError is thrown
-    //
-    // Size remains unchanged
-    //
-    // Existing tile remains unchanged
+    describe('hasTile(coordinates)', () => {
+        let boardTiles: BoardTiles;
+        beforeEach(() => {
+            boardTiles = new BoardTiles(TILES);
+        });
+
+        describe('when a tile with the same coordinates exists', () => {
+            it('returns true', () => {
+                expect(boardTiles.hasTile(ORIGIN_COORDINATES)).toBe(true);
+            });
+        });
+
+        describe('when no tile at coordinates exists', () => {
+            it('returns false', () => {
+                const coordinates = HexCoordinate.of(5, 5);
+                expect(boardTiles.hasTile(coordinates)).toBe(false);
+            });
+        });
+    });
+
+    describe('getTile(coordinates)', () => {
+        let boardTiles: BoardTiles;
+
+        beforeEach(() => {
+            boardTiles = new BoardTiles(TILES);
+        });
+
+        describe('when a tile with the given coordinates exists', () => {
+            it('returns the tile at those coordinates', () => {
+                const tile = boardTiles.getTile(ORIGIN_COORDINATES);
+
+                expect(tile).toBeDefined();
+                expect(tile).toEqual(ORIGIN_TILE);
+            });
+        });
+
+        describe('when no tile at the given coordinates exists', () => {
+            it('returns undefined', () => {
+                const coordinates = HexCoordinate.of(5, 5);
+
+                const tile = boardTiles.getTile(coordinates);
+
+                expect(tile).toBeUndefined();
+            });
+        });
+    });
+
+    it('treats different coordinate instances with same values as identical', () => {
+        const boardTiles = new BoardTiles(TILES);
+
+        const sameCoordinates = HexCoordinate.of(0, 0);
+        const duplicateTile = new Tile(sameCoordinates, RessourceType.ORE);
+
+        expect(boardTiles.hasTile(sameCoordinates)).toBe(true);
+        expect(() => boardTiles.add(duplicateTile)).toThrow(TileAlreadyExistsError);
+        expect(boardTiles.getTile(sameCoordinates)).toEqual(ORIGIN_TILE);
+    });
 });

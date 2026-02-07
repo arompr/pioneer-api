@@ -1,4 +1,4 @@
-import { DomainError } from '#common/domain/DomainError';
+import DomainError from '#common/domain/DomainError';
 import { LobbyId } from '../lobbyId/LobbyId';
 
 export class LobbyClosedError extends DomainError {
