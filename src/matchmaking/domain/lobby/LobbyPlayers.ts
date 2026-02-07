@@ -120,6 +120,15 @@ export class LobbyPlayers {
     }
 
     /**
+     * Returns the number of players that are marked as ready.
+     *
+     * @returns {number} The count of ready players.
+     */
+    get readyCount(): number {
+        return this.players.filter((player) => player.isReady()).length;
+    }
+
+    /**
      * Returns the current number of players in the collection.
      *
      * @returns {number}

@@ -1,5 +1,6 @@
 import { Player } from './Player';
 import type { PlayerIdFactory } from './playerId/PlayerIdFactory.ts';
+import { PlayerStatus } from './PlayerStatus';
 
 /**
  * Factory responsible for creating Player instances.
@@ -14,6 +15,11 @@ export class PlayerFactory {
      * Creates a new Player.
      */
     create(name: string): Player {
-        return new Player(this.playerIdFactory.generate(), this.playerIdFactory.generate(), name);
+        return new Player(
+            this.playerIdFactory.generate(),
+            this.playerIdFactory.generate(),
+            name,
+            PlayerStatus.Pending
+        );
     }
 }
