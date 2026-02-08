@@ -33,7 +33,7 @@ export default class BoardTiles {
      * @throws {TileAlreadyExistsError}
      * Thrown if a tile with the same coordinates already exists on the board.
      */
-    public add(tile: Tile) {
+    public add(tile: Tile): void {
         if (this.hasTile(tile.coordinates)) {
             throw new TileAlreadyExistsError(tile);
         }
@@ -47,7 +47,7 @@ export default class BoardTiles {
      * @param coordinates - The hex coordinates to check.
      * @returns `true` if a tile with the given coordinates exists, otherwise `false`.
      */
-    public hasTile(coordinates: HexCoordinate) {
+    public hasTile(coordinates: HexCoordinate): boolean {
         const key = this.toTileKey(coordinates);
         return this._tiles.has(key);
     }
@@ -67,7 +67,7 @@ export default class BoardTiles {
      * @param coordinates - The hex coordinates of the tile.
      * @returns The tile at the given coordinates, or `undefined` if none exists.
      */
-    public getTile(coordinates: HexCoordinate) {
+    public getTile(coordinates: HexCoordinate): Tile | undefined {
         return this.getByKey(this.toTileKey(coordinates));
     }
 
