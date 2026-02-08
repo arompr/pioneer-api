@@ -36,9 +36,11 @@ jobs:
             echo "📋 Processing workflow: $WORKFLOW_NAME (ID: $WORKFLOW_ID)"
             
             # Get all workflow runs for this workflow, sorted by created date (newest first)
+            # Note: Fetches up to 100 most recent runs. Workflows with more than 100 completed
+            # runs will need multiple cleanup cycles to remove all old runs beyond the 100 limit.
             RUNS=$(gh api repos/$REPO/actions/workflows/$WORKFLOW_ID/runs \
               --per-page 100 \
-              --jq '.workflow_runs[] | select(.status != "in_progress" and .status != "queued") | .id')
+              --jq '.workflow_runs[] | select(.status != "in_progress" and .status != "queued" and .status != "waiting") | .id')
             
             if [ -z "$RUNS" ]; then
               echo "  ℹ️  No completed runs found for this workflow"
