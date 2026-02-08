@@ -1,6 +1,6 @@
 import { LobbyGameMode } from './LobbyGameMode';
 import { LobbyConfig } from './LobbyConfig';
-import { UnsupportedGameModeError } from '../errors/UnsupportedGameModeError';
+import UnsupportedGameModeError from '../errors/UnsupportedGameModeError';
 
 /**
  * Factory responsible for creating LobbyConfig instances based on Game mode.

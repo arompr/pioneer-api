@@ -1,6 +1,6 @@
-import { DomainError } from '#common/domain/DomainError';
+import DomainError from '#common/domain/DomainError';
 
-export class NegativeDistanceError extends DomainError {
+export default class NegativeDistanceError extends DomainError {
     public readonly hexes: number;
 
     constructor(hexes: number) {

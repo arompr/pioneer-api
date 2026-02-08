@@ -1,7 +1,7 @@
 import { Player } from '#matchmaking/domain/player/Player';
 import { PlayerId } from '#matchmaking/domain/player/playerId/PlayerId';
-import { LobbyFullError } from '../errors/LobbyFullError';
-import { PlayerIsNotHostError } from '../errors/PlayerIsNotHostError';
+import LobbyFullError from '../errors/LobbyFullError';
+import PlayerIsNotHostError from '../errors/PlayerIsNotHostError';
 import { InGameState } from './InGameState';
 import { LobbyState } from './LobbyState';
 import { WaitingForPlayersState } from './WaitingForPlayersState';

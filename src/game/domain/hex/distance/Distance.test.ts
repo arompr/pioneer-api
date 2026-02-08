@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { Distance } from './Distance';
-import { NegativeDistanceError } from './errors/NegativeDistanceError';
+import Distance from './Distance';
+import NegativeDistanceError from './errors/NegativeDistanceError';
 
 describe('Distance', () => {
     describe('fromHexes()', () => {
         describe('when the value is negative', () => {
-            it('throws an error', () => {
+            it('throws NegativeDistanceError', () => {
                 expect(() => Distance.fromHexes(-1)).toThrow(NegativeDistanceError);
             });
         });

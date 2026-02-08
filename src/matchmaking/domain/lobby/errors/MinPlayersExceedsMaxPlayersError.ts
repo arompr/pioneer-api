@@ -1,6 +1,6 @@
-import { DomainError } from '#common/domain/DomainError';
+import DomainError from '#common/domain/DomainError';
 
-export class MinPlayersExceedsMaxPlayersError extends DomainError {
+export default class MinPlayersExceedsMaxPlayersError extends DomainError {
     public readonly min: number;
     public readonly max: number;
 

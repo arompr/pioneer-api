@@ -1,8 +1,8 @@
 import { Player } from '#matchmaking/domain/player/Player';
 import { PlayerId } from '#matchmaking/domain/player/playerId/PlayerId';
-import { LobbyFullError } from '../errors/LobbyFullError';
-import { LobbyNotReadyToStartError } from '../errors/LobbyNotReadyToStartError';
-import { PlayerIsNotHostError } from '../errors/PlayerIsNotHostError';
+import LobbyFullError from '../errors/LobbyFullError';
+import LobbyNotReadyToStartError from '../errors/LobbyNotReadyToStartError';
+import PlayerIsNotHostError from '../errors/PlayerIsNotHostError';
 import { LobbyState } from './LobbyState';
 import { ReadyToStartState } from './ReadyToStartState';
 

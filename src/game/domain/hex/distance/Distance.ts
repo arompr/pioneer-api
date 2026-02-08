@@ -1,9 +1,9 @@
-import { NegativeDistanceError } from './errors/NegativeDistanceError';
+import NegativeDistanceError from './errors/NegativeDistanceError';
 
 /**
  * Represents a distance expressed as a non-negative number of hexes.
  */
-export class Distance {
+export default class Distance {
     private readonly hexes: number;
 
     /**

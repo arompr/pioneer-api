@@ -1,8 +1,8 @@
-import { DomainError } from '#common/domain/DomainError';
+import DomainError from '#common/domain/DomainError';
 import type { PlayerId } from '#matchmaking/domain/player/playerId/PlayerId';
 import type { LobbyId } from '../lobbyId/LobbyId';
 
-export class PlayerIsNotHostError extends DomainError {
+export default class PlayerIsNotHostError extends DomainError {
     public readonly lobbyId: LobbyId;
     public readonly playerId: PlayerId;
 

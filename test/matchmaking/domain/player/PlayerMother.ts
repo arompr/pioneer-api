@@ -3,6 +3,10 @@ import { PlayerId } from '#matchmaking/domain/player/playerId/PlayerId';
 import { PlayerStatus } from '#matchmaking/domain/player/PlayerStatus';
 
 export class PlayerMother {
+    static anyPlayer(): Player {
+        return this.create(1);
+    }
+
     static create(index: string | number, ready = false): Player {
         const player = new Player(
             new PlayerId(`secret-${index}`),

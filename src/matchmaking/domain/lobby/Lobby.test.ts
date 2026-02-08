@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { Lobby } from './Lobby';
 import { Player } from '../player/Player';
-import { PlayerNotFoundInLobbyError } from './errors/PlayerNotFoundInLobbyError';
+import PlayerNotFoundInLobbyError from './errors/PlayerNotFoundInLobbyError';
 import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
 
 let lobby: Lobby;
@@ -40,7 +40,6 @@ describe('Lobby', () => {
 
         describe('when the player is not in the lobby', () => {
             it('throws PlayerNotFoundInLobbyError', () => {
-                console.log(player1);
                 expect(() => {
                     lobby.leave(player2.getSecretId());
                 }).toThrow(PlayerNotFoundInLobbyError);

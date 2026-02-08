@@ -1,5 +1,5 @@
-import { InvalidMinPlayersError } from '../errors/InvalidMinPlayersError';
-import { MinPlayersExceedsMaxPlayersError } from '../errors/MinPlayersExceedsMaxPlayersError';
+import InvalidMinPlayersError from '../errors/InvalidMinPlayersError';
+import MinPlayersExceedsMaxPlayersError from '../errors/MinPlayersExceedsMaxPlayersError';
 import type { LobbyGameMode } from './LobbyGameMode';
 
 /**

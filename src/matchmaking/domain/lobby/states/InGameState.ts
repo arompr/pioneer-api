@@ -1,6 +1,6 @@
 import { Player } from '#matchmaking/domain/player/Player';
 import { PlayerId } from '#matchmaking/domain/player/playerId/PlayerId';
-import { LobbyAlreadyInGameError } from '../errors/LobbyAlreadyInGameError';
+import LobbyAlreadyInGameError from '../errors/LobbyAlreadyInGameError';
 import { LobbyState } from './LobbyState';
 
 export class InGameState extends LobbyState {
