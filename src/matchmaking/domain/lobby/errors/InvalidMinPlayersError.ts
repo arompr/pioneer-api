@@ -1,6 +1,6 @@
-import { DomainError } from '#common/domain/DomainError';
+import DomainError from '#common/domain/DomainError';
 
-export class InvalidMinPlayersError extends DomainError {
+export default class InvalidMinPlayersError extends DomainError {
     public readonly min: number;
 
     constructor(min: number) {

@@ -1,6 +1,6 @@
 import { Player } from '#matchmaking/domain/player/Player';
 import { PlayerId } from '#matchmaking/domain/player/playerId/PlayerId';
-import { LobbyClosedError } from '../errors/LobbyClosedError';
+import LobbyClosedError from '../errors/LobbyClosedError';
 import { LobbyState } from './LobbyState';
 
 export class ClosedState extends LobbyState {

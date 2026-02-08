@@ -1,6 +1,6 @@
 import type HexCoordinate from '../coordinate/HexCoordinate';
 import type Distance from '../distance/Distance';
-import { RessourceType as ResourceType } from './RessourceType';
+import { ResourceType as ResourceType } from './ResourceType';
 
 export default class Tile {
     private readonly _coordinates: HexCoordinate;
