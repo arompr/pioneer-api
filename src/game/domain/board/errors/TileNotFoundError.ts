@@ -1,5 +1,5 @@
 import DomainError from '#common/domain/DomainError';
-import HexCoordinate from '#game/domain/hex/coordinate/HexCoordinate';
+import HexCoordinate from '#game/domain/coordinate/HexCoordinate';
 
 export default class TileNotFoundError extends DomainError {
     public readonly coordinates: HexCoordinate;
