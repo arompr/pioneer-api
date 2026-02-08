@@ -48,7 +48,7 @@ export class Lobby implements ILobby {
         return this.id;
     }
 
-    transitionTo(lobbyState: LobbyState) {
+    transitionTo(lobbyState: LobbyState): void {
         this.lobbyState = lobbyState;
         this.lobbyState.setLobby(this);
     }

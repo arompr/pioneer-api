@@ -37,6 +37,7 @@ export default tseslint.config(
                     caughtErrorsIgnorePattern: '^_',
                 },
             ],
+            '@typescript-eslint/explicit-module-boundary-types': 'error',
             'prettier/prettier': ['error', { endOfLine: 'auto' }],
         },
     }
