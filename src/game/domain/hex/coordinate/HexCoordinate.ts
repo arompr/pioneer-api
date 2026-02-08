@@ -1,5 +1,5 @@
 import { Direction } from '../Direction';
-import { Distance } from '../distance/Distance';
+import Distance from '../distance/Distance';
 
 type AxialOffset = readonly [dq: number, dr: number];
 
@@ -14,7 +14,7 @@ type AxialOffset = readonly [dq: number, dr: number];
  * - Hex geometry (neighbors, distance)
  * - Direction math
  */
-export class HexCoordinate {
+export default class HexCoordinate {
     private static readonly DIRECTIONS: readonly Direction[] = [
         Direction.EAST,
         Direction.NORTHEAST,
@@ -61,11 +61,11 @@ export class HexCoordinate {
     }
     /**
      * Computes the distance to another coordinate using cube distance.
-     * @param other Other {@link HexCoordinate}
+     * @param target The target {@link HexCoordinate}
      * @returns Distance (number of hexes)
      */
-    public distanceTo(other: HexCoordinate): Distance {
-        return Distance.fromHexes(this.calculateDistance(other.q, other.r, other.s));
+    public distanceTo(target: HexCoordinate): Distance {
+        return Distance.fromHexes(this.calculateDistance(target.q, target.r, target.s));
     }
 
     private calculateDistance(q: number, r: number, s: number): number {

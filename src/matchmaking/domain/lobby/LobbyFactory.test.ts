@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { Player } from '../player/Player';
-import { PlayerId } from '../player/playerId/PlayerId';
 import { LobbyConfig } from './LobbyConfig/LobbyConfig';
 import { LobbyGameMode } from './LobbyConfig/LobbyGameMode';
 import { LobbyIdFactory } from './lobbyId/LobbyIdFactory';
 import { LobbyFactory } from './LobbyFactory';
 import ILobby from './ILobby';
+import { PlayerMother } from '#test/matchmaking/domain/player/PlayerMother';
 
 const LOBBY_MIN_CAPACITY = 2;
 const LOBBY_MAX_CAPACITY = 3;
@@ -18,12 +18,7 @@ let lobby: ILobby;
 describe('LobbyFactory', () => {
     beforeEach(() => {
         lobbyFactory = new LobbyFactory(lobbyIdFactory);
-        hostPlayer = new Player(
-            new PlayerId(`secret-id`),
-            new PlayerId(`public-id`),
-            'player-name'
-        );
-
+        hostPlayer = PlayerMother.anyPlayer();
         lobby = lobbyFactory.create(LOBBY_CONFIG, hostPlayer);
     });
 

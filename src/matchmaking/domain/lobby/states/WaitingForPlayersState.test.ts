@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { Lobby } from '../Lobby';
 import { Player } from '#matchmaking/domain/player/Player';
-import { LobbyFullError } from '../errors/LobbyFullError';
-import { LobbyNotReadyToStartError } from '../errors/LobbyNotReadyToStartError';
-import { PlayerIsNotHostError } from '../errors/PlayerIsNotHostError';
-import { PlayerNotFoundInLobbyError } from '../errors/PlayerNotFoundInLobbyError';
+import LobbyFullError from '../errors/LobbyFullError';
+import LobbyNotReadyToStartError from '../errors/LobbyNotReadyToStartError';
+import PlayerIsNotHostError from '../errors/PlayerIsNotHostError';
+import PlayerNotFoundInLobbyError from '../errors/PlayerNotFoundInLobbyError';
 import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
 
 let lobby: Lobby;

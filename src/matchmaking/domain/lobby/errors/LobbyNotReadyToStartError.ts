@@ -1,7 +1,7 @@
-import { DomainError } from '#common/domain/DomainError';
+import DomainError from '#common/domain/DomainError';
 import { LobbyId } from '../lobbyId/LobbyId';
 
-export class LobbyNotReadyToStartError extends DomainError {
+export default class LobbyNotReadyToStartError extends DomainError {
     public readonly lobbyId: LobbyId;
 
     constructor(lobbyId: LobbyId) {

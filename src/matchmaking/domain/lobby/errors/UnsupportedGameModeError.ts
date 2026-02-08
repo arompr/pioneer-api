@@ -1,6 +1,6 @@
-import { DomainError } from '#common/domain/DomainError';
+import DomainError from '#common/domain/DomainError';
 
-export class UnsupportedGameModeError extends DomainError {
+export default class UnsupportedGameModeError extends DomainError {
     public readonly mode: string;
 
     constructor(mode: string) {
