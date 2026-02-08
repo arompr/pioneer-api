@@ -5,7 +5,7 @@ import { Lobby } from '../Lobby';
 export abstract class LobbyState {
     protected lobby!: Lobby;
 
-    public setLobby(lobby: Lobby) {
+    public setLobby(lobby: Lobby): void {
         this.lobby = lobby;
     }
 

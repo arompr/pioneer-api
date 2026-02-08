@@ -1,6 +1,6 @@
 import type { Player } from '../player/Player.ts';
 import type { PlayerId } from '../player/playerId/PlayerId.ts';
-import { PlayerAlreadyInLobbyError } from './errors/PlayerAlreadyInLobbyError';
+import PlayerAlreadyInLobbyError from './errors/PlayerAlreadyInLobbyError';
 import PlayerNotFoundInLobbyError from './errors/PlayerNotFoundInLobbyError';
 
 /**

@@ -2,8 +2,8 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { LobbyPlayers } from './LobbyPlayers';
 import { Player } from '../player/Player';
 import { PlayerId } from '../player/playerId/PlayerId';
-import { PlayerAlreadyInLobbyError } from './errors/PlayerAlreadyInLobbyError';
-import { PlayerNotFoundInLobbyError } from './errors/PlayerNotFoundInLobbyError';
+import PlayerAlreadyInLobbyError from './errors/PlayerAlreadyInLobbyError';
+import PlayerNotFoundInLobbyError from './errors/PlayerNotFoundInLobbyError';
 import { PlayerMother } from '#test/matchmaking/domain/player/PlayerMother';
 
 let player: Player;

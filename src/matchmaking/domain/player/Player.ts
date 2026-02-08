@@ -57,14 +57,14 @@ export class Player {
     /**
      * Marks the player as ready.
      */
-    markReady() {
+    markReady(): void {
         this.status = PlayerStatus.Ready;
     }
 
     /**
      * Marks the player as pending.
      */
-    markPending() {
+    markPending(): void {
         this.status = PlayerStatus.Pending;
     }
 
