@@ -1,6 +1,6 @@
-import HexCoordinate from '#game/domain/hex/coordinate/HexCoordinate';
-import { ResourceType } from '#game/domain/hex/tile/ResourceType';
-import Tile from '#game/domain/hex/tile/Tile';
+import HexCoordinate from '#game/domain/coordinate/HexCoordinate';
+import { ResourceType } from '#game/domain/tile/ResourceType';
+import Tile from '#game/domain/tile/Tile';
 
 export class TileBuilder {
     private _coordinates: HexCoordinate = HexCoordinate.of(0, 0);

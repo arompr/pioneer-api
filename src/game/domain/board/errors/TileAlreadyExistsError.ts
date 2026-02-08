@@ -1,5 +1,5 @@
 import DomainError from '#common/domain/DomainError';
-import Tile from '#game/domain/hex/tile/Tile';
+import Tile from '#game/domain/tile/Tile';
 
 export default class TileAlreadyExistsError extends DomainError {
     public readonly tile: Tile;
