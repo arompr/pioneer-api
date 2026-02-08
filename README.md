@@ -1,44 +1,55 @@
 # Pioneer API
 
-Node 24 + TypeScript + Nest backend.
+A NestJS backend API built with TypeScript.
 
-## Scripts
+## Requirements
 
-```bash
-npm run dev          # run server
-npm run test         # Run unit tests with Vitest
-npm run lint         # check code style
-npm run lint:fix     # fix style issues
-npm run format       # format code
-npm run format:check # check formatting
-```
+- Node.js (v22+)
+- npm
 
 ## Setup
 
 ```bash
 npm install
-npm run dev
+npm run start:dev
 ```
 
-## Containerization (Podman)
+The API will run on `http://localhost:3000` by default.
 
-### Build the Image
+## Available Scripts
+
+```bash
+npm run start:dev    # Start development server with watch mode
+npm run start:debug  # Start with debugger
+npm run build        # Build for production
+npm run start:prod   # Run production build
+npm run test         # Run tests with Vitest
+npm run lint:check   # Check code style
+npm run lint:fix     # Fix code style issues
+npm run format:check # Check code formatting
+npm run format:fix   # Fix code formatting
+```
+
+## Containerization
+
+### Containerization with Podman
+
+Build and run with Podman:
 
 ```bash
 podman build -t pioneer-api .
+podman run -d -p 3000:3000 --name pioneer-api-server pioneer-api
 ```
 
-### Run the Container
+### Containerization with Docker
+
+Build and run with Docker:
 
 ```bash
-# Runs the API on port 3000 in detached mode
-podman run -d \
-  --name pioneer-api-server \
-  -p 3000:3000 \
-  pioneer-api
+docker build -t pioneer-api .
+docker run -d -p 3000:3000 --name pioneer-api-server pioneer-api
 ```
 
 ## Test URLs
 
 - <http://localhost:3000/>
-- <http://localhost:3000/health>
