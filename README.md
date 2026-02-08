@@ -53,16 +53,3 @@ docker run -d -p 3000:3000 --name pioneer-api-server pioneer-api
 ## Test URLs
 
 - <http://localhost:3000/>
-
-## GitHub Actions
-
-### Automated Workflow Cleanup
-
-This repository includes an automated workflow that runs daily to clean up old GitHub Actions workflow runs. The cleanup process:
-
-- Runs automatically every day at 00:00 UTC
-- Keeps the last 10 workflow runs for each workflow
-- Deletes all older completed workflow runs
-- Can be manually triggered from the Actions tab
-
-This helps keep the Actions history manageable and reduces storage usage.
