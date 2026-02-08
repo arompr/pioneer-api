@@ -1,0 +1,84 @@
+name: Cleanup Old Workflow Runs
+
+on:
+  schedule:
+    # Run daily at 00:00 UTC
+    - cron: '0 0 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Delete old workflow runs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Get the repository owner and name
+          REPO="${{ github.repository }}"
+          
+          echo "🧹 Starting cleanup of old workflow runs for $REPO"
+          echo "---------------------------------------------------"
+          
+          # Get all workflows in the repository
+          WORKFLOWS=$(gh api repos/$REPO/actions/workflows --jq '.workflows[].id')
+          
+          for WORKFLOW_ID in $WORKFLOWS; do
+            WORKFLOW_NAME=$(gh api repos/$REPO/actions/workflows/$WORKFLOW_ID --jq '.name')
+            echo ""
+            echo "📋 Processing workflow: $WORKFLOW_NAME (ID: $WORKFLOW_ID)"
+            
+            # Get all workflow runs for this workflow, sorted by created date (newest first)
+            RUNS=$(gh api repos/$REPO/actions/workflows/$WORKFLOW_ID/runs \
+              --paginate \
+              --jq '.workflow_runs[] | select(.status != "in_progress" and .status != "queued") | .id' \
+              | head -n 100)
+            
+            if [ -z "$RUNS" ]; then
+              echo "  ℹ️  No completed runs found for this workflow"
+              continue
+            fi
+            
+            # Count total runs
+            TOTAL_RUNS=$(echo "$RUNS" | wc -l)
+            echo "  📊 Found $TOTAL_RUNS completed runs"
+            
+            # Skip the first 10 runs (these are the most recent ones to keep)
+            RUNS_TO_DELETE=$(echo "$RUNS" | tail -n +11)
+            
+            if [ -z "$RUNS_TO_DELETE" ]; then
+              echo "  ✅ No runs to delete (keeping last 10)"
+              continue
+            fi
+            
+            # Count runs to delete
+            DELETE_COUNT=$(echo "$RUNS_TO_DELETE" | wc -l)
+            echo "  🗑️  Deleting $DELETE_COUNT old run(s)..."
+            
+            # Delete old runs
+            DELETED=0
+            FAILED=0
+            for RUN_ID in $RUNS_TO_DELETE; do
+              if gh api -X DELETE repos/$REPO/actions/runs/$RUN_ID 2>/dev/null; then
+                DELETED=$((DELETED + 1))
+              else
+                FAILED=$((FAILED + 1))
+              fi
+            done
+            
+            echo "  ✅ Successfully deleted $DELETED run(s)"
+            if [ $FAILED -gt 0 ]; then
+              echo "  ⚠️  Failed to delete $FAILED run(s)"
+            fi
+          done
+          
+          echo ""
+          echo "---------------------------------------------------"
+          echo "✨ Cleanup completed!"
