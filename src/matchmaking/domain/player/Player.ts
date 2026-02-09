@@ -19,7 +19,7 @@ export class Player {
     /**
      * Creates a new Player instance.
      *
-     * @param {PlayerId} secretId - Unique and secret identifier for the player.
+     * @param {PlayerId} id - Unique and secret identifier for the player.
      * @param {PlayerId} publicKey - Unique identifier for the player.
      * @param {string} name - Name chosen by the player.
      * @param {PlayerStatus} status - Initial readiness status of the player.
