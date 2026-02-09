@@ -4,27 +4,31 @@ import { PlayerStatus } from './PlayerStatus';
 /**
  * Represents a player in a matchmaking lobby.
  *
- * Each player has a unique identifier (playerId) and a chosen name.
- * The player can also be marked as "ready" to indicate they are ready to start the game.
+ * A player has:
+ * - an internal identity (id), used for authentication and equality
+ * - a publicKey, exposed to other players for interactions
+ * - a name
+ * - a readiness status
  */
 export class Player {
-    private secretId: PlayerId;
-    private publicId: PlayerId;
-    private name: string;
-    private status: PlayerStatus;
+    private _id: PlayerId;
+    private _publicKey: PlayerId;
+    private _name: string;
+    private _status: PlayerStatus;
 
     /**
      * Creates a new Player instance.
      *
-     * @param {PlayerId} secretId - Unique and secret identifier for the player.
-     * @param {PlayerId} playerId - Unique identifier for the player.
+     * @param {PlayerId} id - Unique and secret identifier for the player.
+     * @param {PlayerId} publicKey - Unique identifier for the player.
      * @param {string} name - Name chosen by the player.
+     * @param {PlayerStatus} status - Initial readiness status of the player.
      */
-    constructor(secretId: PlayerId, playerId: PlayerId, name: string, status: PlayerStatus) {
-        this.secretId = secretId;
-        this.publicId = playerId;
-        this.name = name;
-        this.status = status;
+    constructor(id: PlayerId, publicKey: PlayerId, name: string, status: PlayerStatus) {
+        this._id = id;
+        this._publicKey = publicKey;
+        this._name = name;
+        this._status = status;
     }
 
     /**
@@ -32,8 +36,8 @@ export class Player {
      *
      * @returns {PlayerId} The unique public identifier of the player.
      */
-    getPublicId(): PlayerId {
-        return this.publicId;
+    get publicKey(): PlayerId {
+        return this._publicKey;
     }
 
     /**
@@ -41,8 +45,8 @@ export class Player {
      *
      * @returns {PlayerId} The unique secret identifier of the player.
      */
-    getSecretId(): PlayerId {
-        return this.secretId;
+    get id(): PlayerId {
+        return this._id;
     }
 
     /**
@@ -50,22 +54,22 @@ export class Player {
      *
      * @returns {string} The name of the player.
      */
-    getName(): string {
-        return this.name;
+    get name(): string {
+        return this._name;
     }
 
     /**
      * Marks the player as ready.
      */
     markReady(): void {
-        this.status = PlayerStatus.Ready;
+        this._status = PlayerStatus.Ready;
     }
 
     /**
      * Marks the player as pending.
      */
     markPending(): void {
-        this.status = PlayerStatus.Pending;
+        this._status = PlayerStatus.Pending;
     }
 
     /**
@@ -74,7 +78,7 @@ export class Player {
      * @returns {boolean} `true` if the player is ready, otherwise `false`.
      */
     isReady(): boolean {
-        return this.status === PlayerStatus.Ready;
+        return this._status === PlayerStatus.Ready;
     }
 
     /**
@@ -84,6 +88,6 @@ export class Player {
      * @returns {boolean} True if the players are the same entity.
      */
     equals(other: Player): boolean {
-        return this.secretId.equals(other.getSecretId());
+        return this._id.equals(other.id);
     }
 }

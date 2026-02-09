@@ -3,6 +3,13 @@ import { Lobby } from './Lobby';
 import { Player } from '../player/Player';
 import PlayerNotFoundInLobbyError from './errors/PlayerNotFoundInLobbyError';
 import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
+import { PlayerJoinedLobby } from './events/PlayerJoinedLobby';
+import { PlayerLeftLobby } from './events/PlayerLeftLobby';
+import { LobbyClosed } from './events/LobbyClosed';
+import { LobbyHostChanged } from './events/LobbyHostChanged';
+import { LobbyStarted } from './events/LobbyStarted';
+import { PlayerMarkedReady } from './events/PlayerMarkedReady';
+import { PlayerMarkedPending } from './events/PlayerMarkedPending';
 
 let lobby: Lobby;
 let player1: Player;
@@ -23,7 +30,19 @@ describe('Lobby', () => {
             });
 
             it('has the provided ID', () => {
-                expect(lobby.getId()).toBe(LobbyMother.DEFAULT_LOBBY_ID);
+                expect(lobby.id).toBe(LobbyMother.DEFAULT_LOBBY_ID);
+            });
+        });
+    });
+
+    describe('join()', () => {
+        describe('when a player joins', () => {
+            it('emits PlayerJoinedLobby', () => {
+                lobby.join(player2);
+
+                expect(lobby.pullDomainEvents().some((e) => e instanceof PlayerJoinedLobby)).toBe(
+                    true
+                );
             });
         });
     });
@@ -31,28 +50,43 @@ describe('Lobby', () => {
     describe('leave()', () => {
         describe('when the player is in the lobby', () => {
             it('removes the player from the lobby', () => {
-                lobby.leave(player1.getSecretId());
+                lobby.leave(player1.id);
 
                 expect(lobby.isEmpty()).toBe(true);
                 expect(lobby.playerCount).toBe(0);
+            });
+
+            it('emits PlayerLeftLobby', () => {
+                lobby.leave(player1.id);
+
+                expect(lobby.pullDomainEvents().some((e) => e instanceof PlayerLeftLobby)).toBe(
+                    true
+                );
             });
         });
 
         describe('when the player is not in the lobby', () => {
             it('throws PlayerNotFoundInLobbyError', () => {
                 expect(() => {
-                    lobby.leave(player2.getSecretId());
+                    lobby.leave(player2.id);
                 }).toThrow(PlayerNotFoundInLobbyError);
             });
         });
 
         describe('when the host leaves', () => {
-            it('transfers the host role to the next player', () => {
+            beforeEach(() => {
                 lobby.join(player2);
+                lobby.leave(player1.id);
+            });
 
-                lobby.leave(player1.getSecretId());
+            it('transfers the host role to the next player', () => {
+                expect(lobby.isHost(player2.id)).toBe(true);
+            });
 
-                expect(lobby.isHost(player2.getSecretId())).toBe(true);
+            it('emits LobbyHostChanged', () => {
+                expect(lobby.pullDomainEvents().some((e) => e instanceof LobbyHostChanged)).toBe(
+                    true
+                );
             });
         });
 
@@ -60,17 +94,59 @@ describe('Lobby', () => {
             it('does not change the host', () => {
                 lobby.join(player2);
 
-                lobby.leave(player2.getSecretId());
+                lobby.leave(player2.id);
 
-                expect(lobby.isHost(player1.getSecretId())).toBe(true);
+                expect(lobby.isHost(player1.id)).toBe(true);
             });
         });
 
         describe('when the host leaves and no players remain', () => {
-            it('closes the lobby', () => {
-                lobby.leave(player1.getSecretId());
+            beforeEach(() => {
+                lobby.leave(player1.id);
+            });
 
+            it('closes the lobby', () => {
                 expect(lobby.isEmpty()).toBe(true);
+            });
+
+            it('emits LobbyClosed', () => {
+                expect(lobby.pullDomainEvents().some((e) => e instanceof LobbyClosed)).toBe(true);
+            });
+        });
+    });
+
+    describe('start()', () => {
+        describe('when the host start the game', () => {
+            it('emits LobbyStarted', () => {
+                lobby = LobbyMother.readyToStartLobby().lobby;
+
+                lobby.start(player1.id);
+
+                expect(lobby.pullDomainEvents().some((e) => e instanceof LobbyStarted)).toBe(true);
+            });
+        });
+    });
+
+    describe('markAsReady()', () => {
+        describe('when a player in the lobby is marked ready', () => {
+            it('emits PlayerMarkedReady', () => {
+                lobby.markAsReady(player1.id);
+
+                expect(lobby.pullDomainEvents().some((e) => e instanceof PlayerMarkedReady)).toBe(
+                    true
+                );
+            });
+        });
+    });
+
+    describe('markAsPending()', () => {
+        describe('when a player in the lobby is marked pending', () => {
+            it('emits PlayerMarkedPending', () => {
+                lobby.markAsPending(player1.id);
+
+                expect(lobby.pullDomainEvents().some((e) => e instanceof PlayerMarkedPending)).toBe(
+                    true
+                );
             });
         });
     });
@@ -80,13 +156,13 @@ describe('Lobby', () => {
             it('returns false', () => {
                 setupClosedLobby();
 
-                expect(lobby.isHost(player1.getSecretId())).toBe(false);
+                expect(lobby.isHost(player1.id)).toBe(false);
             });
         });
 
         describe('when the player is the first to join', () => {
             it('returns true', () => {
-                expect(lobby.isHost(player1.getSecretId()));
+                expect(lobby.isHost(player1.id));
             });
         });
 
@@ -94,13 +170,13 @@ describe('Lobby', () => {
             it('returns false', () => {
                 lobby.join(player2);
 
-                expect(lobby.isHost(player2.getSecretId()));
+                expect(lobby.isHost(player2.id));
             });
         });
 
         describe('when the player is not in the lobby', () => {
             it('returns false', () => {
-                expect(lobby.isHost(player2.getSecretId())).toBe(false);
+                expect(lobby.isHost(player2.id)).toBe(false);
             });
         });
     });
@@ -126,7 +202,7 @@ describe('Lobby', () => {
                 lobby.join(player2);
                 lobby.join(player3);
 
-                lobby.leave(player1.getSecretId());
+                lobby.leave(player1.id);
 
                 expect(lobby.isFull()).toBe(false);
             });
@@ -150,7 +226,7 @@ describe('Lobby', () => {
 
         describe('when the last player leave the lobby', () => {
             it('returns false again', () => {
-                lobby.leave(player1.getSecretId());
+                lobby.leave(player1.id);
 
                 expect(lobby.isEmpty()).toBe(true);
             });
@@ -211,7 +287,7 @@ describe('Lobby', () => {
                 lobby.join(player2);
                 lobby.join(player3);
 
-                lobby.leave(player3.getSecretId());
+                lobby.leave(player3.id);
 
                 expect(lobby.remainingPlaces()).toBe(1);
             });
@@ -254,7 +330,7 @@ describe('Lobby', () => {
             it('decreases the count', () => {
                 lobby.join(player2);
 
-                lobby.leave(player1.getSecretId());
+                lobby.leave(player1.id);
 
                 expect(lobby.playerCount).toBe(1);
             });
@@ -262,7 +338,7 @@ describe('Lobby', () => {
 
         describe('when the lobby is empty', () => {
             it('returns zero', () => {
-                lobby.leave(player1.getSecretId());
+                lobby.leave(player1.id);
 
                 expect(lobby.playerCount).toBe(0);
             });
@@ -271,5 +347,5 @@ describe('Lobby', () => {
 });
 
 const setupClosedLobby = () => {
-    lobby.leave(player1.getSecretId());
+    lobby.leave(player1.id);
 };

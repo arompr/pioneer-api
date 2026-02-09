@@ -25,7 +25,7 @@ describe('InGameState', () => {
     describe('start()', () => {
         it('throws LobbyAlreadyInGameError', () => {
             expect(() => {
-                lobby.start(player1.getSecretId());
+                lobby.start(player1.id);
             }).toThrow(LobbyAlreadyInGameError);
         });
     });
@@ -33,7 +33,7 @@ describe('InGameState', () => {
     describe('markAsReady()', () => {
         it('throws LobbyAlreadyInGameError', () => {
             expect(() => {
-                lobby.markAsReady(player1.getSecretId());
+                lobby.markAsReady(player1.id);
             }).toThrow(LobbyAlreadyInGameError);
         });
     });
@@ -41,7 +41,7 @@ describe('InGameState', () => {
     describe('markAsPending()', () => {
         it('throws LobbyAlreadyInGameError', () => {
             expect(() => {
-                lobby.markAsPending(player1.getSecretId());
+                lobby.markAsPending(player1.id);
             }).toThrow(LobbyAlreadyInGameError);
         });
     });

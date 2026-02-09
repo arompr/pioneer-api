@@ -45,7 +45,7 @@ describe('WaitingForPlayersState', () => {
         describe('when the player attempting to start is the host', () => {
             it('throws LobbyNotReadyToStartError', () => {
                 expect(() => {
-                    lobby.start(player1.getSecretId());
+                    lobby.start(player1.id);
                 }).toThrow(LobbyNotReadyToStartError);
             });
         });
@@ -53,7 +53,7 @@ describe('WaitingForPlayersState', () => {
         describe('when the player attempting to start is not the host', () => {
             it('throws PlayerIsNotHostError', () => {
                 expect(() => {
-                    lobby.start(player2.getSecretId());
+                    lobby.start(player2.id);
                 }).toThrow(PlayerIsNotHostError);
             });
         });
@@ -64,8 +64,8 @@ describe('WaitingForPlayersState', () => {
             it('contributes to the lobby becoming ready to start', () => {
                 lobby.join(player2);
 
-                lobby.markAsReady(player1.getSecretId());
-                lobby.markAsReady(player2.getSecretId());
+                lobby.markAsReady(player1.id);
+                lobby.markAsReady(player2.id);
 
                 expect(lobby.canStart()).toBe(true);
             });
@@ -74,7 +74,7 @@ describe('WaitingForPlayersState', () => {
         describe('when the player is not in the lobby', () => {
             it('throws PlayerNotFoundInLobbyError', () => {
                 expect(() => {
-                    lobby.markAsReady(player2.getSecretId());
+                    lobby.markAsReady(player2.id);
                 }).toThrow(PlayerNotFoundInLobbyError);
             });
         });
@@ -84,10 +84,10 @@ describe('WaitingForPlayersState', () => {
         describe('when a player who was ready becomes pending again', () => {
             it('is no longer ready to start', () => {
                 lobby.join(player2);
-                lobby.markAsReady(player1.getSecretId());
-                lobby.markAsReady(player2.getSecretId());
+                lobby.markAsReady(player1.id);
+                lobby.markAsReady(player2.id);
 
-                lobby.markAsPending(player1.getSecretId());
+                lobby.markAsPending(player1.id);
 
                 expect(lobby.meetsRequirementsToStart()).toBe(false);
             });
@@ -96,7 +96,7 @@ describe('WaitingForPlayersState', () => {
         describe('when the player is not in the lobby', () => {
             it('throws PlayerNotFoundInLobbyError', () => {
                 expect(() => {
-                    lobby.markAsPending(player2.getSecretId());
+                    lobby.markAsPending(player2.id);
                 }).toThrow(PlayerNotFoundInLobbyError);
             });
         });
