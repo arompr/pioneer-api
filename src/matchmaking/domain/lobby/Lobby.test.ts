@@ -129,7 +129,7 @@ describe('Lobby', () => {
 
     describe('markAsReady()', () => {
         describe('when a player in the lobby is marked ready', () => {
-            it('emtis PlayerMarkedReady', () => {
+            it('emits PlayerMarkedReady', () => {
                 lobby.markAsReady(player1.id);
 
                 expect(lobby.pullDomainEvents().some((e) => e instanceof PlayerMarkedReady)).toBe(
@@ -141,7 +141,7 @@ describe('Lobby', () => {
 
     describe('markAsPending()', () => {
         describe('when a player in the lobby is marked pending', () => {
-            it('emtis PlayerMarkedPending', () => {
+            it('emits PlayerMarkedPending', () => {
                 lobby.markAsPending(player1.id);
 
                 expect(lobby.pullDomainEvents().some((e) => e instanceof PlayerMarkedPending)).toBe(
