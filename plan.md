@@ -30,8 +30,7 @@ Transform the Pioneer API into a full-featured Catan-like game backend using ver
 
 ```
 src/
-├── shared/                      # Shared kernel (cross-cutting concerns)
-│   ├── domain/                 # Base domain primitives (ValueObject, Entity, AggregateRoot)
+├── common/                      # Shared kernel (cross-cutting concerns)
 │   ├── events/                 # Event infrastructure (EventStore, EventBus, DomainEvent)
 │   ├── websocket/              # WebSocket infrastructure (Gateway base, DTOs)
 │   └── types/                  # Common types (Result<T,E>, IDs)
@@ -55,7 +54,7 @@ src/
 │
 └── game/                        # BOUNDED CONTEXT: Gameplay (contains multiple vertical slices)
     │
-    ├── shared-domain/           # Shared within game context
+    ├── common/                  # Shared within game context
     │   ├── board/              # Board, Tile, HexCoordinate (existing)
     │   ├── coordinate/         # (existing)
     │   ├── distance/           # (existing)
@@ -176,33 +175,27 @@ src/
 
 ### Phase 1: Foundation & Infrastructure
 
-- [ ] **Rename & Restructure Common**
-  - [ ] Rename `common/` to `shared/`
-  - [ ] Move existing common code to appropriate shared locations
-
 - [ ] **Event Infrastructure**
-  - [ ] Create base Event, DomainEvent interfaces in `shared/events/`
+  - [ ] Create base Event, DomainEvent interfaces in `common/events/`
   - [ ] Implement in-memory EventStore with append/get/replay methods
   - [ ] Create EventBus for pub-sub within application
   - [ ] Add event versioning support for future schema evolution
 
 - [ ] **WebSocket Infrastructure**
   - [ ] Install @nestjs/websockets and @nestjs/platform-socket.io
-  - [ ] Create WebSocketGateway base class in `shared/websocket/`
+  - [ ] Create WebSocketGateway base class in `common/websocket/`
   - [ ] Implement room management (game rooms, lobby rooms)
   - [ ] Add connection/disconnection handling with reconnection logic
   - [ ] Create base DTOs and validation decorators
 
-- [ ] **Shared Domain Primitives**
-  - [ ] Create base classes in `shared/domain/` (ValueObject, Entity, AggregateRoot)
-  - [ ] Create ID value objects in `shared/types/` (PlayerId, GameId, LobbyId)
+- [ ] **Common Types**
+  - [ ] Create ID value objects in `common/types/` (PlayerId, GameId, LobbyId)
   - [ ] Add Result<T, E> type for error handling
-  - [ ] Enhance AggregateRoot base class with event tracking
 
 - [ ] **Restructure Existing Game Domain**
-  - [ ] Move existing domain code to `game/shared-domain/`
+  - [ ] Move existing domain code to `game/common/`
   - [ ] Keep board/, coordinate/, distance/, tile/ structure
-  - [ ] Extract Direction.ts to `game/shared-domain/`
+  - [ ] Extract Direction.ts to `game/common/`
 
 - [ ] **Testing Infrastructure**
   - [ ] Set up test utilities for event store testing
@@ -236,7 +229,7 @@ src/
 
 ### Phase 3: Game Shared Domain & Infrastructure
 
-- [ ] **Game Aggregate** (`game/shared-domain/`)
+- [ ] **Game Aggregate** (`game/common/`)
   - [ ] Game aggregate (id, players, board, state, currentTurn)
   - [ ] Player entity (id, color, resources, buildings, cards, victoryPoints)
   - [ ] GameState enum (SETUP, INITIAL_PLACEMENT, PLAYING, FINISHED)
@@ -291,7 +284,7 @@ src/
 
 - [ ] **Resources Domain** (`game/resources/domain/`)
   - [ ] Dice value object (validation 2-12)
-  - [ ] ResourceType enum (already exists in shared-domain/tile/)
+  - [ ] ResourceType enum (already exists in common/tile/)
   - [ ] Create `events/`: DiceRolled, ResourcesProduced, SevenRolled
   - [ ] Create `rules/`: resource production calculation based on dice
 
@@ -487,8 +480,8 @@ slice-name/
 
 **2. Shared Kernel:**
 
-- `shared/`: Cross-cutting infrastructure used by both bounded contexts
-- `game/shared-domain/`: Domain models shared across game slices (Player, Game, Board)
+- `common/`: Cross-cutting infrastructure used by both bounded contexts
+- `game/common/`: Domain models shared across game slices (Player, Game, Board)
 
 **3. Vertical Slices in Game Context:**
 

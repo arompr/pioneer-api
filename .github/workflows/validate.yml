@@ -27,5 +27,8 @@ jobs:
             - name: Run Linter
               run: npm run lint:check
 
+            - name: Check TypeScript Compilation
+              run: npm run type:check
+
             - name: Run Tests
               run: npm run test
