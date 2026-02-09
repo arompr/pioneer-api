@@ -3,7 +3,7 @@ import { PlayerId } from '../player/playerId/PlayerId';
 import { LobbyId } from './lobbyId/LobbyId';
 
 export default interface ILobby {
-    getId(): LobbyId;
+    get id(): LobbyId;
     join(player: Player): void;
     leave(id: PlayerId): void;
     start(playerId: PlayerId): void;

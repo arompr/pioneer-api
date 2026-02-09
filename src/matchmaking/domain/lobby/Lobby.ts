@@ -6,12 +6,22 @@ import type { PlayerId } from '../player/playerId/PlayerId';
 import { LobbyState } from './states/LobbyState';
 import { ClosedState } from './states/ClosedState';
 import ILobby from './ILobby';
+import { AggregateRoot } from '#common/domain/aggregate/AggregateRoot';
+import {
+    PlayerJoinedLobby,
+    PlayerLeftLobby,
+    LobbyStarted,
+    PlayerMarkedReady,
+    PlayerMarkedPending,
+    LobbyClosed,
+    LobbyHostChanged,
+} from './events';
 
 /**
  * Represents a matchmaking lobby.
  */
-export class Lobby implements ILobby {
-    private readonly id: LobbyId;
+export class Lobby extends AggregateRoot implements ILobby {
+    private readonly _id: LobbyId;
     private readonly players: LobbyPlayers;
     private readonly config: LobbyConfig;
     private hostId: PlayerId;
@@ -31,7 +41,8 @@ export class Lobby implements ILobby {
         players: LobbyPlayers,
         lobbyState: LobbyState
     ) {
-        this.id = id;
+        super();
+        this._id = id;
         this.config = config;
         this.hostId = hostId;
         this.players = players;
@@ -44,8 +55,8 @@ export class Lobby implements ILobby {
      *
      * @returns {LobbyId} The unique LobbyId
      */
-    getId(): LobbyId {
-        return this.id;
+    get id(): LobbyId {
+        return this._id;
     }
 
     transitionTo(lobbyState: LobbyState): void {
@@ -62,17 +73,19 @@ export class Lobby implements ILobby {
      */
     join(player: Player): void {
         this.lobbyState.join(player);
+        this.record(new PlayerJoinedLobby(this._id, player.id));
     }
 
     /**
      * Remove a player from the lobby.
      *
-     * @param {PlayerId} id - The player to remove from the lobby.
+     * @param {PlayerId} playerId - The player to remove from the lobby.
      * @throws {PlayerNotFoundInLobbyError} If the player to remove is not in the lobby.
      */
-    leave(id: PlayerId): void {
-        const wasHost = this.isHost(id);
-        this.players.remove(id);
+    leave(playerId: PlayerId): void {
+        const wasHost = this.isHost(playerId);
+        this.players.remove(playerId);
+        this.record(new PlayerLeftLobby(this._id, playerId, wasHost));
         if (wasHost) {
             this.reassignHost();
         }
@@ -90,26 +103,29 @@ export class Lobby implements ILobby {
      */
     start(playerId: PlayerId): void {
         this.lobbyState.start(playerId);
+        this.record(new LobbyStarted(this._id));
     }
 
     /**
      * Mark a player as ready.
      *
-     * @param {PlayerId} id - The player to mark as ready.
+     * @param {PlayerId} playerId - The player to mark as ready.
      * @throws {PlayerNotFoundInLobbyError} If the player is not in the lobby.
      */
-    markAsReady(id: PlayerId): void {
-        this.lobbyState.markAsReady(id);
+    markAsReady(playerId: PlayerId): void {
+        this.lobbyState.markAsReady(playerId);
+        this.record(new PlayerMarkedReady(this._id, playerId));
     }
 
     /**
      * Mark a player as pending.
      *
-     * @param {PlayerId} id - The player to mark as pending.
+     * @param {PlayerId} playerId - The player to mark as pending.
      * @throws {PlayerNotFoundInLobbyError} If the player is not in the lobby.
      */
-    markAsPending(id: PlayerId): void {
-        this.lobbyState.markAsPending(id);
+    markAsPending(playerId: PlayerId): void {
+        this.lobbyState.markAsPending(playerId);
+        this.record(new PlayerMarkedPending(this._id, playerId));
     }
 
     /**
@@ -217,8 +233,10 @@ export class Lobby implements ILobby {
     private reassignHost(): void {
         if (this.players.isEmpty()) {
             this.transitionTo(new ClosedState());
+            this.record(new LobbyClosed(this._id));
         } else {
             this.assignNextHost();
+            this.record(new LobbyHostChanged(this._id, this.hostId));
         }
     }
 
@@ -227,7 +245,7 @@ export class Lobby implements ILobby {
      * @private
      */
     private assignNextHost() {
-        this.hostId = this.players.first().getSecretId();
+        this.hostId = this.players.first().id;
     }
 
     /** @internal */

@@ -48,7 +48,7 @@ describe('LobbyPlayers', () => {
             it('removes the player', () => {
                 lobbyPlayers.add(player);
 
-                lobbyPlayers.remove(player.getSecretId());
+                lobbyPlayers.remove(player.id);
 
                 expect(lobbyPlayers.count).toBe(0);
             });
@@ -57,7 +57,7 @@ describe('LobbyPlayers', () => {
         describe('when the player is not in the lobby players', () => {
             it('throws a PlayerAlreadyInLobbyError', () => {
                 expect(() => {
-                    lobbyPlayers.remove(player.getSecretId());
+                    lobbyPlayers.remove(player.id);
                 }).toThrow(PlayerNotFoundInLobbyError);
             });
         });
@@ -68,7 +68,7 @@ describe('LobbyPlayers', () => {
             it('returns the player matching the identifier', () => {
                 lobbyPlayers.add(player);
 
-                const foundPlayer = lobbyPlayers.findById(player.getSecretId());
+                const foundPlayer = lobbyPlayers.findById(player.id);
 
                 expect(foundPlayer).toBe(player);
             });
@@ -88,7 +88,7 @@ describe('LobbyPlayers', () => {
             it('updates the player status to ready', () => {
                 lobbyPlayers.add(player);
 
-                lobbyPlayers.markAsReady(player.getSecretId());
+                lobbyPlayers.markAsReady(player.id);
 
                 expect(player.isReady()).toBe(true);
             });
@@ -110,7 +110,7 @@ describe('LobbyPlayers', () => {
             it('updates the player status to pending', () => {
                 lobbyPlayers.add(player);
 
-                lobbyPlayers.markAsPending(player.getSecretId());
+                lobbyPlayers.markAsPending(player.id);
 
                 expect(player.isReady()).toBe(false);
             });
@@ -138,8 +138,8 @@ describe('LobbyPlayers', () => {
 
         describe('when all players are ready', () => {
             it('returns true', () => {
-                lobbyPlayers.markAsReady(player.getSecretId());
-                lobbyPlayers.markAsReady(secondPlayer.getSecretId());
+                lobbyPlayers.markAsReady(player.id);
+                lobbyPlayers.markAsReady(secondPlayer.id);
 
                 expect(lobbyPlayers.areAllReady()).toBe(true);
             });
@@ -147,7 +147,7 @@ describe('LobbyPlayers', () => {
 
         describe('when at least one player is not ready', () => {
             it('returns false', () => {
-                lobbyPlayers.markAsReady(player.getSecretId());
+                lobbyPlayers.markAsReady(player.id);
 
                 expect(lobbyPlayers.areAllReady()).toBe(false);
             });
@@ -182,13 +182,13 @@ describe('LobbyPlayers', () => {
             it('returns true', () => {
                 lobbyPlayers.add(player);
 
-                expect(lobbyPlayers.contains(player.getSecretId())).toBe(true);
+                expect(lobbyPlayers.contains(player.id)).toBe(true);
             });
         });
 
         describe('when the player does not exist in the lobby players', () => {
             it('returns false', () => {
-                expect(lobbyPlayers.contains(player.getSecretId())).toBe(false);
+                expect(lobbyPlayers.contains(player.id)).toBe(false);
             });
         });
     });

@@ -25,7 +25,7 @@ describe('ClosedState', () => {
     describe('start()', () => {
         it('throws LobbyClosedError', () => {
             expect(() => {
-                lobby.start(player1.getSecretId());
+                lobby.start(player1.id);
             }).toThrow(LobbyClosedError);
         });
     });
@@ -33,7 +33,7 @@ describe('ClosedState', () => {
     describe('markAsReady()', () => {
         it('throws LobbyClosedError', () => {
             expect(() => {
-                lobby.markAsReady(player1.getSecretId());
+                lobby.markAsReady(player1.id);
             }).toThrow(LobbyClosedError);
         });
     });
@@ -41,7 +41,7 @@ describe('ClosedState', () => {
     describe('markAsPending()', () => {
         it('throws LobbyClosedError', () => {
             expect(() => {
-                lobby.markAsPending(player1.getSecretId());
+                lobby.markAsPending(player1.id);
             }).toThrow(LobbyClosedError);
         });
     });

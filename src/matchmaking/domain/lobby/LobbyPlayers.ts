@@ -16,7 +16,7 @@ export class LobbyPlayers {
      * @throws {PlayerAlreadyInLobbyError} Error if the player is already present.
      */
     add(player: Player): void {
-        if (this.contains(player.getSecretId())) {
+        if (this.contains(player.id)) {
             throw new PlayerAlreadyInLobbyError();
         }
 
@@ -41,7 +41,7 @@ export class LobbyPlayers {
      * @throws {PlayerNotFoundInLobbyError} Error if the player is not found.
      */
     findById(id: PlayerId): Player {
-        const player = this.players.find((player) => player.getSecretId().equals(id));
+        const player = this.players.find((player) => player.id.equals(id));
         if (!player) {
             throw new PlayerNotFoundInLobbyError();
         }
@@ -116,7 +116,7 @@ export class LobbyPlayers {
      * @returns {boolean} True if the player is in the collection, false otherwise.
      */
     contains(playerId: PlayerId): boolean {
-        return this.players.some((p: Player) => p.getSecretId().equals(playerId));
+        return this.players.some((p: Player) => p.id.equals(playerId));
     }
 
     /**

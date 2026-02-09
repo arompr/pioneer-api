@@ -157,7 +157,7 @@ describe('Lobby', () => {
     describe('leave()', () => {
         describe('when the player is in the lobby', () => {
             it('removes the player from the lobby', () => {
-                lobby.leave(player1.getSecretId());
+                lobby.leave(player1.id);
                 expect(lobby.isEmpty()).toBe(true);
             });
         });

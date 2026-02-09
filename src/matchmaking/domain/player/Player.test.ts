@@ -25,9 +25,9 @@ describe('Player', () => {
     describe('creation', () => {
         describe('when a player is newly created', () => {
             it('should have the correct ids and name', () => {
-                expect(player.getSecretId()).toEqual(DEFAULT_PLAYER_SECRET_ID);
-                expect(player.getPublicId()).toEqual(DEFAULT_PLAYER_PUBLIC_ID);
-                expect(player.getName()).toBe(DEFAULT_PLAYER_NAME);
+                expect(player.id).toEqual(DEFAULT_PLAYER_SECRET_ID);
+                expect(player.publicKey).toEqual(DEFAULT_PLAYER_PUBLIC_ID);
+                expect(player.name).toBe(DEFAULT_PLAYER_NAME);
             });
 
             it('should not be ready', () => {
