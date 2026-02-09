@@ -5,16 +5,17 @@ export default defineConfig({
     test: {
         root: '.',
 
-        include: ['**/*.{spec,test}.ts'],
+        include: ['**/*.{spec,test}.ts', '**/*.e2e-spec.ts'],
 
         environment: 'node',
 
         // Coverage settings
         coverage: {
-            provider: 'v8', // or 'istanbul'
+            provider: 'v8',
             reporter: ['text', 'json', 'html'],
             reportsDirectory: '../coverage',
-            include: ['**/*.(t|j)s'],
+            include: ['./src/**/*.{ts,tsx}'],
+            exclude: ['./src/main.ts'],
         },
     },
     plugins: [
