@@ -5,7 +5,7 @@ export class LobbyFullError extends DomainError {
     public readonly lobbyId: LobbyId;
 
     constructor(lobbyId: LobbyId) {
-        super(`Lobby ${lobbyId.toString()} has reached its capacity.`);
+        super(`Lobby ${lobbyId.value} has reached its capacity.`);
         this.lobbyId = lobbyId;
     }
 }

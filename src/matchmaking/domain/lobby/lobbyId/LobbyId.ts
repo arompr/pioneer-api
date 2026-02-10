@@ -3,9 +3,9 @@
  */
 export class LobbyId {
     /**
-     * The unique identifier string.
+     * The unique identifier string value.
      */
-    private readonly id: string;
+    private readonly _value: string;
 
     /**
      * Creates a new LobbyId.
@@ -13,13 +13,13 @@ export class LobbyId {
      * @param {string} id - Unique identifier of the player.
      */
     constructor(id: string) {
-        this.id = id;
+        this._value = id;
     }
 
     /**
      * Returns the string value of the LobbyId.
      */
-    toString(): string {
-        return this.id;
+    get value(): string {
+        return this._value;
     }
 }

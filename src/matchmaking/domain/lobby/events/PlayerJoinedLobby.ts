@@ -3,12 +3,10 @@ import { PlayerId } from '#matchmaking/domain/player/playerId/PlayerId';
 import { LobbyId } from '../lobbyId/LobbyId';
 
 export class PlayerJoinedLobby extends DomainEvent {
-    public readonly lobbyId: LobbyId;
     public readonly playerId: PlayerId;
 
-    constructor(lobbyId: LobbyId, playerId: PlayerId) {
-        super();
-        this.lobbyId = lobbyId;
+    constructor(lobbyId: LobbyId, playerId: PlayerId, schemaVersion = 1, occurredAt?: Date) {
+        super(lobbyId.value, schemaVersion, occurredAt);
         this.playerId = playerId;
     }
 }

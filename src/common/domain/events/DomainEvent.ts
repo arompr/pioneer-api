@@ -1,9 +1,25 @@
+/**
+ * Base class for all domain events.
+ */
 export abstract class DomainEvent {
-    readonly occurredAt: Date;
-    readonly name: string;
+    /**
+     * Aggregate root identifier.
+     */
+    public readonly aggregateId: string;
 
-    protected constructor() {
-        this.occurredAt = new Date();
-        this.name = this.constructor.name;
+    /**
+     * Event schema version for evolution.
+     */
+    public readonly schemaVersion: number;
+
+    /**
+     * Timestamp of event occurrence.
+     */
+    public readonly occurredAt: Date;
+
+    constructor(aggregateId: string, schemaVersion: number, occurredAt?: Date) {
+        this.aggregateId = aggregateId;
+        this.schemaVersion = schemaVersion;
+        this.occurredAt = occurredAt ?? new Date();
     }
 }
