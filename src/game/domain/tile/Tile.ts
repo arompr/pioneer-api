@@ -1,8 +1,8 @@
-import type HexCoordinate from '../coordinate/HexCoordinate';
-import type Distance from '../distance/Distance';
-import { ResourceType as ResourceType } from './ResourceType';
+import { HexCoordinate } from '../coordinate/HexCoordinate';
+import { Distance } from '../distance/Distance';
+import { ResourceType } from './ResourceType';
 
-export default class Tile {
+export class Tile {
     private readonly _coordinates: HexCoordinate;
     private readonly _resourceType: ResourceType;
 

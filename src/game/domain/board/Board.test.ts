@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import { Board } from './Board';
-import BoardTiles from './BoardTiles';
-import Tile from '../tile/Tile';
-import HexCoordinate from '../coordinate/HexCoordinate';
-import TileNotFoundError from './errors/TileNotFoundError';
+import { BoardTiles } from './BoardTiles';
+import { Tile } from '../tile/Tile';
+import { HexCoordinate } from '../coordinate/HexCoordinate';
+import { TileNotFoundError } from './errors/TileNotFoundError';
 import { TileMother } from '#test/game/domain/tile/TileMother';
 
 const TILE1: Tile = TileMother.aTile(2, 0);

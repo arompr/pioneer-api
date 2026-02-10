@@ -1,5 +1,5 @@
 import { Direction } from '../Direction';
-import Distance from '../distance/Distance';
+import { Distance } from '../distance/Distance';
 
 type AxialOffset = readonly [dq: number, dr: number];
 
@@ -14,7 +14,7 @@ type AxialOffset = readonly [dq: number, dr: number];
  * - Hex geometry (neighbors, distance)
  * - Direction math
  */
-export default class HexCoordinate {
+export class HexCoordinate {
     private static readonly DIRECTIONS: readonly Direction[] = [
         Direction.EAST,
         Direction.NORTHEAST,

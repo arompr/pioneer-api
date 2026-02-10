@@ -1,6 +1,6 @@
-import HexCoordinate from '../coordinate/HexCoordinate';
-import Tile from '../tile/Tile';
-import TileAlreadyExistsError from './errors/TileAlreadyExistsError';
+import { HexCoordinate } from '../coordinate/HexCoordinate';
+import { Tile } from '../tile/Tile';
+import { TileAlreadyExistsError } from './errors/TileAlreadyExistsError';
 
 type TileKey = `${number},${number},${number}`;
 
@@ -9,7 +9,7 @@ type TileKey = `${number},${number},${number}`;
  *
  * Tiles are uniquely identified by their cube coordinates (q, r, s).
  */
-export default class BoardTiles {
+export class BoardTiles {
     private readonly _tiles: Map<TileKey, Tile>;
 
     /**

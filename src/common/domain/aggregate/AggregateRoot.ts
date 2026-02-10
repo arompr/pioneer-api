@@ -1,4 +1,4 @@
-import DomainEvent from '../events/DomainEvent';
+import { DomainEvent } from '../events/DomainEvent';
 import { IEventSourcedAggregate } from './IEventSourcedAggregate';
 
 export abstract class AggregateRoot implements IEventSourcedAggregate {

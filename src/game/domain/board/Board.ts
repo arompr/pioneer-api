@@ -1,7 +1,7 @@
-import HexCoordinate from '../coordinate/HexCoordinate';
-import Tile from '../tile/Tile';
-import BoardTiles from './BoardTiles';
-import TileNotFoundError from './errors/TileNotFoundError';
+import { HexCoordinate } from '../coordinate/HexCoordinate';
+import { Tile } from '../tile/Tile';
+import { BoardTiles } from './BoardTiles';
+import { TileNotFoundError } from './errors/TileNotFoundError';
 
 export class Board {
     private readonly _tiles: BoardTiles;

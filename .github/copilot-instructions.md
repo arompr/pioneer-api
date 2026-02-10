@@ -238,6 +238,7 @@ export class Lobby {
 - `npm run test` - Run tests with Vitest
 - `npm run lint:check` - Check for linting issues
 - `npm run lint:fix` - Fix linting issues automatically
+- npm run type:check - Check TypeScript compilation
 - `npm run format:check` - Check code formatting
 - `npm run format:fix` - Format code with Prettier
 - `npm run build` - Build production bundle

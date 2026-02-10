@@ -5,7 +5,7 @@ import type { Player } from '../player/Player';
 import type { PlayerId } from '../player/playerId/PlayerId';
 import { LobbyState } from './states/LobbyState';
 import { ClosedState } from './states/ClosedState';
-import ILobby from './ILobby';
+import { ILobby } from './ILobby';
 import { AggregateRoot } from '#common/domain/aggregate/AggregateRoot';
 import {
     PlayerJoinedLobby,

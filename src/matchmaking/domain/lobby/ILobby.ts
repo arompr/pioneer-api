@@ -2,7 +2,7 @@ import { Player } from '../player/Player';
 import { PlayerId } from '../player/playerId/PlayerId';
 import { LobbyId } from './lobbyId/LobbyId';
 
-export default interface ILobby {
+export interface ILobby {
     get id(): LobbyId;
     join(player: Player): void;
     leave(id: PlayerId): void;

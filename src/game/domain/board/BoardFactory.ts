@@ -1,8 +1,8 @@
-import HexCoordinate from '../coordinate/HexCoordinate';
+import { HexCoordinate } from '../coordinate/HexCoordinate';
 import { ResourceType } from '../tile/ResourceType';
-import Tile from '../tile/Tile';
+import { Tile } from '../tile/Tile';
 import { Board } from './Board';
-import BoardTiles from './BoardTiles';
+import { BoardTiles } from './BoardTiles';
 
 /**
  * Factory for creating Board instances.

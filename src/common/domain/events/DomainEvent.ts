@@ -1,4 +1,4 @@
-export default abstract class DomainEvent {
+export abstract class DomainEvent {
     readonly occurredAt: Date;
     readonly name: string;
 

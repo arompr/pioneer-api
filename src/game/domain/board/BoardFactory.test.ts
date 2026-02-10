@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { BoardFactory } from './BoardFactory';
-import HexCoordinate from '../coordinate/HexCoordinate';
+import { HexCoordinate } from '../coordinate/HexCoordinate';
 import { ResourceType } from '../tile/ResourceType';
 
 let factory: BoardFactory;

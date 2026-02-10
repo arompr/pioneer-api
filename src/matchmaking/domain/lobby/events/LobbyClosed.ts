@@ -1,4 +1,4 @@
-import DomainEvent from '#common/domain/events/DomainEvent';
+import { DomainEvent } from '#common/domain/events/DomainEvent';
 import { LobbyId } from '../lobbyId/LobbyId';
 
 export class LobbyClosed extends DomainEvent {

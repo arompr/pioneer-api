@@ -1,4 +1,4 @@
-import DomainEvent from '#common/domain/events/DomainEvent';
+import { DomainEvent } from '#common/domain/events/DomainEvent';
 import { PlayerId } from '#matchmaking/domain/player/playerId/PlayerId';
 import { LobbyId } from '../lobbyId/LobbyId';
 

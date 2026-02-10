@@ -1,7 +1,7 @@
-import DomainError from '#common/domain/DomainError';
-import Tile from '#game/domain/tile/Tile';
+import { DomainError } from '#common/domain/DomainError';
+import { Tile } from '#game/domain/tile/Tile';
 
-export default class TileAlreadyExistsError extends DomainError {
+export class TileAlreadyExistsError extends DomainError {
     public readonly tile: Tile;
 
     constructor(tile: Tile) {
