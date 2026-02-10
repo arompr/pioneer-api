@@ -5,7 +5,7 @@ export class LobbyAlreadyInGameError extends DomainError {
     public readonly lobbyId: LobbyId;
 
     constructor(lobbyId: LobbyId) {
-        super(`Lobby ${lobbyId.toString()} is already in game.`);
+        super(`Lobby ${lobbyId.value} is already in game.`);
         this.lobbyId = lobbyId;
     }
 }

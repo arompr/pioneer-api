@@ -2,13 +2,18 @@ import { DomainEvent } from '../events/DomainEvent';
 import { IEventSourcedAggregate } from './IEventSourcedAggregate';
 
 export abstract class AggregateRoot implements IEventSourcedAggregate {
-    private domainEvents: DomainEvent[] = [];
+    private _version = 0;
+    private _domainEvents: DomainEvent[] = [];
 
     protected record(event: DomainEvent): void {
-        this.domainEvents.push(event);
+        this._domainEvents.push(event);
     }
 
     public pullDomainEvents(): DomainEvent[] {
-        return this.domainEvents.splice(0, this.domainEvents.length);
+        return this._domainEvents.splice(0, this._domainEvents.length);
+    }
+
+    get version(): number {
+        return this._version;
     }
 }

@@ -5,7 +5,7 @@ export class LobbyClosedError extends DomainError {
     public readonly lobbyId: LobbyId;
 
     constructor(lobbyId: LobbyId) {
-        super(`Lobby ${lobbyId.toString()} is closed and cannot accept this action.`);
+        super(`Lobby ${lobbyId.value} is closed and cannot accept this action.`);
         this.lobbyId = lobbyId;
     }
 }
