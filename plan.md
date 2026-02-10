@@ -1,544 +1,685 @@
-# Pioneer API - Vertical Slice Architecture Plan
+# Pioneer API — Game Architecture Plan
 
 ## Problem Statement
 
-Transform the Pioneer API into a full-featured Catan-like game backend using vertical slice architecture. The system needs to support real-time multiplayer gameplay via WebSockets, event-driven architecture with in-memory persistence, and be extensible for future game expansions.
+Transform the Pioneer API into a full-featured Catan-like game backend. The game bounded context uses **event sourcing** as its core architectural pattern. The system supports real-time multiplayer gameplay via WebSockets, with in-memory persistence and extensibility for future expansions.
 
 ## Architectural Approach
 
 ### Core Principles
 
-- **Vertical Slice Architecture**: Each feature is a self-contained slice with its own domain logic, handlers, and infrastructure
-- **Event-Driven Design**: Game state changes are captured as events, enabling event sourcing patterns
-- **In-Memory Persistence**: Fast game state access with event replay capability
-- **Clean Architecture**: Domain-centric with clear boundaries between layers
-- **WebSocket Communication**: Real-time bidirectional communication using Socket.IO
+- **Event Sourcing**: Game state is derived entirely from replaying domain events. No separate state storage—only the event store is the source of truth.
+- **CQRS**: Commands mutate state (via events), queries read from projections.
+- **Single Aggregate**: The Game is one aggregate root. All game invariants are enforced within this consistency boundary.
+- **Layered Architecture** (for the game bounded context): presentation → application → domain → infrastructure.
+- **WebSocket Communication**: Real-time bidirectional communication using Socket.IO.
 
 ### Technology Stack
 
 - **Framework**: NestJS with TypeScript
 - **Real-time**: @nestjs/websockets + Socket.IO
-- **Testing**: Vitest for unit tests, integration tests
+- **Testing**: Vitest
 - **Event Store**: In-memory event store with replay capability
 - **Validation**: class-validator + class-transformer
 
 ---
 
-## Architecture Overview
+## Architecture Evaluation: Vertical Slices vs Layered
 
-**Two Bounded Contexts with Vertical Slices:**
+### Why Vertical Slices Don't Fit the Game Context
+
+The original plan organized the game bounded context into 8 vertical slices: setup, turns, resources, buildings, trading, robber, development-cards, victory. After analysis, this is **the wrong decomposition** for a game domain:
+
+**1. The Game is a single aggregate.**
+In Catan, nearly every player action touches multiple concerns simultaneously:
+
+- Building a settlement requires: checking it's your turn (turns), deducting resources (resources), placing on the board (buildings), recalculating longest road (victory), and potentially updating victory points (victory).
+- Rolling a 7 triggers: dice result (resources), robber activation (robber), discard phase (robber), all within one logical operation.
+
+Slicing these into separate modules with their own domain layers creates artificial boundaries that the domain doesn't actually have. You'd end up with cross-slice dependencies everywhere, defeating the purpose of slicing.
+
+**2. Slices become thin command wrappers.**
+Since all slices operate on the same Game aggregate, each "slice" reduces to: a command DTO, a handler that loads the Game aggregate and calls a method, and a response DTO. The domain logic lives in the aggregate, not in the slice. The slice adds no encapsulation value.
+
+**3. Shared `game/common/` grows to contain most of the domain.**
+The Game aggregate, Player, Board, ResourceBundle, Building, etc. all end up in the shared area because every slice needs them. The slices themselves contain almost no domain code—just events, rules fragments, and commands that delegate to the shared aggregate.
+
+**4. Event sourcing makes slices redundant.**
+With event sourcing, the aggregate already organizes behavior around events. The event handlers (`onDiceRolled`, `onSettlementBuilt`, etc.) are the natural grouping. Adding a slice layer on top creates unnecessary indirection.
+
+### Where Vertical Slices Excel
+
+Vertical slices work well for:
+
+- **CRUD-heavy** applications where features are truly independent (e-commerce: orders, products, reviews)
+- **Microservice boundaries** where slices become independent deployables
+- **Large teams** where slice ownership prevents merge conflicts
+
+### The Chosen Approach: Layered Architecture with Event Sourcing
+
+The game bounded context uses a **traditional layered architecture** because:
+
+- The domain has a single natural aggregate (Game) with tightly coupled invariants
+- Event sourcing already provides excellent organization via event handlers
+- CQRS naturally separates read concerns (projections) from write concerns (commands)
+- The domain layer organizes sub-concerns into folders (building/, trading/, robber/) without needing full slice infrastructure
+- The lobby bounded context remains a single cohesive module (it's naturally one vertical slice already)
+
+---
+
+## Directory Structure
 
 ```
 src/
-├── common/                      # Shared kernel (cross-cutting concerns)
-│   ├── events/                 # Event infrastructure (EventStore, EventBus, DomainEvent)
-│   ├── websocket/              # WebSocket infrastructure (Gateway base, DTOs)
-│   └── types/                  # Common types (Result<T,E>, IDs)
-│
-├── lobby/                       # BOUNDED CONTEXT: Matchmaking & Lobby (vertical slice)
+├── common/                          # Shared kernel
 │   ├── domain/
-│   │   ├── Lobby.ts            # Lobby aggregate
-│   │   ├── LobbyPlayer.ts      # Player entity in lobby context
-│   │   ├── LobbySettings.ts    # Value object
-│   │   ├── events/             # LobbyEvents (PlayerJoined, GameStarted, etc.)
-│   │   └── rules/              # Lobby business rules
-│   ├── application/
-│   │   ├── commands/           # CreateLobby, JoinLobby, StartGame
-│   │   ├── handlers/           # Command handlers
-│   │   └── services/           # Domain services
+│   │   ├── DomainError.ts          # (existing)
+│   │   ├── aggregate/
+│   │   │   ├── AggregateRoot.ts    # (existing, will be enhanced for ES)
+│   │   │   └── IEventSourcedAggregate.ts
+│   │   └── events/
+│   │       └── DomainEvent.ts      # (existing)
 │   ├── infrastructure/
-│   │   └── LobbyRepository.ts  # In-memory repository
-│   └── presentation/
-│       ├── LobbyGateway.ts     # WebSocket gateway
-│       └── dtos/               # Request/response DTOs
+│   │   ├── EventStore.ts           # IEventStore interface
+│   │   ├── InMemoryEventStore.ts   # In-memory implementation
+│   │   └── EventBus.ts            # Pub-sub event bus
+│   ├── websocket/                  # WebSocket infrastructure
+│   │   └── BaseGateway.ts
+│   └── types/                      # Shared types (Result<T,E>)
 │
-└── game/                        # BOUNDED CONTEXT: Gameplay (contains multiple vertical slices)
+├── matchmaking/                     # BOUNDED CONTEXT: Lobby (unchanged)
+│   └── domain/
+│       ├── player/                 # (existing)
+│       └── lobby/                  # (existing, state pattern)
+│
+└── game/                            # BOUNDED CONTEXT: Gameplay (event sourced)
     │
-    ├── common/                  # Shared within game context
-    │   ├── board/              # Board, Tile, HexCoordinate (existing)
-    │   ├── coordinate/         # (existing)
-    │   ├── distance/           # (existing)
-    │   ├── Direction.ts        # (existing)
-    │   ├── Player.ts           # Player aggregate (resources, buildings, cards, VP)
-    │   ├── Game.ts             # Game aggregate (root)
-    │   └── GameState.ts        # Game state enum
+    ├── domain/                      # Domain layer (pure, no framework deps)
+    │   │
+    │   ├── Game.ts                 # *** AGGREGATE ROOT ***
+    │   │                           # Single aggregate: all commands go through here.
+    │   │                           # Contains apply() handlers for every event type.
+    │   │                           # Enforces ALL game invariants.
+    │   │
+    │   ├── GamePhase.ts            # Enum: SETUP, PLAYING, FINISHED
+    │   ├── TurnPhase.ts            # Enum: ROLL_DICE, ROBBER, DISCARD, TRADE, MAIN
+    │   │
+    │   ├── player/                 # Player within game context
+    │   │   ├── GamePlayer.ts       # Entity: resources, buildings built, dev cards, VP
+    │   │   ├── GamePlayerId.ts     # Value object
+    │   │   ├── ResourceBundle.ts   # Value object: { wood: 2, brick: 1, ... }
+    │   │   └── PlayerColor.ts      # Value object
+    │   │
+    │   ├── board/                  # Game board (existing, enhanced)
+    │   │   ├── Board.ts            # (existing)
+    │   │   ├── BoardTiles.ts       # (existing)
+    │   │   ├── BoardFactory.ts     # (existing)
+    │   │   └── errors/             # (existing)
+    │   │
+    │   ├── coordinate/             # (existing)
+    │   │   └── HexCoordinate.ts
+    │   │
+    │   ├── tile/                   # (existing)
+    │   │   ├── Tile.ts
+    │   │   └── ResourceType.ts
+    │   │
+    │   ├── distance/               # (existing)
+    │   │   ├── Distance.ts
+    │   │   └── errors/
+    │   │
+    │   ├── Direction.ts            # (existing)
+    │   │
+    │   ├── building/               # Building sub-domain
+    │   │   ├── Building.ts         # Value object: type + location + owner
+    │   │   ├── BuildingType.ts     # Enum: SETTLEMENT, CITY, ROAD
+    │   │   ├── BuildingCost.ts     # Value object: resource requirements per type
+    │   │   └── PlacementRules.ts   # Domain service: distance rule, connectivity
+    │   │
+    │   ├── trading/                # Trading sub-domain
+    │   │   ├── TradeOffer.ts       # Value object: offering + requesting
+    │   │   ├── Port.ts             # Value object: port type + exchange rate
+    │   │   └── TradeRules.ts       # Domain service: validation
+    │   │
+    │   ├── robber/                 # Robber sub-domain
+    │   │   └── RobberRules.ts      # Domain service: discard threshold, stealing
+    │   │
+    │   ├── development-cards/      # Development card sub-domain
+    │   │   ├── DevelopmentCard.ts   # Value object
+    │   │   ├── DevelopmentCardType.ts # Enum: KNIGHT, VP, ROAD_BUILDING, YEAR_OF_PLENTY, MONOPOLY
+    │   │   ├── CardDeck.ts          # Entity: shuffled deck with draw
+    │   │   └── CardPlayRules.ts     # Domain service: play restrictions
+    │   │
+    │   ├── scoring/                # Victory/scoring sub-domain
+    │   │   ├── LongestRoadCalculator.ts  # Domain service
+    │   │   ├── LargestArmyTracker.ts     # Domain service
+    │   │   └── VictoryRules.ts           # Win condition (10 VP)
+    │   │
+    │   ├── dice/                   # Dice sub-domain
+    │   │   └── Dice.ts             # Value object: two dice, total 2-12
+    │   │
+    │   ├── events/                 # *** ALL game domain events ***
+    │   │   ├── GameCreated.ts
+    │   │   ├── SetupPhaseStarted.ts
+    │   │   ├── InitialSettlementPlaced.ts
+    │   │   ├── InitialRoadPlaced.ts
+    │   │   ├── SetupPhaseCompleted.ts
+    │   │   ├── TurnStarted.ts
+    │   │   ├── TurnEnded.ts
+    │   │   ├── DiceRolled.ts
+    │   │   ├── ResourcesProduced.ts
+    │   │   ├── SettlementBuilt.ts
+    │   │   ├── CityUpgraded.ts
+    │   │   ├── RoadBuilt.ts
+    │   │   ├── TradeProposed.ts
+    │   │   ├── TradeAccepted.ts
+    │   │   ├── TradeRejected.ts
+    │   │   ├── TradeExecuted.ts
+    │   │   ├── RobberActivated.ts
+    │   │   ├── CardsDiscarded.ts
+    │   │   ├── RobberMoved.ts
+    │   │   ├── ResourceStolen.ts
+    │   │   ├── DevelopmentCardBought.ts
+    │   │   ├── KnightPlayed.ts
+    │   │   ├── RoadBuildingPlayed.ts
+    │   │   ├── YearOfPlentyPlayed.ts
+    │   │   ├── MonopolyPlayed.ts
+    │   │   ├── LongestRoadChanged.ts
+    │   │   ├── LargestArmyChanged.ts
+    │   │   ├── GameWon.ts
+    │   │   └── index.ts
+    │   │
+    │   └── errors/                 # Game domain errors
+    │       ├── NotYourTurnError.ts
+    │       ├── InvalidPhaseError.ts
+    │       ├── InsufficientResourcesError.ts
+    │       ├── InvalidPlacementError.ts
+    │       ├── InvalidTradeError.ts
+    │       └── ...
     │
-    ├── setup/                   # SLICE: Initial game setup
-    │   ├── domain/
-    │   │   ├── events/         # InitialSettlementPlaced, SetupPhaseCompleted
-    │   │   ├── rules/          # Placement validation, setup order
-    │   │   └── SetupPhase.ts   # Setup phase logic
-    │   ├── application/
-    │   │   ├── commands/       # PlaceInitialSettlement, PlaceInitialRoad
-    │   │   └── handlers/
-    │   └── presentation/
-    │       └── dtos/
+    ├── application/                 # Application layer (CQRS)
+    │   │
+    │   ├── commands/                # Write side: all game commands
+    │   │   ├── PlaceInitialSettlement.ts
+    │   │   ├── PlaceInitialRoad.ts
+    │   │   ├── RollDice.ts
+    │   │   ├── BuildSettlement.ts
+    │   │   ├── UpgradeToCity.ts
+    │   │   ├── BuildRoad.ts
+    │   │   ├── ProposeTrade.ts
+    │   │   ├── AcceptTrade.ts
+    │   │   ├── RejectTrade.ts
+    │   │   ├── ExecuteBankTrade.ts
+    │   │   ├── MoveRobber.ts
+    │   │   ├── StealResource.ts
+    │   │   ├── DiscardCards.ts
+    │   │   ├── BuyDevelopmentCard.ts
+    │   │   ├── PlayKnight.ts
+    │   │   ├── PlayRoadBuilding.ts
+    │   │   ├── PlayYearOfPlenty.ts
+    │   │   ├── PlayMonopoly.ts
+    │   │   └── EndTurn.ts
+    │   │
+    │   ├── handlers/                # Command handlers
+    │   │   └── ... (one per command, loads Game from store, calls method, saves events)
+    │   │
+    │   ├── queries/                 # Read side: queries against projections
+    │   │   ├── GetGameState.ts
+    │   │   ├── GetPlayerHand.ts     # Private: only the requesting player's cards
+    │   │   └── GetAvailableActions.ts
+    │   │
+    │   └── projections/             # Read models built from events
+    │       ├── GameStateProjection.ts     # Full game state for broadcasting
+    │       ├── VictoryPointProjection.ts  # VP leaderboard
+    │       └── PlayerHandProjection.ts    # Per-player private state
     │
-    ├── turns/                   # SLICE: Turn management
-    │   ├── domain/
-    │   │   ├── Turn.ts         # Turn aggregate
-    │   │   ├── TurnPhase.ts    # Enum: ROLL_DICE, MAIN_PHASE, etc.
-    │   │   └── events/         # TurnStarted, TurnEnded, PhaseChanged
-    │   ├── application/
-    │   │   ├── commands/       # StartTurn, EndTurn
-    │   │   └── handlers/
-    │   └── presentation/
-    │       └── dtos/
+    ├── infrastructure/              # Infrastructure layer
+    │   ├── GameEventStore.ts        # IEventStore implementation for games
+    │   ├── GameRepository.ts        # Loads/saves Game aggregate via event store
+    │   └── InMemoryProjectionStore.ts
     │
-    ├── resources/               # SLICE: Resource production (dice roll)
-    │   ├── domain/
-    │   │   ├── Dice.ts         # Value object
-    │   │   ├── events/         # DiceRolled, ResourcesProduced
-    │   │   └── rules/          # Production calculation rules
-    │   ├── application/
-    │   │   ├── commands/       # RollDice
-    │   │   ├── handlers/
-    │   │   └── services/       # ResourceProductionService
-    │   └── presentation/
-    │       └── dtos/
-    │
-    ├── buildings/               # SLICE: Building settlements, cities, roads
-    │   ├── domain/
-    │   │   ├── Building.ts     # Building entity
-    │   │   ├── BuildingType.ts # Enum
-    │   │   ├── BuildingCost.ts # Value object
-    │   │   ├── events/         # SettlementBuilt, CityUpgraded, RoadBuilt
-    │   │   └── rules/          # Placement validation
-    │   ├── application/
-    │   │   ├── commands/       # BuildSettlement, UpgradeCity, BuildRoad
-    │   │   └── handlers/
-    │   └── presentation/
-    │       └── dtos/
-    │
-    ├── trading/                 # SLICE: Trading (player-to-player & bank)
-    │   ├── domain/
-    │   │   ├── Trade.ts        # Trade entity
-    │   │   ├── TradeType.ts    # Enum
-    │   │   ├── Port.ts         # Port entity
-    │   │   ├── events/         # TradeProposed, TradeAccepted, TradeExecuted
-    │   │   └── rules/          # Trade validation
-    │   ├── application/
-    │   │   ├── commands/       # ProposeTrade, AcceptTrade, ExecuteBankTrade
-    │   │   └── handlers/
-    │   └── presentation/
-    │       └── dtos/
-    │
-    ├── robber/                  # SLICE: Robber mechanics
-    │   ├── domain/
-    │   │   ├── Robber.ts       # Robber entity
-    │   │   ├── events/         # RobberMoved, CardStolen, CardsDiscarded
-    │   │   └── rules/          # Stealing rules, discard rules
-    │   ├── application/
-    │   │   ├── commands/       # MoveRobber, StealCard, DiscardCards
-    │   │   └── handlers/
-    │   └── presentation/
-    │       └── dtos/
-    │
-    ├── development-cards/       # SLICE: Development cards
-    │   ├── domain/
-    │   │   ├── DevelopmentCard.ts      # Card entity
-    │   │   ├── DevelopmentCardType.ts  # Enum
-    │   │   ├── CardDeck.ts             # Deck management
-    │   │   ├── events/                 # CardBought, CardPlayed, LargestArmyChanged
-    │   │   └── rules/                  # Play restrictions
-    │   ├── application/
-    │   │   ├── commands/       # BuyCard, PlayKnight, PlayRoadBuilding, etc.
-    │   │   └── handlers/
-    │   └── presentation/
-    │       └── dtos/
-    │
-    ├── victory/                 # SLICE: Victory points & win conditions
-    │   ├── domain/
-    │   │   ├── VictoryPoints.ts        # VP calculation
-    │   │   ├── LongestRoad.ts          # Longest road tracking
-    │   │   ├── LargestArmy.ts          # Largest army tracking
-    │   │   ├── events/                 # VictoryPointsChanged, GameWon
-    │   │   └── rules/                  # Win condition (10 VP)
-    │   ├── application/
-    │   │   ├── queries/        # GetVictoryPoints
-    │   │   └── services/       # VP calculation, longest road algorithm
-    │   └── presentation/
-    │       └── dtos/
-    │
-    ├── infrastructure/          # Game-wide infrastructure
-    │   ├── GameRepository.ts   # In-memory game repository
-    │   └── GameEventStore.ts   # Game-specific event store
-    │
-    └── presentation/            # Game-wide presentation layer
-        ├── GameGateway.ts      # Main WebSocket gateway for gameplay
-        └── dtos/               # Shared game DTOs
+    └── presentation/                # Presentation/API layer
+        ├── GameGateway.ts           # WebSocket gateway: receives commands, emits events
+        └── dtos/                    # Request/response DTOs
+            ├── commands/            # Incoming command DTOs (validated)
+            └── responses/           # Outgoing state/event DTOs
 ```
+
+---
+
+## Event Sourcing Architecture
+
+### How It Works
+
+```
+Client Command (WebSocket)
+    │
+    ▼
+GameGateway (presentation)
+    │ validates DTO, extracts command
+    ▼
+CommandHandler (application)
+    │ loads Game aggregate from EventStore
+    │ calls domain method on Game
+    ▼
+Game Aggregate (domain)
+    │ validates invariants
+    │ calls this.apply(new SomeEvent(...))
+    │ apply() routes to internal on<EventName>() handler
+    │ on<EventName>() mutates aggregate state
+    │ event is recorded in uncommitted events list
+    ▼
+CommandHandler (application)
+    │ pulls uncommitted events from aggregate
+    │ appends to EventStore
+    │ publishes events to EventBus
+    ▼
+Projections (application)                    GameGateway (presentation)
+    │ update read models from events          │ broadcasts events to clients
+    ▼                                         ▼
+ProjectionStore (infrastructure)             WebSocket rooms
+```
+
+### AggregateRoot Enhancement
+
+The existing `AggregateRoot` needs to be enhanced for true event sourcing:
+
+```typescript
+export abstract class AggregateRoot {
+    private uncommittedEvents: DomainEvent[] = [];
+    private version: number = 0;
+
+    // Apply an event: mutate state + record as uncommitted
+    protected apply(event: DomainEvent): void {
+        this.route(event); // call the on<EventName> handler
+        this.version++;
+        this.uncommittedEvents.push(event);
+    }
+
+    // Reconstitute from history (no recording)
+    public loadFromHistory(events: DomainEvent[]): void {
+        for (const event of events) {
+            this.route(event);
+            this.version++;
+        }
+    }
+
+    // Each aggregate implements routing to its on* handlers
+    protected abstract route(event: DomainEvent): void;
+
+    public pullUncommittedEvents(): DomainEvent[] {
+        return this.uncommittedEvents.splice(0);
+    }
+
+    public getVersion(): number {
+        return this.version;
+    }
+}
+```
+
+### Game Aggregate (Sketch)
+
+```typescript
+export class Game extends AggregateRoot {
+    private phase: GamePhase;
+    private board: Board;
+    private players: GamePlayer[];
+    private currentPlayerIndex: number;
+    private turnPhase: TurnPhase;
+    private robberPosition: HexCoordinate;
+    private developmentCardDeck: CardDeck;
+    // ... more state
+
+    // === COMMANDS (produce events) ===
+
+    rollDice(): void {
+        this.assertPhase(GamePhase.PLAYING);
+        this.assertTurnPhase(TurnPhase.ROLL_DICE);
+        const result = Dice.roll();
+        this.apply(new DiceRolled(this.id, result));
+
+        if (result.total === 7) {
+            this.apply(new RobberActivated(this.id));
+        } else {
+            const production = ResourceProductionService.calculate(
+                this.board,
+                this.players,
+                result.total,
+                this.robberPosition
+            );
+            for (const [playerId, resources] of production) {
+                this.apply(new ResourcesProduced(this.id, playerId, resources));
+            }
+        }
+    }
+
+    buildSettlement(playerId: GamePlayerId, location: HexCoordinate): void {
+        this.assertCurrentPlayer(playerId);
+        this.assertTurnPhase(TurnPhase.MAIN);
+        PlacementRules.validateSettlement(this.board, location, playerId);
+        const player = this.getPlayer(playerId);
+        player.assertHasResources(BuildingCost.SETTLEMENT);
+        this.apply(new SettlementBuilt(this.id, playerId, location));
+    }
+
+    // === EVENT HANDLERS (mutate state) ===
+
+    protected route(event: DomainEvent): void {
+        // Route to the appropriate on* method based on event type
+    }
+
+    private onDiceRolled(event: DiceRolled): void {
+        this.lastDiceResult = event.result;
+        this.turnPhase = TurnPhase.MAIN;
+    }
+
+    private onSettlementBuilt(event: SettlementBuilt): void {
+        const player = this.getPlayer(event.playerId);
+        player.deductResources(BuildingCost.SETTLEMENT);
+        this.board.placeBuilding(Building.settlement(event.location, event.playerId));
+        player.addVictoryPoints(1);
+    }
+
+    // ... handlers for every event type
+
+    // === RECONSTITUTION ===
+
+    static create(id: GameId, players: GamePlayer[], board: Board): Game {
+        const game = new Game();
+        game.apply(new GameCreated(id, players, board));
+        return game;
+    }
+
+    static fromHistory(events: DomainEvent[]): Game {
+        const game = new Game();
+        game.loadFromHistory(events);
+        return game;
+    }
+}
+```
+
+### Event Store Interface
+
+```typescript
+interface IEventStore {
+    append(aggregateId: string, events: DomainEvent[], expectedVersion: number): void;
+    getEvents(aggregateId: string): DomainEvent[];
+    getEventsAfterVersion(aggregateId: string, version: number): DomainEvent[];
+}
+```
+
+### Projections
+
+Projections are read models rebuilt from events. They subscribe to the EventBus and maintain materialized views:
+
+- **GameStateProjection**: Full board state, player positions, current turn — broadcast to all players after each command.
+- **VictoryPointProjection**: Listens to SettlementBuilt, CityUpgraded, LongestRoadChanged, etc. Recalculates VP. Checks win condition.
+- **PlayerHandProjection**: Per-player private state (resource cards, development cards). Only sent to the owning player.
 
 ---
 
 ## Workplan
 
-### Phase 1: Foundation & Infrastructure
+### Phase 1: Event Sourcing Foundation
 
-- [ ] **Event Infrastructure**
-  - [ ] Create base Event, DomainEvent interfaces in `common/events/`
-  - [ ] Implement in-memory EventStore with append/get/replay methods
-  - [ ] Create EventBus for pub-sub within application
+- [ ] **Enhance AggregateRoot for Event Sourcing**
+  - [ ] Add `apply(event)` with internal routing to `on*` handlers
+  - [ ] Add `loadFromHistory(events[])` for reconstitution
+  - [ ] Add version tracking for optimistic concurrency
+  - [ ] Keep backward compatibility with existing Lobby aggregate
+
+- [ ] **Event Store Infrastructure**
+  - [ ] Define `IEventStore` interface in `common/infrastructure/`
+  - [ ] Implement `InMemoryEventStore` with append/get/replay
+  - [ ] Add optimistic concurrency (expected version check)
   - [ ] Add event versioning support for future schema evolution
+
+- [ ] **Event Bus**
+  - [ ] Create `EventBus` for pub-sub within the application
+  - [ ] Support sync event handlers (projections)
+  - [ ] Integrate with NestJS dependency injection
 
 - [ ] **WebSocket Infrastructure**
   - [ ] Install @nestjs/websockets and @nestjs/platform-socket.io
-  - [ ] Create WebSocketGateway base class in `common/websocket/`
+  - [ ] Create base WebSocket gateway in `common/websocket/`
   - [ ] Implement room management (game rooms, lobby rooms)
   - [ ] Add connection/disconnection handling with reconnection logic
-  - [ ] Create base DTOs and validation decorators
 
-- [ ] **Common Types**
-  - [ ] Create ID value objects in `common/types/` (PlayerId, GameId, LobbyId)
-  - [ ] Add Result<T, E> type for error handling
+### Phase 2: Lobby Bounded Context
 
-- [ ] **Restructure Existing Game Domain**
-  - [ ] Move existing domain code to `game/common/`
-  - [ ] Keep board/, coordinate/, distance/, tile/ structure
-  - [ ] Extract Direction.ts to `game/common/`
+- [ ] **Lobby Application & Infrastructure**
+  - [ ] Restructure existing `matchmaking/` into `lobby/` or keep as-is
+  - [ ] Add command handlers (CreateLobby, JoinLobby, LeaveLobby, StartGame)
+  - [ ] Add LobbyRepository (in-memory)
+  - [ ] Integrate lobby events with EventBus
 
-- [ ] **Testing Infrastructure**
-  - [ ] Set up test utilities for event store testing
-  - [ ] Create WebSocket testing helpers
-  - [ ] Add in-memory test doubles for repositories
-
-### Phase 2: Lobby Bounded Context (Vertical Slice)
-
-- [ ] **Lobby Domain** (`lobby/domain/`)
-  - [ ] Lobby aggregate (id, players, settings, status)
-  - [ ] LobbyPlayer entity
-  - [ ] LobbySettings value object
-  - [ ] Create `events/` with: PlayerJoined, PlayerLeft, LobbySettingsChanged, GameStartRequested
-  - [ ] Create `rules/` for: max players validation, ready state logic, host privileges
-
-- [ ] **Lobby Application Layer** (`lobby/application/`)
-  - [ ] `commands/`: CreateLobby, JoinLobby, LeaveLobby, UpdateLobbySettings, StartGame
-  - [ ] `handlers/`: Implement command handlers
-  - [ ] Domain services for lobby orchestration
-
-- [ ] **Lobby Infrastructure** (`lobby/infrastructure/`)
-  - [ ] LobbyRepository with in-memory implementation
-  - [ ] Lobby event persistence integration
-
-- [ ] **Lobby WebSocket Presentation** (`lobby/presentation/`)
+- [ ] **Lobby WebSocket Presentation**
   - [ ] LobbyGateway with Socket.IO
-  - [ ] Create `dtos/` for all lobby commands and responses
+  - [ ] DTOs for all lobby commands and responses
   - [ ] Room-based broadcasting for lobby updates
-  - [ ] Handle lobby commands via WebSocket events
-  - [ ] Emit lobby state changes to all players
 
-### Phase 3: Game Shared Domain & Infrastructure
+### Phase 3: Game Domain Core
 
-- [ ] **Game Aggregate** (`game/common/`)
-  - [ ] Game aggregate (id, players, board, state, currentTurn)
-  - [ ] Player entity (id, color, resources, buildings, cards, victoryPoints)
-  - [ ] GameState enum (SETUP, INITIAL_PLACEMENT, PLAYING, FINISHED)
-  - [ ] Core game events: GameCreated, GameStateChanged
+- [ ] **Game Aggregate Root** (`game/domain/Game.ts`)
+  - [ ] Implement Game extending enhanced AggregateRoot
+  - [ ] Game creation with players, board, initial state
+  - [ ] Phase management (SETUP → PLAYING → FINISHED)
+  - [ ] Turn management (current player, turn phases)
+  - [ ] Event routing to `on*` handlers
+  - [ ] `Game.create()` and `Game.fromHistory()` factory methods
 
-- [ ] **Game Infrastructure** (`game/infrastructure/`)
-  - [ ] GameRepository with in-memory implementation
-  - [ ] GameEventStore for game-specific events
-  - [ ] Game state reconstruction from events
+- [ ] **Game Player** (`game/domain/player/`)
+  - [ ] GamePlayer entity (resources, buildings count, dev cards, VP)
+  - [ ] ResourceBundle value object with add/deduct/has operations
+  - [ ] PlayerColor value object
 
-- [ ] **Game WebSocket Gateway** (`game/presentation/`)
-  - [ ] GameGateway for game-specific communication
-  - [ ] Game room management
-  - [ ] Base game state broadcasting
+- [ ] **Game Infrastructure**
+  - [ ] GameRepository (loads/saves via EventStore)
+  - [ ] GameEventStore (wraps InMemoryEventStore for game aggregate)
 
-### Phase 4: Setup Slice
+- [ ] **Game Presentation**
+  - [ ] GameGateway WebSocket gateway
+  - [ ] Command DTOs and response DTOs
+  - [ ] Game room management and state broadcasting
 
-- [ ] **Setup Domain** (`game/setup/domain/`)
-  - [ ] SetupPhase value object
-  - [ ] Create `events/`: InitialSettlementPlaced, InitialRoadPlaced, SetupPhaseCompleted
-  - [ ] Create `rules/`: placement order logic, initial placement validation
+### Phase 4: Setup Phase
 
-- [ ] **Setup Application** (`game/setup/application/`)
-  - [ ] `commands/`: PlaceInitialSettlement, PlaceInitialRoad, CompleteSetupPhase
-  - [ ] `handlers/`: Implement command handlers
-  - [ ] Setup orchestration service
+- [ ] **Setup Domain Logic** (in Game aggregate)
+  - [ ] Initial settlement + road placement commands
+  - [ ] Snake-draft order (1→2→3→4→4→3→2→1)
+  - [ ] Events: InitialSettlementPlaced, InitialRoadPlaced, SetupPhaseCompleted
+  - [ ] Placement rules: valid hex positions, no adjacency conflicts
 
-- [ ] **Setup Presentation** (`game/setup/presentation/`)
-  - [ ] Create `dtos/` for placement commands
-  - [ ] Wire up to GameGateway
-  - [ ] Broadcast placement actions to all players
+- [ ] **Setup Commands & Handlers**
+  - [ ] PlaceInitialSettlement command + handler
+  - [ ] PlaceInitialRoad command + handler
 
-### Phase 5: Turns Slice
+### Phase 5: Turn Flow & Dice
 
-- [ ] **Turns Domain** (`game/turns/domain/`)
-  - [ ] Turn aggregate with current player, phase, actions taken
-  - [ ] TurnPhase enum (ROLL_DICE, MAIN_PHASE, DISCARD_PHASE)
-  - [ ] Create `events/`: TurnStarted, PhaseChanged, TurnEnded
-  - [ ] Turn transition rules
+- [ ] **Turn Management** (in Game aggregate)
+  - [ ] Turn start/end logic, player rotation
+  - [ ] Turn phase transitions (ROLL_DICE → MAIN → end)
+  - [ ] Events: TurnStarted, TurnEnded
 
-- [ ] **Turns Application** (`game/turns/application/`)
-  - [ ] `commands/`: StartTurn, EndTurn, ChangePhase
-  - [ ] `handlers/`: Implement command handlers
-  - [ ] Automatic turn progression service
+- [ ] **Dice & Resource Production** (in Game aggregate)
+  - [ ] Dice value object (two d6, total 2-12)
+  - [ ] RollDice command: produce DiceRolled + ResourcesProduced events
+  - [ ] Resource production calculation based on tile numbers + settlements/cities
+  - [ ] Handle rolling 7 (robber activation)
 
-- [ ] **Turns Presentation** (`game/turns/presentation/`)
-  - [ ] Create `dtos/` for turn commands
-  - [ ] Emit turn change notifications
-  - [ ] Broadcast current player and phase
+### Phase 6: Building
 
-### Phase 6: Resources Slice
+- [ ] **Building Domain** (`game/domain/building/`)
+  - [ ] Building value object (type, location, owner)
+  - [ ] BuildingCost value object per type
+  - [ ] PlacementRules domain service (distance rule, road connectivity)
 
-- [ ] **Resources Domain** (`game/resources/domain/`)
-  - [ ] Dice value object (validation 2-12)
-  - [ ] ResourceType enum (already exists in common/tile/)
-  - [ ] Create `events/`: DiceRolled, ResourcesProduced, SevenRolled
-  - [ ] Create `rules/`: resource production calculation based on dice
+- [ ] **Building Commands** (in Game aggregate)
+  - [ ] BuildSettlement: validate placement + resources, emit SettlementBuilt
+  - [ ] UpgradeToCity: validate existing settlement + resources, emit CityUpgraded
+  - [ ] BuildRoad: validate connectivity + resources, emit RoadBuilt
 
-- [ ] **Resources Application** (`game/resources/application/`)
-  - [ ] `commands/`: RollDice
-  - [ ] `handlers/`: Implement command handlers
-  - [ ] `services/`: ResourceProductionService, DistributeResources
+### Phase 7: Trading
 
-- [ ] **Resources Presentation** (`game/resources/presentation/`)
-  - [ ] Create `dtos/` for dice roll
-  - [ ] Emit dice roll results with animation data
-  - [ ] Broadcast resource distribution
+- [ ] **Trading Domain** (`game/domain/trading/`)
+  - [ ] TradeOffer value object
+  - [ ] Port value object (3:1 generic, 2:1 specific)
+  - [ ] TradeRules domain service
 
-### Phase 7: Buildings Slice
+- [ ] **Trading Commands** (in Game aggregate)
+  - [ ] ProposeTrade, AcceptTrade, RejectTrade
+  - [ ] ExecuteBankTrade (4:1 default)
+  - [ ] ExecutePortTrade (3:1 or 2:1)
 
-- [ ] **Buildings Domain** (`game/buildings/domain/`)
-  - [ ] Building entity with location, owner, type
-  - [ ] BuildingType enum (SETTLEMENT, CITY, ROAD)
-  - [ ] BuildingCost value object (resource requirements)
-  - [ ] Create `events/`: SettlementBuilt, CityUpgraded, RoadBuilt
-  - [ ] Create `rules/`: placement validation (distance rule, connectivity)
+### Phase 8: Robber
 
-- [ ] **Buildings Application** (`game/buildings/application/`)
-  - [ ] `commands/`: BuildSettlement, UpgradeToCity, BuildRoad
-  - [ ] `handlers/`: Implement command handlers
-  - [ ] `services/`: ValidatePlacementService, DeductResourcesService
+- [ ] **Robber Logic** (in Game aggregate)
+  - [ ] On rolling 7: players with >7 cards must discard half
+  - [ ] Move robber to new tile, block production
+  - [ ] Steal one random resource from adjacent player
+  - [ ] Events: RobberActivated, CardsDiscarded, RobberMoved, ResourceStolen
 
-- [ ] **Buildings Presentation** (`game/buildings/presentation/`)
-  - [ ] Create `dtos/` for building commands
-  - [ ] Emit building placement to all players
-  - [ ] Update player resources and buildings state
+- [ ] **Robber Commands**
+  - [ ] DiscardCards, MoveRobber, StealResource
 
-### Phase 8: Trading Slice
+### Phase 9: Development Cards
 
-- [ ] **Trading Domain** (`game/trading/domain/`)
-  - [ ] Trade entity (proposer, receiver, offering, requesting)
-  - [ ] TradeType enum (PLAYER_TRADE, BANK_TRADE, PORT_TRADE)
-  - [ ] Port entity/value object (3:1, 2:1 specific)
-  - [ ] Create `events/`: TradeProposed, TradeAccepted, TradeRejected, TradeExecuted
-  - [ ] Create `rules/`: trade validation, port eligibility
+- [ ] **Development Card Domain** (`game/domain/development-cards/`)
+  - [ ] DevelopmentCardType enum (5 types)
+  - [ ] CardDeck entity (shuffled, draw)
+  - [ ] Play restrictions (can't play card bought this turn)
 
-- [ ] **Trading Application** (`game/trading/application/`)
-  - [ ] `commands/`: ProposePlayerTrade, AcceptTrade, RejectTrade, ExecuteBankTrade, ExecutePortTrade
-  - [ ] `handlers/`: Implement command handlers
-  - [ ] Trade orchestration service
+- [ ] **Development Card Commands** (in Game aggregate)
+  - [ ] BuyDevelopmentCard
+  - [ ] PlayKnight (move robber + steal)
+  - [ ] PlayRoadBuilding (place 2 free roads)
+  - [ ] PlayYearOfPlenty (take 2 resources from bank)
+  - [ ] PlayMonopoly (take all of one resource type from all players)
 
-- [ ] **Trading Presentation** (`game/trading/presentation/`)
-  - [ ] Create `dtos/` for trading commands
-  - [ ] Broadcast trade proposals to all players
-  - [ ] Emit trade acceptance/rejection
-  - [ ] Update resource counts after trade
+### Phase 10: Scoring & Victory
 
-### Phase 9: Robber Slice
+- [ ] **Scoring Domain** (`game/domain/scoring/`)
+  - [ ] LongestRoadCalculator (graph algorithm, minimum 5 roads)
+  - [ ] LargestArmyTracker (minimum 3 knights)
+  - [ ] VictoryRules (10 VP to win)
 
-- [ ] **Robber Domain** (`game/robber/domain/`)
-  - [ ] Robber entity with current position
-  - [ ] Create `events/`: RobberMoved, CardStolen, CardsDiscarded
-  - [ ] Create `rules/`: stealing rules (random from adjacent), discard rules (>7 cards when 7 rolled)
+- [ ] **Projections**
+  - [ ] VictoryPointProjection (reacts to events, recalculates VP)
+  - [ ] GameStateProjection (materialized view of full game state)
+  - [ ] PlayerHandProjection (private per-player state)
 
-- [ ] **Robber Application** (`game/robber/application/`)
-  - [ ] `commands/`: MoveRobber, StealCard, DiscardCards
-  - [ ] `handlers/`: Implement command handlers
-  - [ ] `services/`: CalculatePlayersToDiscard
+- [ ] **Win Condition**
+  - [ ] Check after every VP-changing event
+  - [ ] Emit GameWon event when a player reaches 10 VP
 
-- [ ] **Robber Presentation** (`game/robber/presentation/`)
-  - [ ] Create `dtos/` for robber commands
-  - [ ] Emit robber movement
-  - [ ] Notify player of stolen card (privately)
-  - [ ] Broadcast discard phase to affected players
+### Phase 11: Integration & Polish
 
-### Phase 10: Development Cards Slice
+- [ ] **Cross-Cutting Concerns**
+  - [ ] Error handling: domain errors → WebSocket error responses
+  - [ ] Reconnection: restore game state from event replay
+  - [ ] Disconnect handling: pause timers, notify other players
 
-- [ ] **Development Cards Domain** (`game/development-cards/domain/`)
-  - [ ] DevelopmentCard entity
-  - [ ] DevelopmentCardType enum (KNIGHT, VICTORY_POINT, ROAD_BUILDING, YEAR_OF_PLENTY, MONOPOLY)
-  - [ ] CardDeck value object/entity for deck management
-  - [ ] Create `events/`: CardBought, CardPlayed, KnightPlayed, LargestArmyChanged
-  - [ ] Create `rules/`: play restrictions (can't play same turn bought)
+- [ ] **Snapshot Support** (optimization)
+  - [ ] Periodic game state snapshots to avoid full event replay
+  - [ ] Load from snapshot + replay events after snapshot
 
-- [ ] **Development Cards Application** (`game/development-cards/application/`)
-  - [ ] `commands/`: BuyDevelopmentCard, PlayKnight, PlayRoadBuilding, PlayYearOfPlenty, PlayMonopoly
-  - [ ] `handlers/`: Implement command handlers
-  - [ ] `services/`: CalculateLargestArmy
+- [ ] **Testing**
+  - [ ] Unit tests: Game aggregate, all domain logic, value objects, rules
+  - [ ] Integration tests: command → event store → projection round trips
+  - [ ] Scenario tests: full game flows (setup through victory)
+  - [ ] WebSocket integration tests
 
-- [ ] **Development Cards Presentation** (`game/development-cards/presentation/`)
-  - [ ] Create `dtos/` for card commands
-  - [ ] Broadcast card purchases (hide type from others)
-  - [ ] Emit card play effects
-  - [ ] Update largest army holder
-
-### Phase 11: Victory Slice
-
-- [ ] **Victory Domain** (`game/victory/domain/`)
-  - [ ] VictoryPoints value object
-  - [ ] LongestRoad value object/entity (tracking)
-  - [ ] LargestArmy value object/entity (tracking)
-  - [ ] Create `events/`: VictoryPointsChanged, LongestRoadChanged, LargestArmyChanged, GameWon
-  - [ ] Create `rules/`: VP sources (settlements=1, cities=2, etc.), win condition (10 VP)
-
-- [ ] **Victory Application** (`game/victory/application/`)
-  - [ ] `queries/`: GetVictoryPoints (read model)
-  - [ ] `services/`: CalculateVictoryPoints, CalculateLongestRoad, CheckWinCondition
-  - [ ] Event handlers for VP changes
-
-- [ ] **Victory Presentation** (`game/victory/presentation/`)
-  - [ ] Create `dtos/` for victory point updates
-  - [ ] Emit victory point updates
-  - [ ] Broadcast longest road changes
-  - [ ] Emit game won event with winner
-
-### Phase 12: Integration & Polish
-
-- [ ] **Cross-Slice Integration**
-  - [ ] Wire up all event handlers across slices
-  - [ ] Ensure event ordering and consistency
-  - [ ] Test full game flow from lobby to win
-
-- [ ] **Error Handling**
-  - [ ] Create domain-specific error types
-  - [ ] Add error responses to WebSocket messages
-  - [ ] Implement graceful degradation for disconnections
-
-- [ ] **Game State Queries**
-  - [ ] Create read models for game state
-  - [ ] Implement GetGameState query
-  - [ ] Optimize for frequent client state requests
-
-- [ ] **Reconnection Logic**
-  - [ ] Handle player disconnects/reconnects
-  - [ ] Restore game state for reconnecting players
-  - [ ] Pause/resume game logic for disconnections
-
-### Phase 13: Extensibility Preparation
+### Phase 12: Extensibility
 
 - [ ] **Extension Points**
-  - [ ] Create extension interfaces for new tile types
-  - [ ] Design hook system for custom game rules
-  - [ ] Document how to add new vertical slices
-  - [ ] Create base classes for new building types
-
-- [ ] **Configuration System**
-  - [ ] Game variant configuration (base game, expansions)
-  - [ ] Feature flags for different rule sets
   - [ ] Board generation strategies (classic, random, custom)
-
-### Phase 14: Testing & Documentation
-
-- [ ] **Unit Tests**
-  - [ ] Test all domain logic (aggregates, value objects, rules)
-  - [ ] Test all command handlers
-  - [ ] Test all event handlers
-
-- [ ] **Integration Tests**
-  - [ ] Test WebSocket message flows
-  - [ ] Test event store persistence and replay
-  - [ ] Test full game scenarios
-
-- [ ] **Documentation**
-  - [ ] Architecture decision records (ADRs)
-  - [ ] API documentation for WebSocket events
-  - [ ] Game rules documentation
-  - [ ] Developer onboarding guide
+  - [ ] Game variant configuration (player count, VP target)
+  - [ ] Document how to add new event types and handlers
 
 ---
 
 ## Notes & Considerations
 
-### Vertical Slice Structure
+### Why One Game Aggregate?
 
-Each slice follows this consistent structure:
+A Catan game is a single consistency boundary. Every action requires checking:
 
-```
-slice-name/
-├── domain/              # Domain models, aggregates, events, rules
-│   ├── events/          # Domain events for this slice
-│   └── rules/           # Business rules & validations
-├── application/         # Commands, queries, handlers, services
-│   ├── commands/        # Command objects
-│   ├── handlers/        # Command/event handlers
-│   ├── queries/         # Query objects (if needed)
-│   └── services/        # Application/domain services
-├── infrastructure/      # Persistence, external integrations (when needed)
-└── presentation/        # WebSocket handlers, DTOs, validation
-    └── dtos/            # Data transfer objects
-```
+- Is it this player's turn?
+- Is the game in the right phase?
+- Does the player have enough resources?
+- Is the placement valid given the full board state?
+- Does this action change victory points?
 
-### Key Architectural Decisions
+Splitting this into multiple aggregates would require distributed transactions or eventual consistency between aggregates that actually need immediate consistency. A single Game aggregate keeps invariants simple and transactional.
 
-**1. Two Bounded Contexts:**
+### Event Sourcing Benefits for This Domain
 
-- **Lobby**: Everything before the game starts (matchmaking, player joining)
-- **Game**: All gameplay mechanics (each feature is a vertical slice within this context)
+- **Perfect audit trail**: Every move is recorded. Replay any game.
+- **Time travel debugging**: Reconstruct game state at any point.
+- **Reconnection**: Replay events to restore a disconnected player's state.
+- **Undo support** (future): Walk back events for house rules.
+- **Analytics** (future): Mine event streams for game statistics.
+- **Spectator mode** (future): Stream events in real-time to observers.
 
-**2. Shared Kernel:**
+### Domain Sub-Folder Organization
 
-- `common/`: Cross-cutting infrastructure used by both bounded contexts
-- `game/common/`: Domain models shared across game slices (Player, Game, Board)
+The `game/domain/` layer uses folders (building/, trading/, robber/, etc.) to organize related value objects, domain services, and rules. These are **not** separate bounded contexts or slices — they're just file organization within a single domain. The Game aggregate imports from all of them.
 
-**3. Vertical Slices in Game Context:**
+### Event Naming Convention
 
-- Each gameplay feature (setup, turns, resources, etc.) is a self-contained slice
-- Slices communicate via domain events through the EventBus
-- Each slice owns its own domain logic and presentation layer
+- Past tense: `SettlementBuilt`, not `BuildSettlement`
+- Prefixed with context when ambiguous: `ResourcesProduced`, not `Produced`
+- Granular: one event per state change, not one event per command
 
-**4. No "slices" folder:**
+### Projections vs Direct State
 
-- Lobby is a top-level bounded context (single vertical slice)
-- Game slices are organized directly under `game/` by feature name
-- More natural navigation: `game/buildings/` instead of `game/slices/building/`
+- **Commands** operate on the Game aggregate (write model). The aggregate is loaded from events.
+- **Queries** read from projections (read models). Projections are updated asynchronously by subscribing to the EventBus.
+- The GameGateway broadcasts projection data to clients, not raw aggregate state.
 
-### Event-Driven Considerations
+### Snapshot Strategy
 
-- Events are immutable and represent facts
-- Use past tense for event names (PlayerJoined, not JoinPlayer)
-- Event store is append-only
-- Game state is rebuilt from events on load
-- Consider event snapshots for long games (future optimization)
+For a typical Catan game (~200-400 events), full replay is fast enough in memory. Snapshots become useful if:
 
-### WebSocket Message Format
+- Games grow very long (house rules, expansions)
+- Server restarts need to be fast with many concurrent games
+- Implemented as: serialize aggregate state at version N, load snapshot + replay events after N
+
+### Security: Hidden Information
+
+Some game state is private (your hand of cards). The presentation layer must:
+
+- Send full game state (board, buildings, turn) to all players
+- Send private state (resource cards, dev cards) only to the owning player
+- Never leak card values through events (emit `DevelopmentCardBought` without card type to other players)
+
+### WebSocket Event Format
 
 ```typescript
-{
-  type: 'command' | 'event' | 'query',
-  payload: { /* command/event/query specific data */ },
-  gameId?: string,
-  playerId?: string,
-  timestamp: number
-}
+// Client → Server (command)
+{ action: "rollDice", gameId: "...", playerId: "..." }
+{ action: "buildSettlement", gameId: "...", playerId: "...", location: { q: 0, r: 1 } }
+
+// Server → Client (game event broadcast)
+{ event: "diceRolled", data: { result: 8, player: "..." } }
+{ event: "resourcesProduced", data: { distributions: [...] } }
+
+// Server → Client (private, to one player)
+{ event: "yourHand", data: { resources: { wood: 3, ... }, cards: [...] } }
+
+// Server → Client (state sync, on connect/reconnect)
+{ event: "gameState", data: { /* full projected game state */ } }
 ```
-
-### Scalability Considerations
-
-- In-memory design limits to single instance for now
-- Future: Add Redis for distributed game state
-- Future: Add message queue (RabbitMQ/Redis) for event distribution
-- Future: Add database persistence for game history
-
-### Security Considerations
-
-- Validate all player actions (is it their turn, do they have resources, etc.)
-- Prevent cheating via client manipulation
-- Implement proper authentication/authorization
-- Rate limiting on WebSocket commands
 
 ### Performance Considerations
 
-- Optimize event replay for large event logs
-- Use projection/read models for complex queries
-- Batch resource distribution calculations
-- Minimize WebSocket message frequency
+- In-memory event store: O(1) append, O(n) replay per game
+- Projections avoid replaying on every query
+- Typical game: ~200-400 events, negligible replay cost
+- Snapshot optimization deferred until measured need
 
 ### Extension Examples (Future)
 
-- **5-6 Player Extension**: Add player slots in lobby, adjust resource distribution
-- **Cities & Knights**: New vertical slices for barbarians, commodities, progress cards
-- **Seafarers**: Extend board with sea tiles, ships, island discovery
-- **Custom Scenarios**: Plugin system for special maps and rules
+- **5-6 Player Extension**: Adjust player count in GameCreated, add special build phase
+- **Cities & Knights**: New event types (BarbarianAttack, CommodityProduced), new card types
+- **Seafarers**: New tile types, ship building events, island discovery events
+- **Custom Scenarios**: Different board layouts via BoardFactory strategies
