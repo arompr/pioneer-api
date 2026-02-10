@@ -2,6 +2,7 @@ import { Player } from '#matchmaking/domain/player/Player';
 import { PlayerId } from '#matchmaking/domain/player/playerId/PlayerId';
 import { LobbyClosedError } from '../errors/LobbyClosedError';
 import { LobbyState } from './LobbyState';
+import { LobbyStateType } from './LobbyStateType';
 
 /**
  * Represents a lobby that has been permanently closed.
@@ -15,6 +16,8 @@ import { LobbyState } from './LobbyState';
  * This state is terminal and indicates that the lobby is no longer usable.
  */
 export class ClosedState extends LobbyState {
+    stateType: LobbyStateType = LobbyStateType.Closed;
+
     /**
      * Joining a closed lobby is forbidden.
      *

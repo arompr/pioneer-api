@@ -16,16 +16,17 @@ import {
     LobbyClosed,
     LobbyHostChanged,
 } from './events';
+import { LobbyStateType } from './states/LobbyStateType';
 
 /**
  * Represents a matchmaking lobby.
  */
 export class Lobby extends AggregateRoot implements ILobby {
     private readonly _id: LobbyId;
-    private readonly players: LobbyPlayers;
-    private readonly config: LobbyConfig;
-    private hostId: PlayerId;
-    private lobbyState: LobbyState;
+    private readonly _players: LobbyPlayers;
+    private readonly _config: LobbyConfig;
+    private _hostId: PlayerId;
+    private _lobbyState: LobbyState;
 
     /**
      * Creates a new Lobby instance.
@@ -43,10 +44,10 @@ export class Lobby extends AggregateRoot implements ILobby {
     ) {
         super();
         this._id = id;
-        this.config = config;
-        this.hostId = hostId;
-        this.players = players;
-        this.lobbyState = lobbyState;
+        this._config = config;
+        this._hostId = hostId;
+        this._players = players;
+        this._lobbyState = lobbyState;
         this.transitionTo(lobbyState);
     }
 
@@ -59,9 +60,41 @@ export class Lobby extends AggregateRoot implements ILobby {
         return this._id;
     }
 
+    /**
+     * Gets the lobby configuration (min/max players, mode).
+     *
+     * @returns {LobbyConfig} The immutable configuration of the lobby.
+     */
+    get config(): LobbyConfig {
+        return this._config;
+    }
+
+    /**
+     * Gets the identifier of the current host.
+     *
+     * @returns {PlayerId} The host's unique identifier.
+     */
+    get hostId(): PlayerId {
+        return this._hostId;
+    }
+
+    /**
+     * Gets the current state of the lobby (open, closed, started, etc.).
+     *
+     * @returns {LobbyStateType} The type of the current lobby state.
+     */
+    get stateType(): LobbyStateType {
+        return this._lobbyState.stateType;
+    }
+
+    /**
+     * Changes the lobby to the given state and binds the state to this lobby.
+     *
+     * @param {LobbyState} lobbyState - The new state.
+     */
     transitionTo(lobbyState: LobbyState): void {
-        this.lobbyState = lobbyState;
-        this.lobbyState.setLobby(this);
+        this._lobbyState = lobbyState;
+        this._lobbyState.setLobby(this);
     }
 
     /**
@@ -72,7 +105,7 @@ export class Lobby extends AggregateRoot implements ILobby {
      * @throws {PlayerAlreadyInLobbyError} If the player is already present in the lobby.
      */
     join(player: Player): void {
-        this.lobbyState.join(player);
+        this._lobbyState.join(player);
         this.record(new PlayerJoinedLobby(this._id, player.id));
     }
 
@@ -84,7 +117,7 @@ export class Lobby extends AggregateRoot implements ILobby {
      */
     leave(playerId: PlayerId): void {
         const wasHost = this.isHost(playerId);
-        this.players.remove(playerId);
+        this._players.remove(playerId);
         this.record(new PlayerLeftLobby(this._id, playerId, wasHost));
         if (wasHost) {
             this.reassignHost();
@@ -102,7 +135,7 @@ export class Lobby extends AggregateRoot implements ILobby {
      * @throws {LobbyNotReadyToStartError} If the lobby status is not READY_TO_START.
      */
     start(playerId: PlayerId): void {
-        this.lobbyState.start(playerId);
+        this._lobbyState.start(playerId);
         this.record(new LobbyStarted(this._id));
     }
 
@@ -113,7 +146,7 @@ export class Lobby extends AggregateRoot implements ILobby {
      * @throws {PlayerNotFoundInLobbyError} If the player is not in the lobby.
      */
     markAsReady(playerId: PlayerId): void {
-        this.lobbyState.markAsReady(playerId);
+        this._lobbyState.markAsReady(playerId);
         this.record(new PlayerMarkedReady(this._id, playerId));
     }
 
@@ -124,7 +157,7 @@ export class Lobby extends AggregateRoot implements ILobby {
      * @throws {PlayerNotFoundInLobbyError} If the player is not in the lobby.
      */
     markAsPending(playerId: PlayerId): void {
-        this.lobbyState.markAsPending(playerId);
+        this._lobbyState.markAsPending(playerId);
         this.record(new PlayerMarkedPending(this._id, playerId));
     }
 
@@ -134,7 +167,7 @@ export class Lobby extends AggregateRoot implements ILobby {
      * @returns {boolean} True if the lobby is ready to start, otherwise false.
      */
     canStart(): boolean {
-        return this.lobbyState.canStart();
+        return this._lobbyState.canStart();
     }
 
     /**
@@ -144,7 +177,7 @@ export class Lobby extends AggregateRoot implements ILobby {
      * @returns {boolean} True if the player is the host.
      */
     isHost(id: PlayerId): boolean {
-        return !this.isEmpty() && this.hostId.equals(id);
+        return !this.isEmpty() && this._hostId.equals(id);
     }
 
     /**
@@ -162,7 +195,7 @@ export class Lobby extends AggregateRoot implements ILobby {
      * @returns {boolean} True if the lobby is empty, false otherwise.
      */
     isEmpty(): boolean {
-        return this.players.isEmpty();
+        return this._players.isEmpty();
     }
 
     /**
@@ -171,7 +204,7 @@ export class Lobby extends AggregateRoot implements ILobby {
      * @returns {boolean} True if the lobby has reached the minimum capacity, false otherwise.
      */
     hasReachedMinimum(): boolean {
-        return this.players.count >= this.config.getMinPlayers();
+        return this._players.count >= this._config.getMinPlayers();
     }
 
     /**
@@ -180,7 +213,7 @@ export class Lobby extends AggregateRoot implements ILobby {
      * @returns {number} The number of players that can still join.
      */
     remainingPlaces(): number {
-        return Math.max(0, this.config.getMaxPlayers() - this.players.count);
+        return Math.max(0, this._config.getMaxPlayers() - this._players.count);
     }
 
     /**
@@ -189,7 +222,7 @@ export class Lobby extends AggregateRoot implements ILobby {
      * @returns {Player[]} All the players in the lobby.
      */
     get allPlayers(): Player[] {
-        return this.players.all;
+        return this._players.all;
     }
 
     /**
@@ -198,7 +231,7 @@ export class Lobby extends AggregateRoot implements ILobby {
      * @returns {number} The number of players
      */
     get playerCount(): number {
-        return this.players.count;
+        return this._players.count;
     }
 
     /**
@@ -207,7 +240,7 @@ export class Lobby extends AggregateRoot implements ILobby {
      * @returns {number} The count of ready players.
      */
     get readyPlayerCount(): number {
-        return this.players.readyCount;
+        return this._players.readyCount;
     }
 
     /**
@@ -218,7 +251,7 @@ export class Lobby extends AggregateRoot implements ILobby {
      * @returns {boolean} True if player count and readiness requirements are satisfied.
      */
     meetsRequirementsToStart(): boolean {
-        return this.hasReachedMinimum() && this.players.areAllReady();
+        return this.hasReachedMinimum() && this._players.areAllReady();
     }
 
     /**
@@ -231,12 +264,12 @@ export class Lobby extends AggregateRoot implements ILobby {
      * @private
      */
     private reassignHost(): void {
-        if (this.players.isEmpty()) {
+        if (this._players.isEmpty()) {
             this.transitionTo(new ClosedState());
             this.record(new LobbyClosed(this._id));
         } else {
             this.assignNextHost();
-            this.record(new LobbyHostChanged(this._id, this.hostId));
+            this.record(new LobbyHostChanged(this._id, this._hostId));
         }
     }
 
@@ -245,21 +278,21 @@ export class Lobby extends AggregateRoot implements ILobby {
      * @private
      */
     private assignNextHost() {
-        this.hostId = this.players.first().id;
+        this._hostId = this._players.first().id;
     }
 
     /** @internal */
     internalAddPlayer(player: Player): void {
-        this.players.add(player);
+        this._players.add(player);
     }
 
     /** @internal */
     internalMarkAsReady(id: PlayerId): void {
-        this.players.markAsReady(id);
+        this._players.markAsReady(id);
     }
 
     /** @internal */
     internalMarkAsPending(id: PlayerId): void {
-        this.players.markAsPending(id);
+        this._players.markAsPending(id);
     }
 }

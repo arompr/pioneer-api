@@ -2,6 +2,7 @@ import { Player } from '#matchmaking/domain/player/Player';
 import { PlayerId } from '#matchmaking/domain/player/playerId/PlayerId';
 import { LobbyAlreadyInGameError } from '../errors/LobbyAlreadyInGameError';
 import { LobbyState } from './LobbyState';
+import { LobbyStateType } from './LobbyStateType';
 
 /**
  * Represents a lobby that is currently in an active match.
@@ -16,6 +17,8 @@ import { LobbyState } from './LobbyState';
  * and is no longer available for matchmaking interactions.
  */
 export class InGameState extends LobbyState {
+    stateType: LobbyStateType = LobbyStateType.InGame;
+
     /**
      * Joining a lobby that is already in-game is forbidden.
      *

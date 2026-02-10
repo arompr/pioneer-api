@@ -4,6 +4,7 @@ import { LobbyFullError } from '../errors/LobbyFullError';
 import { LobbyNotReadyToStartError } from '../errors/LobbyNotReadyToStartError';
 import { PlayerIsNotHostError } from '../errors/PlayerIsNotHostError';
 import { LobbyState } from './LobbyState';
+import { LobbyStateType } from './LobbyStateType';
 import { ReadyToStartState } from './ReadyToStartState';
 
 /**
@@ -16,6 +17,8 @@ import { ReadyToStartState } from './ReadyToStartState';
  * - When all requirements are met (minimum players + all ready), the lobby transitions to ReadyToStartState.
  */
 export class WaitingForPlayersState extends LobbyState {
+    stateType: LobbyStateType = LobbyStateType.WaitingForPlayers;
+
     /**
      * Adds a player to the lobby if it is not full.
      *
