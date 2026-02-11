@@ -16,7 +16,7 @@ import { LobbyStateType } from './LobbyStateType';
  * This state is terminal and indicates that the lobby is no longer usable.
  */
 export class ClosedState extends LobbyState {
-    stateType: LobbyStateType = LobbyStateType.Closed;
+    public readonly stateType: LobbyStateType = LobbyStateType.Closed;
 
     /**
      * Joining a closed lobby is forbidden.

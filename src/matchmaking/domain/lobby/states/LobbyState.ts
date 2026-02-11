@@ -4,7 +4,7 @@ import { Lobby } from '../Lobby';
 import { LobbyStateType } from './LobbyStateType';
 
 export abstract class LobbyState {
-    abstract readonly stateType: LobbyStateType;
+    public abstract readonly stateType: LobbyStateType;
     protected lobby!: Lobby;
 
     public setLobby(lobby: Lobby): void {

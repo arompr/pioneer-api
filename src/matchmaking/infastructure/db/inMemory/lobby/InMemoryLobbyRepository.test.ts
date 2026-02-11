@@ -14,10 +14,10 @@ describe('InMemoryLobbyRepository', () => {
 
     describe('save()', () => {
         describe('when saving a lobby', () => {
-            it('stores it in memory', async () => {
-                await repo.save(lobby);
+            it('stores it in memory', () => {
+                repo.save(lobby);
 
-                const found = await repo.findById(lobby.id);
+                const found = repo.findById(lobby.id);
 
                 expect(found).not.toBeNull();
                 expect(found?.id.equals(lobby.id)).toBe(true);
@@ -27,20 +27,20 @@ describe('InMemoryLobbyRepository', () => {
 
     describe('findById()', () => {
         describe('when the lobby does not exist', () => {
-            it('returns null', async () => {
-                const found = await repo.findById(lobby.id);
+            it('returns null', () => {
+                const found = repo.findById(lobby.id);
 
                 expect(found).toBeNull();
             });
         });
 
         describe('when the lobby exists', () => {
-            beforeEach(async () => {
-                await repo.save(lobby);
+            beforeEach(() => {
+                repo.save(lobby);
             });
 
-            it('returns the stored lobby', async () => {
-                const found = await repo.findById(lobby.id);
+            it('returns the stored lobby', () => {
+                const found = repo.findById(lobby.id);
 
                 expect(found).not.toBeNull();
                 expect(found?.id.equals(lobby.id)).toBe(true);
@@ -50,23 +50,23 @@ describe('InMemoryLobbyRepository', () => {
 
     describe('delete()', () => {
         describe('when the lobby exists', () => {
-            beforeEach(async () => {
-                await repo.save(lobby);
+            beforeEach(() => {
+                repo.save(lobby);
             });
 
-            it('removes it from memory', async () => {
-                await repo.delete(lobby.id);
+            it('removes it from memory', () => {
+                repo.delete(lobby.id);
 
-                const found = await repo.findById(lobby.id);
+                const found = repo.findById(lobby.id);
                 expect(found).toBeNull();
             });
         });
 
         describe('when the lobby does not exist', () => {
-            it('does nothing and does not throw', async () => {
-                await repo.delete(lobby.id);
+            it('does nothing and does not throw', () => {
+                repo.delete(lobby.id);
 
-                const found = await repo.findById(lobby.id);
+                const found = repo.findById(lobby.id);
                 expect(found).toBeNull();
             });
         });

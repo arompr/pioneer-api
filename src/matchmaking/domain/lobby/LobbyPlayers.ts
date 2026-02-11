@@ -15,7 +15,7 @@ export class LobbyPlayers {
      * @param {Player[]} players - The list of player.
      */
     constructor(players: Player[] = []) {
-        this._players = players;
+        this._players = [...players];
     }
 
     /**

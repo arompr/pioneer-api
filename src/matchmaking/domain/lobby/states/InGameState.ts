@@ -17,7 +17,7 @@ import { LobbyStateType } from './LobbyStateType';
  * and is no longer available for matchmaking interactions.
  */
 export class InGameState extends LobbyState {
-    stateType: LobbyStateType = LobbyStateType.InGame;
+    public readonly stateType: LobbyStateType = LobbyStateType.InGame;
 
     /**
      * Joining a lobby that is already in-game is forbidden.

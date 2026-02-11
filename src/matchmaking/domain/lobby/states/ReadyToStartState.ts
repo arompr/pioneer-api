@@ -20,7 +20,7 @@ import { WaitingForPlayersState } from './WaitingForPlayersState';
  *   the lobby transitions back to WaitingForPlayersState.
  */
 export class ReadyToStartState extends LobbyState {
-    stateType: LobbyStateType = LobbyStateType.ReadyToStart;
+    public readonly stateType: LobbyStateType = LobbyStateType.ReadyToStart;
 
     /**
      * Adds a player to the lobby if it is not full.

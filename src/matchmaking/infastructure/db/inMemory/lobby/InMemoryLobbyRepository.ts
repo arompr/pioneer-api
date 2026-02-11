@@ -7,19 +7,17 @@ import { InMemoryLobbyMapper } from './InMemoryLobbyMapper';
 export class InMemoryLobbyRepository implements LobbyRepository {
     private lobbies = new Map<string, InMemoryLobby>();
 
-    async findById(id: LobbyId): Promise<LobbyAggregate | null> {
+    findById(id: LobbyId): LobbyAggregate | null {
         const lobby = this.lobbies.get(id.toString());
-        if (!lobby) return Promise.resolve(null);
-        return Promise.resolve(InMemoryLobbyMapper.toDomain(lobby));
+        if (!lobby) return null;
+        return InMemoryLobbyMapper.toDomain(lobby);
     }
 
-    async save(lobby: LobbyAggregate): Promise<void> {
+    save(lobby: LobbyAggregate): void {
         this.lobbies.set(lobby.id.toString(), InMemoryLobbyMapper.toInMemory(lobby));
-        await Promise.resolve();
     }
 
-    async delete(id: LobbyId): Promise<void> {
+    delete(id: LobbyId): void {
         this.lobbies.delete(id.toString());
-        await Promise.resolve();
     }
 }
