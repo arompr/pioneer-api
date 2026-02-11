@@ -10,7 +10,7 @@ export class LobbyId {
     /**
      * Creates a new LobbyId.
      *
-     * @param {string} id - Unique identifier of the player.
+     * @param {string} id - Unique identifier of the lobby.
      */
     constructor(id: string) {
         this._value = id;
