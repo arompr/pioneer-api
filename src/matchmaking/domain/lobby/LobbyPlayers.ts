@@ -7,7 +7,16 @@ import { PlayerNotFoundInLobbyError } from './errors/PlayerNotFoundInLobbyError'
  * Encapsulates the collection of players within a lobby.
  */
 export class LobbyPlayers {
-    private readonly players: Player[] = [];
+    private readonly _players: Player[];
+
+    /**
+     * Creates a new LobbyPlayers instance.
+     *
+     * @param {Player[]} players - The list of player.
+     */
+    constructor(players: Player[] = []) {
+        this._players = [...players];
+    }
 
     /**
      * Adds a player to the collection.
@@ -20,7 +29,7 @@ export class LobbyPlayers {
             throw new PlayerAlreadyInLobbyError();
         }
 
-        this.players.push(player);
+        this._players.push(player);
     }
 
     /**
@@ -30,7 +39,7 @@ export class LobbyPlayers {
      * @throws {PlayerNotFoundError} If the player is not in the lobby.
      */
     remove(id: PlayerId): void {
-        this.players.splice(this.players.indexOf(this.findById(id)), 1);
+        this._players.splice(this._players.indexOf(this.findById(id)), 1);
     }
 
     /**
@@ -41,7 +50,7 @@ export class LobbyPlayers {
      * @throws {PlayerNotFoundInLobbyError} Error if the player is not found.
      */
     findById(id: PlayerId): Player {
-        const player = this.players.find((player) => player.id.equals(id));
+        const player = this._players.find((player) => player.id.equals(id));
         if (!player) {
             throw new PlayerNotFoundInLobbyError();
         }
@@ -74,7 +83,7 @@ export class LobbyPlayers {
      * @returns {boolean} True if all conditions are met.
      */
     areAllReady(): boolean {
-        return this.players.every((player) => player.isReady());
+        return this._players.every((player) => player.isReady());
     }
 
     /**
@@ -84,7 +93,7 @@ export class LobbyPlayers {
      * @throws {PlayerNotFoundInLobbyError} If the lobby is empty.
      */
     first(): Player {
-        const player = this.players.at(0);
+        const player = this._players.at(0);
         if (!player) {
             throw new PlayerNotFoundInLobbyError();
         }
@@ -97,7 +106,7 @@ export class LobbyPlayers {
      * @returns {Player[]} The list of all the players in the lobby.
      */
     get all(): Player[] {
-        return [...this.players];
+        return [...this._players];
     }
 
     /**
@@ -106,7 +115,7 @@ export class LobbyPlayers {
      *  @returns {boolean} True if the lobby is empty, false otherwise.
      */
     isEmpty(): boolean {
-        return this.players.length === 0;
+        return this._players.length === 0;
     }
 
     /**
@@ -116,7 +125,7 @@ export class LobbyPlayers {
      * @returns {boolean} True if the player is in the collection, false otherwise.
      */
     contains(playerId: PlayerId): boolean {
-        return this.players.some((p: Player) => p.id.equals(playerId));
+        return this._players.some((p: Player) => p.id.equals(playerId));
     }
 
     /**
@@ -125,7 +134,7 @@ export class LobbyPlayers {
      * @returns {number} The count of ready players.
      */
     get readyCount(): number {
-        return this.players.filter((player) => player.isReady()).length;
+        return this._players.filter((player) => player.isReady()).length;
     }
 
     /**
@@ -134,6 +143,6 @@ export class LobbyPlayers {
      * @returns {number}
      */
     get count(): number {
-        return this.players.length;
+        return this._players.length;
     }
 }
