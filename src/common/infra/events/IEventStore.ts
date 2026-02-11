@@ -1,3 +1,5 @@
+import { DomainEvent } from '#common/domain/events/DomainEvent';
+
 export interface IEventStore {
     /**
      * Appends events to the store for a given aggregate.
@@ -20,13 +22,4 @@ export interface IEventStore {
      * @returns Array of all domain events.
      */
     replay(): DomainEvent[];
-}
-
-import { DomainEvent } from '#common/domain/events/DomainEvent';
-
-export class ConcurrencyError extends Error {
-    constructor(message: string) {
-        super(message);
-        this.name = 'ConcurrencyError';
-    }
 }

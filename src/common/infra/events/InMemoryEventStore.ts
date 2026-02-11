@@ -1,5 +1,6 @@
 import { DomainEvent } from '#common/domain/events/DomainEvent';
-import { IEventStore, ConcurrencyError } from './IEventStore';
+import { ConcurrencyError } from './ConcurrencyError';
+import { IEventStore } from './IEventStore';
 
 /**
  * In-memory implementation of IEventStore.
