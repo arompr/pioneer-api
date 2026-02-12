@@ -4,12 +4,12 @@ import { DomainEvent } from '#common/domain/events/DomainEvent';
 import { ConcurrencyError } from './ConcurrencyError';
 
 // Test event implementation
-class TestEvent implements DomainEvent {
+class TestEvent implements DomainEvent<{ data: string }> {
     public readonly type = 'TestEvent';
-    public readonly data: string;
+    payload: { data: string };
 
     constructor(data: string = 'test') {
-        this.data = data;
+        this.payload = { data };
     }
 }
 

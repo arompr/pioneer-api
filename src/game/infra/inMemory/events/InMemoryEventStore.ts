@@ -10,7 +10,7 @@ import { ConcurrencyError } from './ConcurrencyError';
 export class InMemoryEventStore implements IEventStore {
     private readonly store: Map<string, { events: InMemoryEvent[]; version: number }> = new Map();
 
-    append(aggregateId: string, events: DomainEvent[], expectedVersion?: number): void {
+    append(aggregateId: string, events: DomainEvent<any>[], expectedVersion?: number): void {
         const entry = this.store.get(aggregateId);
         const currentVersion = entry ? entry.version : 0;
 
@@ -33,7 +33,7 @@ export class InMemoryEventStore implements IEventStore {
         }
     }
 
-    getEvents(aggregateId: string): DomainEvent[] {
+    getEvents(aggregateId: string): DomainEvent<any>[] {
         const entry = this.store.get(aggregateId);
         return entry ? [...entry.events] : [];
     }
