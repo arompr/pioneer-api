@@ -6,14 +6,14 @@ import { LobbyFactory } from '#matchmaking/domain/lobby/LobbyFactory';
 import { PlayerFactory } from '#matchmaking/domain/player/PlayerFactory';
 import { CreateLobbyDto } from './dto/CreateLobbyDto';
 import { LobbyGameMode } from '#matchmaking/domain/lobby/LobbyConfig/LobbyGameMode';
+import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
 
 const PLAYER_NAME = 'hostName';
 const GAME_MODE = LobbyGameMode.BASE;
-const LOBBY_ID = 'lobby-1';
-const PLAYER_ID = 'player-1';
+const { lobby, players } = LobbyMother.baseLobby();
 
-const createdLobby = { id: LOBBY_ID };
-const createdPlayer = { id: PLAYER_ID };
+const createdLobby = lobby;
+const createdPlayer = players[0];
 const createdLobbyConfig = { gameMode: GAME_MODE };
 const mockLobbyConfigFactory: Partial<LobbyConfigFactory> = {
     createFromGameMode: vi.fn().mockReturnValue(createdLobbyConfig),
@@ -44,8 +44,8 @@ describe('CreateLobbyUseCase', () => {
             expect(mockPlayerFactory.create).toHaveBeenCalledWith(PLAYER_NAME);
             expect(mockLobbyFactory.create).toHaveBeenCalledWith(createdLobbyConfig, createdPlayer);
             expect(mockLobbyRepository.save).toHaveBeenCalledWith(createdLobby);
-            expect(result.lobbyId).toBe(LOBBY_ID);
-            expect(result.playerId).toBe(PLAYER_ID);
+            expect(result.createdLobby.id).toBe(lobby.id);
+            expect(result.createdHostPlayer.id).toBe(players[0].id);
         });
     });
 });

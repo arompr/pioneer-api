@@ -1,9 +1,15 @@
+import { LobbyAggregate } from '#matchmaking/domain/lobby/LobbyAggregate.type';
 import { LobbyConfigFactory } from '#matchmaking/domain/lobby/LobbyConfig/LobbyConfigFactory';
 import { LobbyFactory } from '#matchmaking/domain/lobby/LobbyFactory';
 import { LobbyRepository } from '#matchmaking/domain/lobby/LobbyRepository';
+import { Player } from '#matchmaking/domain/player/Player';
 import { PlayerFactory } from '#matchmaking/domain/player/PlayerFactory';
 import { CreateLobbyDto } from './dto/CreateLobbyDto';
-import { CreateLobbyResultDto } from './dto/CreateLobbyResultDto';
+
+export type CreateLobbyResult = {
+    createdLobby: LobbyAggregate;
+    createdHostPlayer: Player;
+};
 
 export class CreateLobbyUseCase {
     constructor(
@@ -13,13 +19,13 @@ export class CreateLobbyUseCase {
         private readonly lobbyConfigFactory: LobbyConfigFactory
     ) {}
 
-    execute(dto: CreateLobbyDto): CreateLobbyResultDto {
+    execute(dto: CreateLobbyDto): CreateLobbyResult {
         const lobbyConfig = this.lobbyConfigFactory.createFromGameMode(dto.gameMode);
-        const host = this.playerFactory.create(dto.hostName);
-        const lobby = this.lobbyFactory.create(lobbyConfig, host);
+        const createdHostPlayer = this.playerFactory.create(dto.hostName);
+        const createdLobby = this.lobbyFactory.create(lobbyConfig, createdHostPlayer);
 
-        this.lobbyRepository.save(lobby);
+        this.lobbyRepository.save(createdLobby);
 
-        return new CreateLobbyResultDto(lobby.id, host.id);
+        return { createdLobby, createdHostPlayer };
     }
 }
