@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { JoinLobbyUseCase } from './JoinLobbyUseCase';
+import { JoinLobbyUseCase } from '#matchmaking/usecase/JoinLobbyUseCase';
 import { LobbyRepository } from '#matchmaking/domain/lobby/LobbyRepository';
 import { PlayerFactory } from '#matchmaking/domain/player/PlayerFactory';
-import { JoinLobbyDto } from './dto/JoinLobbyDto';
+import { JoinLobbyDto } from '#matchmaking/usecase/dto/JoinLobbyDto';
 import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
-import LobbyNotFoundError from './errors/LobbyNotFoundError';
+import LobbyNotFoundError from '#matchmaking/usecase/errors/LobbyNotFoundError';
 
 const PLAYER_NAME = 'newPlayer';
 const { lobby, players } = LobbyMother.baseLobby();

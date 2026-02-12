@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { CreateLobbyUseCase } from './CreateLobbyUseCase';
+import { CreateLobbyUseCase } from '#matchmaking/usecase/CreateLobbyUseCase';
 import { LobbyConfigFactory } from '#matchmaking/domain/lobby/LobbyConfig/LobbyConfigFactory';
 import { LobbyRepository } from '#matchmaking/domain/lobby/LobbyRepository';
 import { LobbyFactory } from '#matchmaking/domain/lobby/LobbyFactory';
 import { PlayerFactory } from '#matchmaking/domain/player/PlayerFactory';
-import { CreateLobbyDto } from './dto/CreateLobbyDto';
+import { CreateLobbyDto } from '#matchmaking/usecase/dto/CreateLobbyDto';
 import { LobbyGameMode } from '#matchmaking/domain/lobby/LobbyConfig/LobbyGameMode';
 import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
 

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { InMemoryLobbyRepository } from './InMemoryLobbyRepository';
 import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
 import { LobbyAggregate } from '#matchmaking/domain/lobby/LobbyAggregate.type';
+import { InMemoryLobbyRepository } from '#matchmaking/infastructure/db/inMemory/lobby/InMemoryLobbyRepository';
 
 let repo: InMemoryLobbyRepository;
 let lobby: LobbyAggregate;
@@ -25,7 +25,7 @@ describe('InMemoryLobbyRepository', () => {
         });
     });
 
-    describe('findById()', () => {
+    describe('findById', () => {
         describe('when the lobby does not exist', () => {
             it('returns null', () => {
                 const found = repo.findById(lobby.id);

@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { Lobby } from '../Lobby';
+import { Lobby } from '#matchmaking/domain/lobby/Lobby';
 import { Player } from '#matchmaking/domain/player/Player';
-import { LobbyClosedError } from '../errors/LobbyClosedError';
+import { LobbyClosedError } from '#matchmaking/domain/lobby/errors/LobbyClosedError';
 import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
 
 let lobby: Lobby;

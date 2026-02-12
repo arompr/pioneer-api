@@ -11,7 +11,7 @@ import { InMemoryLobbyConfigMapper } from './lobbyConfig/InMemoryLobbyConfigMapp
 export class InMemoryLobbyMapper {
     static toInMemory(lobby: LobbyAggregate): InMemoryLobby {
         return new InMemoryLobby(
-            lobby.id.toString(),
+            lobby.id.value,
             InMemoryLobbyConfigMapper.toInMemory(lobby.config),
             lobby.hostId.toString(),
             lobby.allPlayers.map((p) => InMemoryPlayerMapper.toInMemory(p)),

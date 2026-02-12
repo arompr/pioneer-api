@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { LobbyGameMode } from './LobbyGameMode';
-import { LobbyConfig } from './LobbyConfig';
-import { InvalidMinPlayersError } from '../errors/InvalidMinPlayersError';
-import { MinPlayersExceedsMaxPlayersError } from '../errors/MinPlayersExceedsMaxPlayersError';
+import { LobbyGameMode } from '#matchmaking/domain/lobby/LobbyConfig/LobbyGameMode';
+import { LobbyConfig } from '#matchmaking/domain/lobby/LobbyConfig/LobbyConfig';
+import { InvalidMinPlayersError } from '#matchmaking/domain/lobby/errors/InvalidMinPlayersError';
+import { MinPlayersExceedsMaxPlayersError } from '#matchmaking/domain/lobby/errors/MinPlayersExceedsMaxPlayersError';
 
 const DEFAULT_MODE: LobbyGameMode = LobbyGameMode.BASE;
 const DEFAULT_MIN_PLAYERS = 3;

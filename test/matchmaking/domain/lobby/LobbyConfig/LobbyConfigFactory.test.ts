@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { LobbyConfigFactory } from './LobbyConfigFactory';
-import { LobbyGameMode } from './LobbyGameMode';
-import { UnsupportedGameModeError } from '../errors/UnsupportedGameModeError';
+import { LobbyConfigFactory } from '#matchmaking/domain/lobby/LobbyConfig/LobbyConfigFactory';
+import { LobbyGameMode } from '#matchmaking/domain/lobby/LobbyConfig/LobbyGameMode';
+import { UnsupportedGameModeError } from '#matchmaking/domain/lobby/errors/UnsupportedGameModeError';
 
 const factory = new LobbyConfigFactory();
 

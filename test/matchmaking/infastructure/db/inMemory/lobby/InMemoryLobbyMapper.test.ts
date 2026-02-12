@@ -1,4 +1,4 @@
-import { InMemoryLobbyMapper } from './InMemoryLobbyMapper';
+import { InMemoryLobbyMapper } from '#matchmaking/infastructure/db/inMemory/lobby/InMemoryLobbyMapper';
 import { describe, expect, it } from 'vitest';
 import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
 
@@ -14,7 +14,7 @@ describe('InMemoryLobbyMapper', () => {
 
             const imLobby = InMemoryLobbyMapper.toInMemory(lobby);
 
-            expect(imLobby.id).toBe(lobby.id.toString());
+            expect(imLobby.id).toBe(lobby.id.value);
             expect(imLobby.hostId).toBe(lobby.hostId.toString());
             expect(imLobby.state).toBe(lobby.stateType);
             expect(imLobby.config.mode).toBe(lobby.config.getGameMode());

@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { PlayerId } from './playerId/PlayerId';
-import { Player } from './Player';
-import { PlayerStatus } from './PlayerStatus';
+import { PlayerId } from '#matchmaking/domain/player/playerId/PlayerId';
+import { Player } from '#matchmaking/domain/player/Player';
+import { PlayerStatus } from '#matchmaking/domain/player/PlayerStatus';
 
 const DEFAULT_PLAYER_PUBLIC_ID = new PlayerId('player-public-id');
 const DEFAULT_PLAYER_ID = new PlayerId('player-secret-id');

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { HexCoordinate } from './HexCoordinate';
-import { Direction } from '../Direction';
-import { Distance } from '../distance/Distance';
+import { HexCoordinate } from '#game/domain/coordinate/HexCoordinate';
+import { Direction } from '#game/domain/Direction';
+import { Distance } from '#game/domain/distance/Distance';
 
 describe('HexCoordinate', () => {
     describe('of()', () => {
