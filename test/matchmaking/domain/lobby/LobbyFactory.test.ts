@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { Player } from '../player/Player';
-import { LobbyConfig } from './LobbyConfig/LobbyConfig';
-import { LobbyGameMode } from './LobbyConfig/LobbyGameMode';
-import { LobbyIdFactory } from './lobbyId/LobbyIdFactory';
-import { LobbyFactory } from './LobbyFactory';
+import { Player } from '#matchmaking/domain/player/Player';
+import { LobbyConfig } from '#matchmaking/domain/lobby/LobbyConfig/LobbyConfig';
+import { LobbyGameMode } from '#matchmaking/domain/lobby/LobbyConfig/LobbyGameMode';
+import { LobbyIdFactory } from '#matchmaking/domain/lobby/lobbyId/LobbyIdFactory';
+import { LobbyFactory } from '#matchmaking/domain/lobby/LobbyFactory';
 import { PlayerMother } from '#test/matchmaking/domain/player/PlayerMother';
-import { LobbyAggregate } from './LobbyAggregate.type';
+import { LobbyAggregate } from '#matchmaking/domain/lobby/LobbyAggregate.type';
 
 const LOBBY_MIN_CAPACITY = 2;
 const LOBBY_MAX_CAPACITY = 3;

@@ -8,16 +8,16 @@ export class InMemoryLobbyRepository implements LobbyRepository {
     private lobbies = new Map<string, InMemoryLobby>();
 
     findById(id: LobbyId): LobbyAggregate | null {
-        const lobby = this.lobbies.get(id.toString());
+        const lobby = this.lobbies.get(id.value);
         if (!lobby) return null;
         return InMemoryLobbyMapper.toDomain(lobby);
     }
 
     save(lobby: LobbyAggregate): void {
-        this.lobbies.set(lobby.id.toString(), InMemoryLobbyMapper.toInMemory(lobby));
+        this.lobbies.set(lobby.id.value, InMemoryLobbyMapper.toInMemory(lobby));
     }
 
     delete(id: LobbyId): void {
-        this.lobbies.delete(id.toString());
+        this.lobbies.delete(id.value);
     }
 }

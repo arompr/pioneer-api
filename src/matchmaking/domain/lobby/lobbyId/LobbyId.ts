@@ -30,6 +30,6 @@ export class LobbyId {
      * @returns {boolean} True if the IDs are identical.
      */
     equals(other: LobbyId): boolean {
-        return this.id === other.toString();
+        return this._value === other._value;
     }
 }

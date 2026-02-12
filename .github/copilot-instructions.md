@@ -29,6 +29,11 @@ src/
         ├── coordinate/ # Hex coordinate system
         ├── distance/   # Distance calculations
         └── tile/       # Tile entities
+
+test/
+├── matchmaking/    # Matchmaking tests (mirrors src structure)
+├── game/           # Game tests (mirrors src structure)
+└── *.Mother.ts     # Object Mother test fixtures
 ```
 
 ### Import Aliases
@@ -107,8 +112,9 @@ export default class InvalidMinPlayersError extends DomainError {
 
 ### Test Organization
 
-- Tests are co-located with source files in `src/` directories
-- Larger test fixtures and helpers live in `/test` directory
+- Tests are located in the `/test` directory, mirroring the structure of `/src`
+- Test files use the `.test.ts` suffix (e.g., `Lobby.test.ts`)
+- Test fixtures and helpers (Object Mothers) also live in `/test` directory
 - Test structure follows Arrange-Act-Assert pattern
 - Use `describe` and `it` blocks for test organization
 

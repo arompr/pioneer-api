@@ -1,15 +1,15 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { Lobby } from './Lobby';
-import { Player } from '../player/Player';
-import { PlayerNotFoundInLobbyError } from './errors/PlayerNotFoundInLobbyError';
+import { Lobby } from '#matchmaking/domain/lobby/Lobby';
+import { Player } from '#matchmaking/domain/player/Player';
+import { PlayerNotFoundInLobbyError } from '#matchmaking/domain/lobby/errors/PlayerNotFoundInLobbyError';
 import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
-import { PlayerJoinedLobby } from './events/PlayerJoinedLobby';
-import { PlayerLeftLobby } from './events/PlayerLeftLobby';
-import { LobbyClosed } from './events/LobbyClosed';
-import { LobbyHostChanged } from './events/LobbyHostChanged';
-import { LobbyStarted } from './events/LobbyStarted';
-import { PlayerMarkedReady } from './events/PlayerMarkedReady';
-import { PlayerMarkedPending } from './events/PlayerMarkedPending';
+import { PlayerJoinedLobby } from '#matchmaking/domain/lobby/events/PlayerJoinedLobby';
+import { PlayerLeftLobby } from '#matchmaking/domain/lobby/events/PlayerLeftLobby';
+import { LobbyClosed } from '#matchmaking/domain/lobby/events/LobbyClosed';
+import { LobbyHostChanged } from '#matchmaking/domain/lobby/events/LobbyHostChanged';
+import { LobbyStarted } from '#matchmaking/domain/lobby/events/LobbyStarted';
+import { PlayerMarkedReady } from '#matchmaking/domain/lobby/events/PlayerMarkedReady';
+import { PlayerMarkedPending } from '#matchmaking/domain/lobby/events/PlayerMarkedPending';
 
 let lobby: Lobby;
 let player1: Player;

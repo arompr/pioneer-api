@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { Distance } from './Distance';
-import { NegativeDistanceError } from './errors/NegativeDistanceError';
+import { Distance } from '#game/domain/distance/Distance';
+import { NegativeDistanceError } from '#game/domain/distance/errors/NegativeDistanceError';
 
 describe('Distance', () => {
     describe('fromHexes()', () => {

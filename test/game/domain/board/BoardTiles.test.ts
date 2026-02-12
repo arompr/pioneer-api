@@ -1,9 +1,9 @@
 import { describe, expect, it, beforeEach } from 'vitest';
-import { BoardTiles } from './BoardTiles';
-import { Tile } from '../tile/Tile';
-import { HexCoordinate } from '../coordinate/HexCoordinate';
-import { ResourceType } from '../tile/ResourceType';
-import { TileAlreadyExistsError } from './errors/TileAlreadyExistsError';
+import { BoardTiles } from '#game/domain/board/BoardTiles';
+import { Tile } from '#game/domain/tile/Tile';
+import { HexCoordinate } from '#game/domain/coordinate/HexCoordinate';
+import { ResourceType } from '#game/domain/tile/ResourceType';
+import { TileAlreadyExistsError } from '#game/domain/board/errors/TileAlreadyExistsError';
 import { TileMother } from '#test/game/domain/tile/TileMother';
 
 const TILE1: Tile = TileMother.aTile(2, 0);

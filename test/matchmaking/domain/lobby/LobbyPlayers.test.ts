@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { LobbyPlayers } from './LobbyPlayers';
-import { Player } from '../player/Player';
-import { PlayerId } from '../player/playerId/PlayerId';
-import { PlayerAlreadyInLobbyError } from './errors/PlayerAlreadyInLobbyError';
-import { PlayerNotFoundInLobbyError } from './errors/PlayerNotFoundInLobbyError';
+import { LobbyPlayers } from '#matchmaking/domain/lobby/LobbyPlayers';
+import { Player } from '#matchmaking/domain/player/Player';
+import { PlayerId } from '#matchmaking/domain/player/playerId/PlayerId';
+import { PlayerAlreadyInLobbyError } from '#matchmaking/domain/lobby/errors/PlayerAlreadyInLobbyError';
+import { PlayerNotFoundInLobbyError } from '#matchmaking/domain/lobby/errors/PlayerNotFoundInLobbyError';
 import { PlayerMother } from '#test/matchmaking/domain/player/PlayerMother';
 
 let player: Player;

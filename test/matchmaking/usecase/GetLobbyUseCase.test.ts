@@ -1,35 +1,32 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { LeaveLobbyUseCase } from './LeaveLobbyUseCase';
+import { GetLobbyUseCase } from '#matchmaking/usecase/GetLobbyUseCase';
 import { LobbyRepository } from '#matchmaking/domain/lobby/LobbyRepository';
-import { LeaveLobbyDto } from './dto/LeaveLobbyDto';
+import { GetLobbyDto } from '#matchmaking/usecase/dto/GetLobbyDto';
 import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
-import LobbyNotFoundError from './errors/LobbyNotFoundError';
+import LobbyNotFoundError from '#matchmaking/usecase/errors/LobbyNotFoundError';
 
-const { lobby, players } = LobbyMother.baseLobby();
-const playerToRemove = players[0]; // The host
+const { lobby } = LobbyMother.baseLobby();
 
 const mockLobbyRepository: Partial<LobbyRepository> = {
     findById: vi.fn().mockReturnValue(lobby),
-    save: vi.fn(),
 };
 
-let useCase: LeaveLobbyUseCase;
+let useCase: GetLobbyUseCase;
 
-describe('LeaveLobbyUseCase', () => {
+describe('GetLobbyUseCase', () => {
     beforeEach(() => {
-        useCase = new LeaveLobbyUseCase(mockLobbyRepository as LobbyRepository);
+        useCase = new GetLobbyUseCase(mockLobbyRepository as LobbyRepository);
         vi.clearAllMocks();
     });
 
     describe('execute()', () => {
         describe('when lobby exists', () => {
-            it('should remove player from lobby and save it', () => {
-                const dto = new LeaveLobbyDto(lobby.id, playerToRemove.id);
+            it('should return the lobby', () => {
+                const dto = new GetLobbyDto(lobby.id);
 
                 const result = useCase.execute(dto);
 
                 expect(mockLobbyRepository.findById).toHaveBeenCalledWith(lobby.id);
-                expect(mockLobbyRepository.save).toHaveBeenCalledWith(lobby);
                 expect(result).toBe(lobby);
             });
         });
@@ -37,7 +34,7 @@ describe('LeaveLobbyUseCase', () => {
         describe('when lobby does not exist', () => {
             it('should throw LobbyNotFoundError', () => {
                 mockLobbyRepository.findById = vi.fn().mockReturnValue(null);
-                const dto = new LeaveLobbyDto(lobby.id, playerToRemove.id);
+                const dto = new GetLobbyDto(lobby.id);
 
                 expect(() => useCase.execute(dto)).toThrow(LobbyNotFoundError);
             });
