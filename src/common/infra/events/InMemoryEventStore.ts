@@ -30,14 +30,4 @@ export class InMemoryEventStore implements IEventStore {
         const entry = this.store.get(aggregateId);
         return entry ? [...entry.events] : [];
     }
-
-    replay(): DomainEvent[] {
-        const allEvents: DomainEvent[] = [];
-
-        for (const entry of this.store.values()) {
-            allEvents.push(...entry.events);
-        }
-
-        return allEvents;
-    }
 }

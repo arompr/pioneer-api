@@ -16,10 +16,4 @@ export interface IEventStore {
      * @returns Array of domain events.
      */
     getEvents(aggregateId: string): DomainEvent[];
-
-    /**
-     * Replays all events in the store.
-     * @returns Array of all domain events.
-     */
-    replay(): DomainEvent[];
 }

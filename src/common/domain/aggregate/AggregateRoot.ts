@@ -7,6 +7,7 @@ export abstract class AggregateRoot implements IEventSourcedAggregate {
 
     protected record(event: DomainEvent): void {
         this._domainEvents.push(event);
+        this._version++;
     }
 
     public pullDomainEvents(): DomainEvent[] {
