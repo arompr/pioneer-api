@@ -1,11 +1,15 @@
 import { DomainEvent } from '#common/domain/events/DomainEvent';
 import { PlayerId } from '#matchmaking/domain/player/playerId/PlayerId';
 
-export class PlayerMarkedReady implements DomainEvent {
+export type PlayerMarkedReadyPayload = {
+    playerId: PlayerId;
+};
+
+export class PlayerMarkedReady implements DomainEvent<PlayerMarkedReadyPayload> {
     public readonly type = 'PlayerMarkedReady';
-    public readonly playerId: PlayerId;
+    public readonly payload: PlayerMarkedReadyPayload;
 
     constructor(playerId: PlayerId) {
-        this.playerId = playerId;
+        this.payload = { playerId };
     }
 }

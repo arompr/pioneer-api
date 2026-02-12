@@ -8,7 +8,7 @@ export interface IEventStore {
      * @param expectedVersion Optional expected version for optimistic concurrency.
      * @throws {ConcurrencyError} if version mismatch.
      */
-    append(aggregateId: string, events: DomainEvent[], expectedVersion?: number): void;
+    append(aggregateId: string, events: DomainEvent<>[], expectedVersion?: number): void;
 
     /**
      * Gets all events for a given aggregate.
