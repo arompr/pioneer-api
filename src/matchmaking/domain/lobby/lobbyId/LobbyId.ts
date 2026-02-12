@@ -23,21 +23,12 @@ export class LobbyId {
         return this._value;
     }
 
-    /**
-     * Compares this LobbyId with another for value equality.
+    /* Compares this LobbyId with another for equality.
      *
-     * @param {LobbyId} other - The LobbyId to compare against.
-     * @returns {boolean} True if both LobbyId instances have the same value.
+     * @param {LobbyId} other - The other ID to compare.
+     * @returns {boolean} True if the IDs are identical.
      */
-    public equals(other: LobbyId): boolean {
-        if (this === other) {
-            return true;
-        }
-
-        if (!other) {
-            return false;
-        }
-
+    equals(other: LobbyId): boolean {
         return this._value === other._value;
     }
 }

@@ -59,6 +59,15 @@ export class Player {
     }
 
     /**
+     * Accessor for the Player's status.
+     *
+     * @returns {PlayerStatus} The status of the player.
+     */
+    get status(): PlayerStatus {
+        return this._status;
+    }
+
+    /**
      * Marks the player as ready.
      */
     markReady(): void {

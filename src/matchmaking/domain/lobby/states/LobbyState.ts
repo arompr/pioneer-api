@@ -1,8 +1,10 @@
 import { Player } from '#matchmaking/domain/player/Player';
 import { PlayerId } from '#matchmaking/domain/player/playerId/PlayerId';
 import { Lobby } from '../Lobby';
+import { LobbyStateType } from './LobbyStateType';
 
 export abstract class LobbyState {
+    public abstract readonly stateType: LobbyStateType;
     protected lobby!: Lobby;
 
     public setLobby(lobby: Lobby): void {
