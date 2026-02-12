@@ -3,14 +3,10 @@ import { LobbyRepository } from '#matchmaking/domain/lobby/LobbyRepository';
 import { LeaveLobbyDto } from './dto/LeaveLobbyDto';
 import LobbyNotFoundError from './errors/LobbyNotFoundError';
 
-export type LeaveLobbyResult = {
-    lobby: LobbyAggregate;
-};
-
 export class LeaveLobbyUseCase {
     constructor(private readonly lobbyRepository: LobbyRepository) {}
 
-    execute(dto: LeaveLobbyDto): LeaveLobbyResult {
+    execute(dto: LeaveLobbyDto): LobbyAggregate {
         const lobby = this.lobbyRepository.findById(dto.lobbyId);
         if (!lobby) {
             throw new LobbyNotFoundError(dto.lobbyId);
@@ -20,6 +16,6 @@ export class LeaveLobbyUseCase {
 
         this.lobbyRepository.save(lobby);
 
-        return { lobby };
+        return lobby;
     }
 }

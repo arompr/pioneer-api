@@ -28,11 +28,9 @@ describe('LeaveLobbyUseCase', () => {
 
                 const result = useCase.execute(dto);
 
-                console.log(result);
-
                 expect(mockLobbyRepository.findById).toHaveBeenCalledWith(lobby.id);
                 expect(mockLobbyRepository.save).toHaveBeenCalledWith(lobby);
-                expect(result.lobby).toBe(lobby);
+                expect(result).toBe(lobby);
             });
         });
 

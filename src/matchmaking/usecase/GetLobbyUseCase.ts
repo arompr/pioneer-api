@@ -3,19 +3,15 @@ import { LobbyRepository } from '#matchmaking/domain/lobby/LobbyRepository';
 import { GetLobbyDto } from './dto/GetLobbyDto';
 import LobbyNotFoundError from './errors/LobbyNotFoundError';
 
-export type GetLobbyResult = {
-    lobby: LobbyAggregate;
-};
-
 export class GetLobbyUseCase {
     constructor(private readonly lobbyRepository: LobbyRepository) {}
 
-    execute(dto: GetLobbyDto): GetLobbyResult {
+    execute(dto: GetLobbyDto): LobbyAggregate {
         const lobby = this.lobbyRepository.findById(dto.lobbyId);
         if (!lobby) {
             throw new LobbyNotFoundError(dto.lobbyId);
         }
 
-        return { lobby };
+        return lobby;
     }
 }

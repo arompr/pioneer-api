@@ -27,7 +27,7 @@ describe('GetLobbyUseCase', () => {
                 const result = useCase.execute(dto);
 
                 expect(mockLobbyRepository.findById).toHaveBeenCalledWith(lobby.id);
-                expect(result.lobby).toBe(lobby);
+                expect(result).toBe(lobby);
             });
         });
 
