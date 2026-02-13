@@ -1,4 +1,4 @@
-export type EventPayload = object;
+export type EventPayload = Record<string, unknown>;
 
 /**
  * Base class for all domain events.

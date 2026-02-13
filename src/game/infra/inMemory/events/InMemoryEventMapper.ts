@@ -11,7 +11,7 @@ export class InMemoryEventMapper {
     /**
      * Converts a domain event to an InMemoryEvent for persistence.
      *
-     * @param {DomainEvent<any>} event - The domain event to convert.
+     * @param {DomainEvent<EventPayload>} event - The domain event to convert.
      * @param {string} aggregateId - The aggregate root identifier.
      * @param {number} sequence - The sequence number of this event in the aggregate's stream.
      * @returns {InMemoryEvent} The persisted event representation.
