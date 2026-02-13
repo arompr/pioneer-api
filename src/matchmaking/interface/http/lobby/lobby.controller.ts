@@ -13,17 +13,17 @@ export class LobbyController {
     ) {}
 
     @Post()
-    create(@Body() createLobbyRequest: CreateLobbyRequest) {
+    create(@Body() createLobbyRequest: CreateLobbyRequest): string {
         const test: CreateLobbyDto = {
             hostName: createLobbyRequest.hostName,
             gameMode: createLobbyRequest.gameMode,
         };
 
-        return this.createLobby.execute(test).createdLobby.id;
+        return this.createLobby.execute(test).createdLobby.id.value;
     }
 
     @Get(':id')
-    getLobbyById(@Param('id') id: string) {
-        return this.getLobby.execute({ lobbyId: new LobbyId(id) }).allPlayers;
+    getLobbyById(@Param('id') id: string): string {
+        return this.getLobby.execute({ lobbyId: new LobbyId(id) }).id.value;
     }
 }
