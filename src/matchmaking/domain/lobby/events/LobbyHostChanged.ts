@@ -1,12 +1,15 @@
 import { DomainEvent } from '#common/domain/events/DomainEvent';
 import { PlayerId } from '#matchmaking/domain/player/playerId/PlayerId';
-import { LobbyId } from '../lobbyId/LobbyId';
 
-export class LobbyHostChanged extends DomainEvent {
-    public readonly newHostId: PlayerId;
+export type LobbyHostChangedPayload = {
+    newHostId: PlayerId;
+};
 
-    constructor(lobbyId: LobbyId, newHostId: PlayerId, schemaVersion = 1, occurredAt?: Date) {
-        super(lobbyId.value, schemaVersion, occurredAt);
-        this.newHostId = newHostId;
+export class LobbyHostChanged implements DomainEvent<LobbyHostChangedPayload> {
+    public readonly type = 'LobbyHostChanged';
+    public readonly payload: LobbyHostChangedPayload;
+
+    constructor(newHostId: PlayerId) {
+        this.payload = { newHostId };
     }
 }

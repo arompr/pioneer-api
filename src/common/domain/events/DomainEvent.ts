@@ -1,25 +1,14 @@
+export type EventPayload = Record<string, unknown>;
+
 /**
  * Base class for all domain events.
  */
-export abstract class DomainEvent {
+export interface DomainEvent<TPayload extends EventPayload> {
     /**
-     * Aggregate root identifier.
+     * The type of the event.
+     * Each domain event must define its own type.
      */
-    public readonly aggregateId: string;
+    readonly type: string;
 
-    /**
-     * Event schema version for evolution.
-     */
-    public readonly schemaVersion: number;
-
-    /**
-     * Timestamp of event occurrence.
-     */
-    public readonly occurredAt: Date;
-
-    constructor(aggregateId: string, schemaVersion: number, occurredAt?: Date) {
-        this.aggregateId = aggregateId;
-        this.schemaVersion = schemaVersion;
-        this.occurredAt = occurredAt ?? new Date();
-    }
+    readonly payload: TPayload;
 }

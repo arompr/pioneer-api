@@ -1,12 +1,15 @@
 import { DomainEvent } from '#common/domain/events/DomainEvent';
 import { PlayerId } from '#matchmaking/domain/player/playerId/PlayerId';
-import { LobbyId } from '../lobbyId/LobbyId';
 
-export class PlayerMarkedPending extends DomainEvent {
-    public readonly playerId: PlayerId;
+export type PlayerMarkedPendingPayload = {
+    playerId: PlayerId;
+};
 
-    constructor(lobbyId: LobbyId, playerId: PlayerId, schemaVersion = 1, occurredAt?: Date) {
-        super(lobbyId.value, schemaVersion, occurredAt);
-        this.playerId = playerId;
+export class PlayerMarkedPending implements DomainEvent<PlayerMarkedPendingPayload> {
+    public readonly type = 'PlayerMarkedPending';
+    public readonly payload: PlayerMarkedPendingPayload;
+
+    constructor(playerId: PlayerId) {
+        this.payload = { playerId };
     }
 }

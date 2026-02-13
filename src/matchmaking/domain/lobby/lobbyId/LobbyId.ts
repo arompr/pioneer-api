@@ -10,7 +10,7 @@ export class LobbyId {
     /**
      * Creates a new LobbyId.
      *
-     * @param {string} id - Unique identifier of the player.
+     * @param {string} id - Unique identifier of the lobby.
      */
     constructor(id: string) {
         this._value = id;
@@ -23,8 +23,7 @@ export class LobbyId {
         return this._value;
     }
 
-    /**
-     * Compares this LobbyId with another for equality.
+    /* Compares this LobbyId with another for equality.
      *
      * @param {LobbyId} other - The other ID to compare.
      * @returns {boolean} True if the IDs are identical.

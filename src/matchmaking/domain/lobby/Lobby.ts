@@ -106,7 +106,7 @@ export class Lobby extends AggregateRoot implements ILobby {
      */
     join(player: Player): void {
         this._lobbyState.join(player);
-        this.record(new PlayerJoinedLobby(this._id, player.id));
+        this.record(new PlayerJoinedLobby(player.id));
     }
 
     /**
@@ -118,7 +118,7 @@ export class Lobby extends AggregateRoot implements ILobby {
     leave(playerId: PlayerId): void {
         const wasHost = this.isHost(playerId);
         this._players.remove(playerId);
-        this.record(new PlayerLeftLobby(this._id, playerId, wasHost));
+        this.record(new PlayerLeftLobby(playerId, wasHost));
         if (wasHost) {
             this.reassignHost();
         }
@@ -136,7 +136,7 @@ export class Lobby extends AggregateRoot implements ILobby {
      */
     start(playerId: PlayerId): void {
         this._lobbyState.start(playerId);
-        this.record(new LobbyStarted(this._id));
+        this.record(new LobbyStarted());
     }
 
     /**
@@ -147,7 +147,7 @@ export class Lobby extends AggregateRoot implements ILobby {
      */
     markAsReady(playerId: PlayerId): void {
         this._lobbyState.markAsReady(playerId);
-        this.record(new PlayerMarkedReady(this._id, playerId));
+        this.record(new PlayerMarkedReady(playerId));
     }
 
     /**
@@ -158,7 +158,7 @@ export class Lobby extends AggregateRoot implements ILobby {
      */
     markAsPending(playerId: PlayerId): void {
         this._lobbyState.markAsPending(playerId);
-        this.record(new PlayerMarkedPending(this._id, playerId));
+        this.record(new PlayerMarkedPending(playerId));
     }
 
     /**
@@ -266,10 +266,10 @@ export class Lobby extends AggregateRoot implements ILobby {
     private reassignHost(): void {
         if (this._players.isEmpty()) {
             this.transitionTo(new ClosedState());
-            this.record(new LobbyClosed(this._id));
+            this.record(new LobbyClosed());
         } else {
             this.assignNextHost();
-            this.record(new LobbyHostChanged(this._id, this._hostId));
+            this.record(new LobbyHostChanged(this._hostId));
         }
     }
 
