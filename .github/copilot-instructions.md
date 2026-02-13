@@ -160,7 +160,7 @@ Example:
 
 ```typescript
 describe('Lobby', () => {
-    describe('leave()', () => {
+    describe('leave', () => {
         describe('when the player is in the lobby', () => {
             it('removes the player from the lobby', () => {
                 lobby.leave(player1.id);
@@ -179,7 +179,7 @@ describe('Lobby', () => {
 
 ### Test Setup
 
-- Use `beforeEach` for test data initialization
+- Use `beforeEach` for test data initialization when multiple tests have the same Arrange section.
 - Leverage Object Mothers for creating test fixtures
 - Keep tests isolated—no shared mutable state between tests
 
