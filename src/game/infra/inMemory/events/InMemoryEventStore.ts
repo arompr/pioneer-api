@@ -1,8 +1,9 @@
-import { DomainEvent } from '#common/domain/events/DomainEvent';
+import { DomainEvent, EventPayload } from '#common/domain/events/DomainEvent';
 import { IEventStore } from '#common/infra/events/IEventStore';
 import { InMemoryEvent } from './InMemoryEvent';
-import { DomainEventMapper } from './DomainEventMapper';
 import { ConcurrencyError } from './ConcurrencyError';
+import { ulid } from 'ulid';
+import { InMemoryEventMapper } from './InMemoryEventMapper';
 
 /**
  * In-memory implementation of IEventStore.
@@ -10,7 +11,11 @@ import { ConcurrencyError } from './ConcurrencyError';
 export class InMemoryEventStore implements IEventStore {
     private readonly store: Map<string, { events: InMemoryEvent[]; version: number }> = new Map();
 
-    append(aggregateId: string, events: DomainEvent<any>[], expectedVersion?: number): void {
+    append(
+        aggregateId: string,
+        events: DomainEvent<EventPayload>[],
+        expectedVersion?: number
+    ): void {
         const entry = this.store.get(aggregateId);
         const currentVersion = entry ? entry.version : 0;
 
@@ -22,7 +27,7 @@ export class InMemoryEventStore implements IEventStore {
 
         const inMemoryEvents = events.map((event, index) => {
             const sequence = currentVersion + index + 1;
-            return DomainEventMapper.toInMemoryEvent(event, aggregateId, sequence);
+            return InMemoryEventMapper.toInMemoryEvent(ulid(), event, aggregateId, sequence);
         });
 
         if (!entry) {
@@ -33,7 +38,7 @@ export class InMemoryEventStore implements IEventStore {
         }
     }
 
-    getEvents(aggregateId: string): DomainEvent<any>[] {
+    getEvents(aggregateId: string): DomainEvent<EventPayload>[] {
         const entry = this.store.get(aggregateId);
         return entry ? [...entry.events] : [];
     }
