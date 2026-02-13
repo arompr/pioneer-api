@@ -19,7 +19,7 @@ describe('GetLobbyUseCase', () => {
         vi.clearAllMocks();
     });
 
-    describe('execute()', () => {
+    describe('execute', () => {
         describe('when lobby exists', () => {
             it('should return the lobby', () => {
                 const dto = new GetLobbyDto(lobby.id);

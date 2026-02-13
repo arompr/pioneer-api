@@ -14,7 +14,7 @@ describe('InGameState', () => {
         [player1] = players;
     });
 
-    describe('join()', () => {
+    describe('join', () => {
         it('throws LobbyAlreadyInGameError', () => {
             expect(() => {
                 lobby.join(player1);
@@ -22,7 +22,7 @@ describe('InGameState', () => {
         });
     });
 
-    describe('start()', () => {
+    describe('start', () => {
         it('throws LobbyAlreadyInGameError', () => {
             expect(() => {
                 lobby.start(player1.id);
@@ -30,7 +30,7 @@ describe('InGameState', () => {
         });
     });
 
-    describe('markAsReady()', () => {
+    describe('markAsReady', () => {
         it('throws LobbyAlreadyInGameError', () => {
             expect(() => {
                 lobby.markAsReady(player1.id);
@@ -38,7 +38,7 @@ describe('InGameState', () => {
         });
     });
 
-    describe('markAsPending()', () => {
+    describe('markAsPending', () => {
         it('throws LobbyAlreadyInGameError', () => {
             expect(() => {
                 lobby.markAsPending(player1.id);
@@ -46,7 +46,7 @@ describe('InGameState', () => {
         });
     });
 
-    describe('canStart()', () => {
+    describe('canStart', () => {
         it('returns false', () => {
             expect(lobby.canStart()).toBe(false);
         });

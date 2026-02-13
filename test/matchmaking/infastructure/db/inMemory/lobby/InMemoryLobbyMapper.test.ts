@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
 
 describe('InMemoryLobbyMapper', () => {
-    describe('toInMemory()', () => {
+    describe('toInMemory', () => {
         it.each([
             ['a base lobby', () => LobbyMother.baseLobby()],
             ['a full in-game lobby', () => LobbyMother.inGameLobby()],
@@ -31,7 +31,7 @@ describe('InMemoryLobbyMapper', () => {
         });
     });
 
-    describe('toDomain()', () => {
+    describe('toDomain', () => {
         it.each([
             ['a base lobby', () => LobbyMother.baseLobby()],
             ['a full in-game lobby', () => LobbyMother.inGameLobby()],

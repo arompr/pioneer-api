@@ -27,7 +27,7 @@ describe('BoardTiles', () => {
         });
     });
 
-    describe('add(tile)', () => {
+    describe('add', () => {
         describe('when adding a new tile', () => {
             it('the tile is added', () => {
                 const coordinates = HexCoordinate.of(0, 3);
@@ -65,7 +65,7 @@ describe('BoardTiles', () => {
         });
     });
 
-    describe('hasTile(coordinates)', () => {
+    describe('hasTile', () => {
         let boardTiles: BoardTiles;
         beforeEach(() => {
             boardTiles = new BoardTiles(TILES);
@@ -85,7 +85,7 @@ describe('BoardTiles', () => {
         });
     });
 
-    describe('getTile(coordinates)', () => {
+    describe('getTile', () => {
         let boardTiles: BoardTiles;
 
         beforeEach(() => {

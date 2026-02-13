@@ -3,7 +3,7 @@ import { Distance } from '#game/domain/distance/Distance';
 import { NegativeDistanceError } from '#game/domain/distance/errors/NegativeDistanceError';
 
 describe('Distance', () => {
-    describe('fromHexes()', () => {
+    describe('fromHexes', () => {
         describe('when the value is negative', () => {
             it('throws NegativeDistanceError', () => {
                 expect(() => Distance.fromHexes(-1)).toThrow(NegativeDistanceError);
@@ -18,7 +18,7 @@ describe('Distance', () => {
         });
     });
 
-    describe('add()', () => {
+    describe('add', () => {
         describe('when adding two distances', () => {
             it('returns a distance equal to their sum', () => {
                 const a = Distance.fromHexes(2);
@@ -32,7 +32,7 @@ describe('Distance', () => {
     });
 
     describe('comparison', () => {
-        describe('isLessThan()', () => {
+        describe('isLessThan', () => {
             describe('when the distance is smaller than another distance', () => {
                 it('returns true', () => {
                     const smaller = Distance.fromHexes(1);
@@ -52,7 +52,7 @@ describe('Distance', () => {
             });
         });
 
-        describe('isGreaterThan()', () => {
+        describe('isGreaterThan', () => {
             describe('when the distance is larger than another distance', () => {
                 it('returns true', () => {
                     const larger = Distance.fromHexes(2);
@@ -72,7 +72,7 @@ describe('Distance', () => {
             });
         });
 
-        describe('equals()', () => {
+        describe('equals', () => {
             describe('when the distances are equal', () => {
                 it('returns true', () => {
                     const a = Distance.fromHexes(2);
@@ -93,7 +93,7 @@ describe('Distance', () => {
         });
     });
 
-    describe('toString()', () => {
+    describe('toString', () => {
         describe('when the distance is one hex', () => {
             it('uses the singular form', () => {
                 expect(Distance.fromHexes(1).toString()).toBe('1 hex');

@@ -35,7 +35,7 @@ describe('Lobby', () => {
         });
     });
 
-    describe('join()', () => {
+    describe('join', () => {
         describe('when a player joins', () => {
             it('emits PlayerJoinedLobby', () => {
                 lobby.join(player2);
@@ -47,7 +47,7 @@ describe('Lobby', () => {
         });
     });
 
-    describe('leave()', () => {
+    describe('leave', () => {
         describe('when the player is in the lobby', () => {
             it('removes the player from the lobby', () => {
                 lobby.leave(player1.id);
@@ -115,7 +115,7 @@ describe('Lobby', () => {
         });
     });
 
-    describe('start()', () => {
+    describe('start', () => {
         describe('when the host start the game', () => {
             it('emits LobbyStarted', () => {
                 lobby = LobbyMother.readyToStartLobby().lobby;
@@ -127,7 +127,7 @@ describe('Lobby', () => {
         });
     });
 
-    describe('markAsReady()', () => {
+    describe('markAsReady', () => {
         describe('when a player in the lobby is marked ready', () => {
             it('emits PlayerMarkedReady', () => {
                 lobby.markAsReady(player1.id);
@@ -139,7 +139,7 @@ describe('Lobby', () => {
         });
     });
 
-    describe('markAsPending()', () => {
+    describe('markAsPending', () => {
         describe('when a player in the lobby is marked pending', () => {
             it('emits PlayerMarkedPending', () => {
                 lobby.markAsPending(player1.id);
@@ -151,7 +151,7 @@ describe('Lobby', () => {
         });
     });
 
-    describe('isHost()', () => {
+    describe('isHost', () => {
         describe('when the lobby is empty', () => {
             it('returns false', () => {
                 setupClosedLobby();
@@ -181,7 +181,7 @@ describe('Lobby', () => {
         });
     });
 
-    describe('isFull()', () => {
+    describe('isFull', () => {
         describe('when the lobby has reached max capacity', () => {
             it('returns true', () => {
                 lobby.join(player2);
@@ -209,7 +209,7 @@ describe('Lobby', () => {
         });
     });
 
-    describe('isEmpty()', () => {
+    describe('isEmpty', () => {
         describe('when there is no player in the lobby', () => {
             it('returns true', () => {
                 setupClosedLobby();
@@ -233,7 +233,7 @@ describe('Lobby', () => {
         });
     });
 
-    describe('hasReachedMinimum()', () => {
+    describe('hasReachedMinimum', () => {
         describe('when the number of ready players exactly reaches the minimum', () => {
             it('returns true', () => {
                 lobby.join(player2);
@@ -258,7 +258,7 @@ describe('Lobby', () => {
         });
     });
 
-    describe('remainingPlaces()', () => {
+    describe('remainingPlaces', () => {
         describe('when the lobby is empty', () => {
             it('returns the maximum capacity', () => {
                 setupClosedLobby();
@@ -294,7 +294,7 @@ describe('Lobby', () => {
         });
     });
 
-    describe('allPlayers()', () => {
+    describe('allPlayers', () => {
         describe('when there are players in the lobby', () => {
             it('returns a list of all the players', () => {
                 lobby.join(player2);
@@ -317,7 +317,7 @@ describe('Lobby', () => {
         });
     });
 
-    describe('playerCount()', () => {
+    describe('playerCount', () => {
         describe('when there are players in the lobby', () => {
             it('returns the number of player', () => {
                 lobby.join(player2);

@@ -10,7 +10,7 @@ describe('BoardFactory', () => {
         factory = new BoardFactory();
     });
 
-    describe('create()', () => {
+    describe('create', () => {
         it('creates a board with 19 tiles', () => {
             const board = factory.create();
 

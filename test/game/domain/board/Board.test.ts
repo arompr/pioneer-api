@@ -11,7 +11,7 @@ const TILE2: Tile = TileMother.aTile(1, 0);
 const TILES = [TILE1, TILE2];
 
 describe('Board', () => {
-    describe('addTile(tile)', () => {
+    describe('addTile', () => {
         it('should add a tile to the board', () => {
             const emptyBoardTiles = new BoardTiles();
             const board = new Board(emptyBoardTiles);
@@ -25,7 +25,7 @@ describe('Board', () => {
         });
     });
 
-    describe('getTile(tile)', () => {
+    describe('getTile', () => {
         it('should return the tile at the given coordinates', () => {
             const boardTiles = new BoardTiles([TILE1, TILE2]);
             const board = new Board(boardTiles);
@@ -44,7 +44,7 @@ describe('Board', () => {
         });
     });
 
-    describe('getTileOrThrow(tile)', () => {
+    describe('getTileOrThrow', () => {
         it('should return the tile if it exists', () => {
             const boardTiles = new BoardTiles([TILE1, TILE2]);
             const board = new Board(boardTiles);
@@ -61,7 +61,7 @@ describe('Board', () => {
         });
     });
 
-    describe('getAllTiles()', () => {
+    describe('getAllTiles', () => {
         it('should return all tiles added to the board', () => {
             const boardTiles = new BoardTiles([TILE1, TILE2]);
             const board = new Board(boardTiles);

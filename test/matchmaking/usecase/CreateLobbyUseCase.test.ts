@@ -36,7 +36,7 @@ describe('CreateLobbyUseCase', () => {
         );
     });
 
-    describe('execute()', () => {
+    describe('execute', () => {
         it('create and save the new lobby', () => {
             const result = useCase.execute(new CreateLobbyDto(PLAYER_NAME, GAME_MODE));
 

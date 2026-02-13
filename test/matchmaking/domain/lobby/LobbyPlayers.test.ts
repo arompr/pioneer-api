@@ -23,7 +23,7 @@ describe('LobbyPlayers', () => {
         });
     });
 
-    describe('add()', () => {
+    describe('add', () => {
         describe('when the player is not in the lobby players', () => {
             it('adds the player', () => {
                 lobbyPlayers.add(player);
@@ -43,7 +43,7 @@ describe('LobbyPlayers', () => {
         });
     });
 
-    describe('remove()', () => {
+    describe('remove', () => {
         describe('when the player is in the lobby players', () => {
             it('removes the player', () => {
                 lobbyPlayers.add(player);
@@ -63,7 +63,7 @@ describe('LobbyPlayers', () => {
         });
     });
 
-    describe('findById()', () => {
+    describe('findById', () => {
         describe('when the player exists in the lobby players', () => {
             it('returns the player matching the identifier', () => {
                 lobbyPlayers.add(player);
@@ -83,7 +83,7 @@ describe('LobbyPlayers', () => {
         });
     });
 
-    describe('markAsReady()', () => {
+    describe('markAsReady', () => {
         describe('when the player exists in the lobby', () => {
             it('updates the player status to ready', () => {
                 lobbyPlayers.add(player);
@@ -105,7 +105,7 @@ describe('LobbyPlayers', () => {
         });
     });
 
-    describe('markAsPending()', () => {
+    describe('markAsPending', () => {
         describe('when the player exists in the lobby', () => {
             it('updates the player status to pending', () => {
                 lobbyPlayers.add(player);
@@ -127,7 +127,7 @@ describe('LobbyPlayers', () => {
         });
     });
 
-    describe('areAllReady()', () => {
+    describe('areAllReady', () => {
         let secondPlayer: Player;
 
         beforeEach(() => {
@@ -154,7 +154,7 @@ describe('LobbyPlayers', () => {
         });
     });
 
-    describe('first()', () => {
+    describe('first', () => {
         describe('when the lobby is not empty', () => {
             it('returns the first player added (the host)', () => {
                 const secondPlayer = PlayerMother.create('2');
@@ -177,7 +177,7 @@ describe('LobbyPlayers', () => {
         });
     });
 
-    describe('contains()', () => {
+    describe('contains', () => {
         describe('when the player exists in the lobby players', () => {
             it('returns true', () => {
                 lobbyPlayers.add(player);

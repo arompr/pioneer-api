@@ -36,7 +36,7 @@ describe('Player', () => {
         });
     });
 
-    describe('markReady()', () => {
+    describe('markReady', () => {
         describe('when the player is pending', () => {
             it('should be ready', () => {
                 player.markReady();
@@ -54,7 +54,7 @@ describe('Player', () => {
         });
     });
 
-    describe('markPending()', () => {
+    describe('markPending', () => {
         describe('when the player is ready', () => {
             it('should not be ready', () => {
                 player.markReady();
@@ -74,7 +74,7 @@ describe('Player', () => {
         });
     });
 
-    describe('equals()', () => {
+    describe('equals', () => {
         describe('when two players have the same id', () => {
             it('returns true', () => {
                 const playerWithSameId = new Player(

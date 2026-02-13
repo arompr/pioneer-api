@@ -4,7 +4,7 @@ import { Direction } from '#game/domain/Direction';
 import { Distance } from '#game/domain/distance/Distance';
 
 describe('HexCoordinate', () => {
-    describe('of()', () => {
+    describe('of', () => {
         describe('when creating a coordinate', () => {
             it('assigns the correct q, r, and s values', () => {
                 const coordinate = HexCoordinate.of(1, 2);
@@ -16,7 +16,7 @@ describe('HexCoordinate', () => {
         });
     });
 
-    describe('distanceTo()', () => {
+    describe('distanceTo', () => {
         describe('when calculating distance between two coordinates', () => {
             it('returns the correct distance', () => {
                 const a = HexCoordinate.of(0, 0);
@@ -30,7 +30,7 @@ describe('HexCoordinate', () => {
         });
     });
 
-    describe('neighbors()', () => {
+    describe('neighbors', () => {
         describe('when retrieving all neighbors', () => {
             it('returns exactly six neighbors', () => {
                 const coordinate = HexCoordinate.of(0, 0);
@@ -52,7 +52,7 @@ describe('HexCoordinate', () => {
         });
     });
 
-    describe('equals()', () => {
+    describe('equals', () => {
         describe('when coordinates have the same q and r values', () => {
             it('considers them equal', () => {
                 const a = HexCoordinate.of(0, 0);

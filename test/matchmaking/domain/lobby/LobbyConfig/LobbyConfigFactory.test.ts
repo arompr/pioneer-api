@@ -6,7 +6,7 @@ import { UnsupportedGameModeError } from '#matchmaking/domain/lobby/errors/Unsup
 const factory = new LobbyConfigFactory();
 
 describe('LobbyConfigFactory', () => {
-    describe('createFromGameMode()', () => {
+    describe('createFromGameMode', () => {
         describe('when the game mode is supported', () => {
             it('creates a LobbyConfig with the correct mode', () => {
                 const config = factory.createFromGameMode(LobbyGameMode.BASE);

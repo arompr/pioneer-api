@@ -21,7 +21,7 @@ describe('LeaveLobbyUseCase', () => {
         vi.clearAllMocks();
     });
 
-    describe('execute()', () => {
+    describe('execute', () => {
         describe('when lobby exists', () => {
             it('should remove player from lobby and save it', () => {
                 const dto = new LeaveLobbyDto(lobby.id, playerToRemove.id);

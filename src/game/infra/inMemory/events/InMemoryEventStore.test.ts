@@ -22,7 +22,7 @@ describe('InMemoryEventStore', () => {
         aggregateId = 'test-aggregate-1';
     });
 
-    describe('append()', () => {
+    describe('append', () => {
         describe('when appending events to a new aggregate', () => {
             it('stores the events', () => {
                 const events = [new TestEvent('event1')];
@@ -182,7 +182,7 @@ describe('InMemoryEventStore', () => {
         });
     });
 
-    describe('getInMemoryEvents()', () => {
+    describe('getInMemoryEvents', () => {
         describe('when aggregate has no events', () => {
             it('returns an empty array', () => {
                 const retrieved = eventStore.getInMemoryEvents(aggregateId);

@@ -12,7 +12,7 @@ describe('InMemoryLobbyRepository', () => {
         lobby = LobbyMother.baseLobby().lobby;
     });
 
-    describe('save()', () => {
+    describe('save', () => {
         describe('when saving a lobby', () => {
             it('stores it in memory', () => {
                 repo.save(lobby);
@@ -48,7 +48,7 @@ describe('InMemoryLobbyRepository', () => {
         });
     });
 
-    describe('delete()', () => {
+    describe('delete', () => {
         describe('when the lobby exists', () => {
             beforeEach(() => {
                 repo.save(lobby);

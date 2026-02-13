@@ -14,7 +14,7 @@ describe('ClosedState', () => {
         [player1] = players;
     });
 
-    describe('join()', () => {
+    describe('join', () => {
         it('throws LobbyClosedError', () => {
             expect(() => {
                 lobby.join(player1);
@@ -22,7 +22,7 @@ describe('ClosedState', () => {
         });
     });
 
-    describe('start()', () => {
+    describe('start', () => {
         it('throws LobbyClosedError', () => {
             expect(() => {
                 lobby.start(player1.id);
@@ -30,7 +30,7 @@ describe('ClosedState', () => {
         });
     });
 
-    describe('markAsReady()', () => {
+    describe('markAsReady', () => {
         it('throws LobbyClosedError', () => {
             expect(() => {
                 lobby.markAsReady(player1.id);
@@ -38,7 +38,7 @@ describe('ClosedState', () => {
         });
     });
 
-    describe('markAsPending()', () => {
+    describe('markAsPending', () => {
         it('throws LobbyClosedError', () => {
             expect(() => {
                 lobby.markAsPending(player1.id);
@@ -46,7 +46,7 @@ describe('ClosedState', () => {
         });
     });
 
-    describe('canStart()', () => {
+    describe('canStart', () => {
         it('returns false', () => {
             expect(lobby.canStart()).toBe(false);
         });

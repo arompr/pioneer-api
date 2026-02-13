@@ -22,7 +22,7 @@ describe('LobbyFactory', () => {
         lobby = lobbyFactory.create(LOBBY_CONFIG, hostPlayer);
     });
 
-    describe('create()', () => {
+    describe('create', () => {
         describe('when creating a new lobby', () => {
             it('should have one initial player', () => {
                 expect(lobby.playerCount).toBe(1);

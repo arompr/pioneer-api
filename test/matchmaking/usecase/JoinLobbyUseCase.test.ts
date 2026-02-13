@@ -29,7 +29,7 @@ describe('JoinLobbyUseCase', () => {
         vi.clearAllMocks();
     });
 
-    describe('execute()', () => {
+    describe('execute', () => {
         describe('when lobby exists', () => {
             it('should add player to lobby and save it', () => {
                 const dto = new JoinLobbyDto(lobby.id, PLAYER_NAME);
