@@ -5,10 +5,10 @@ import { CreateLobbyDto } from '#matchmaking/usecase/dto/CreateLobbyDto';
 import { LobbyId } from '#matchmaking/domain/lobby/lobbyId/LobbyId';
 import { GetLobbyUseCase } from '#matchmaking/usecase/GetLobbyUseCase';
 import { LobbyMapper } from './mapper/LobbyMapper';
-import { LobbyResponse } from './response/lobby/LobbyResponse';
-import { CreateLobbyResponse } from './response/lobby/CreateLobbyResponse';
-import { PrivatePlayerMapper } from './mapper/PrivatePlayerMapper';
 import { UseExceptionFilters } from './filters/UseExceptionFilters';
+import type { LobbyResponse } from './response/lobby/LobbyResponse';
+import type { CreateLobbyResponse } from './response/lobby/CreateLobbyResponse';
+import { PrivatePlayerMapper } from './mapper/PrivatePlayerMapper';
 
 @UseExceptionFilters()
 @Controller('lobby')
@@ -43,8 +43,8 @@ export class LobbyController {
         const { createdLobby, createdHostPlayer } = this.createLobby.execute(createdLobbyDto);
 
         return {
-            lobby: LobbyMapper.toApi(createdLobby),
-            selfPlayer: PrivatePlayerMapper.toApi(createdHostPlayer, true),
+            lobby: LobbyMapper.toLobbyResponse(createdLobby),
+            selfPlayer: PrivatePlayerMapper.toPlayerResponse(createdHostPlayer, true),
         };
     }
 
@@ -59,6 +59,6 @@ export class LobbyController {
      */
     @Get(':id')
     getLobbyById(@Param('id') id: string): LobbyResponse {
-        return LobbyMapper.toApi(this.getLobby.execute({ lobbyId: new LobbyId(id) }));
+        return LobbyMapper.toLobbyResponse(this.getLobby.execute({ lobbyId: new LobbyId(id) }));
     }
 }

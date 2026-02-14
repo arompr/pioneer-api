@@ -1,5 +1,5 @@
-export class PlayerResponse {
-    publicKey!: string;
-    name!: string;
-    isHost!: boolean;
-}
+export type PlayerResponse = {
+    publicKey: string;
+    name: string;
+    isHost: boolean;
+};

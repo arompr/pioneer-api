@@ -1,6 +1,6 @@
-export class PrivatePlayerResponse {
-    secretKey!: string;
-    publicKey!: string;
-    name!: string;
-    isHost!: boolean;
-}
+export type PrivatePlayerResponse = {
+    secretKey: string;
+    publicKey: string;
+    name: string;
+    isHost: boolean;
+};
