@@ -1,5 +1,5 @@
 import { Player } from '../player/Player';
-import { PlayerId } from '../player/playerId/PlayerId';
+import { PlayerId } from '../../../common/domain/player/playerId/PlayerId';
 import { LobbyConfig } from './LobbyConfig/LobbyConfig';
 import { LobbyId } from './lobbyId/LobbyId';
 import { LobbyStateType } from './states/LobbyStateType';

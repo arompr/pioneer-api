@@ -1,4 +1,4 @@
-import type { PlayerId } from './playerId/PlayerId.ts';
+import type { PlayerId } from '../../../common/domain/player/playerId/PlayerId.js';
 import { PlayerStatus } from './PlayerStatus';
 
 /**

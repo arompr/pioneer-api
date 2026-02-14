@@ -1,6 +1,6 @@
-import type { PlayerId } from '#matchmaking/domain/player/playerId/PlayerId';
+import type { PlayerId } from '#common/domain/player/playerId/PlayerId';
 import { PlayerColor } from './PlayerColor';
-import { ResourceHand } from './ResourceHand';
+import { ResourceBundle } from './ResourceBundle';
 
 /**
  * Represents a player in the game.
@@ -8,16 +8,16 @@ import { ResourceHand } from './ResourceHand';
 export class Player {
     private readonly _id: PlayerId;
     private readonly _color: PlayerColor;
-    private _resources: ResourceHand;
+    private _resources: ResourceBundle;
 
     /**
      * Creates a new Player instance.
      *
      * @param {PlayerId} id - Unique identifier for the player.
      * @param {PlayerColor} color - The player's color.
-     * @param {ResourceHand} resources - The player's resources.
+     * @param {ResourceBundle} resources - The player's resources.
      */
-    constructor(id: PlayerId, color: PlayerColor, resources: ResourceHand) {
+    constructor(id: PlayerId, color: PlayerColor, resources: ResourceBundle) {
         this._id = id;
         this._color = color;
         this._resources = resources;
@@ -44,38 +44,38 @@ export class Player {
     /**
      * Returns the player's resources.
      *
-     * @returns {ResourceHand} The player's current resources.
+     * @returns {ResourceBundle} The player's current resources.
      */
-    get resources(): ResourceHand {
+    get resources(): ResourceBundle {
         return this._resources;
     }
 
     /**
      * Adds resources to the player's resource bundle.
      *
-     * @param {ResourceHand} resources - The resources to add.
+     * @param {ResourceBundle} resources - The resources to add.
      */
-    addResources(resources: ResourceHand): void {
+    addResources(resources: ResourceBundle): void {
         this._resources = this._resources.add(resources);
     }
 
     /**
      * Deducts resources from the player's resource bundle.
      *
-     * @param {ResourceHand} resources - The resources to deduct.
+     * @param {ResourceBundle} resources - The resources to deduct.
      * @throws {InsufficientResourcesError} If the player doesn't have enough resources.
      */
-    deductResources(resources: ResourceHand): void {
+    deductResources(resources: ResourceBundle): void {
         this._resources = this._resources.deduct(resources);
     }
 
     /**
      * Checks if the player has the specified resources.
      *
-     * @param {ResourceHand} resources - The resources to check.
+     * @param {ResourceBundle} resources - The resources to check.
      * @returns {boolean} True if the player has sufficient resources.
      */
-    hasResources(resources: ResourceHand): boolean {
+    hasResources(resources: ResourceBundle): boolean {
         return this._resources.has(resources);
     }
 
