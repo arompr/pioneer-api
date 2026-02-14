@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { BoardFactory } from '#game/domain/board/BoardFactory';
-import { HexCoordinate } from '#game/domain/coordinate/HexCoordinate';
-import { ResourceType } from '#game/domain/tile/ResourceType';
+import { HexCoordinate } from '#game/domain/shared/coordinate/HexCoordinate';
+import { ResourceType } from '#game/domain/shared/ResourceType';
 
 let factory: BoardFactory;
 

@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { Board } from '#game/domain/board/Board';
 import { BoardTiles } from '#game/domain/board/BoardTiles';
 import { Tile } from '#game/domain/tile/Tile';
-import { HexCoordinate } from '#game/domain/coordinate/HexCoordinate';
+import { HexCoordinate } from '#game/domain/shared/coordinate/HexCoordinate';
 import { TileNotFoundError } from '#game/domain/board/errors/TileNotFoundError';
 import { TileMother } from '#test/game/domain/tile/TileMother';
 

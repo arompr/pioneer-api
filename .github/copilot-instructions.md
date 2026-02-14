@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Pioneer API is a Node.js 24 + TypeScript + NestJS backend for a multiplayer game with matchmaking and hex-based gameplay.
+Pioneer API is a Node.js 24 + TypeScript + NestJS backend for a multiplayer Catan-like game with matchmaking and hex-based gameplay.
 
 ## Architecture
 
@@ -10,6 +10,7 @@ Pioneer API is a Node.js 24 + TypeScript + NestJS backend for a multiplayer game
 
 - **Domain-Driven Design (DDD)**: The codebase follows DDD principles with a clear separation between domain logic and application/infrastructure layers
 - **Module Organization**: Code is organized into feature modules (`matchmaking`, `game`, `common`)
+- **Bounded contexts**: The `game` bounded context should use full event sourcing for domain state and history, while `matchmaking` should follow State-based Aggregate with Domain Events.
 - **Domain Layer**: Each module has a `domain/` directory containing pure business logic, entities, value objects, and domain services
 - **Early Stage**: The project is young; `app.module.ts`, `app.controller.ts`, `app.controller.spec.ts`, and `app.service.ts` are NestJS boilerplate files present by default and not yet part of the actual architecture
 
@@ -83,7 +84,7 @@ export default class InvalidMinPlayersError extends DomainError {
 
 ### Entity Guidelines
 
-- Entities should encapsulate their invariants and validate them in constructors
+- Entities should encapsulate their invariants
 - Use **private fields** for internal state, expose through **public accessor methods**
 - Methods should represent domain operations, not just getters/setters
 - Use **value objects** for identifiers (e.g., `PlayerId`, `LobbyId`) instead of primitives
@@ -107,7 +108,6 @@ export default class InvalidMinPlayersError extends DomainError {
 ### Test Framework
 
 - **Primary**: Vitest (configured in `vitest.config.ts`)
-- **Legacy**: Jest (available but prefer Vitest for new tests)
 - Tests use the `.test.ts` suffix (e.g., `Lobby.test.ts`)
 
 ### Test Organization
@@ -115,12 +115,11 @@ export default class InvalidMinPlayersError extends DomainError {
 - Tests are located in the `/test` directory, mirroring the structure of `/src`
 - Test files use the `.test.ts` suffix (e.g., `Lobby.test.ts`)
 - Test fixtures and helpers (Object Mothers) also live in `/test` directory
-- Test structure follows Arrange-Act-Assert pattern
-- Use `describe` and `it` blocks for test organization
+- Follow Arrange-Act-Assert pattern
 
 ### Object Mother Pattern
 
-The codebase uses the **Object Mother** pattern for test data creation:
+Use the **Object Mother** pattern for test data creation:
 
 - Each domain entity has a corresponding "Mother" class in `/test` (e.g., `LobbyMother`, `PlayerMother`, `TileMother`)
 - Mothers provide factory methods for creating test objects in various states
@@ -194,19 +193,14 @@ describe('Lobby', () => {
 
 ### Naming Conventions
 
-- Classes: PascalCase (e.g., `Lobby`, `Player`, `DomainError`)
-- Methods/functions: camelCase (e.g., `markAsReady()`, `canStart()`)
-- Private fields: camelCase with `private` keyword (e.g., `private lobbyState`)
-- Constants: SCREAMING_SNAKE_CASE for true constants, camelCase for readonly
-- Files: Match the primary export (e.g., `Lobby.ts`, `LobbyState.ts`)
+- Error naming: `[Entity][Violation]Error`
 - Test files: `[Entity].test.ts`
+- Object Mothers: `[Entity]Mother.ts`
 
 ### Comments
 
-- Use JSDoc comments for public APIs (classes, methods)
-- Include `@param` and `@returns` tags
-- Avoid obvious comments—code should be self-documenting
-- Comment only when clarification is needed for complex logic
+- Use JSDoc only for public APIs
+- Do not comment obvious code
 
 Example:
 
@@ -244,22 +238,21 @@ export class Lobby {
 - `npm run test` - Run tests with Vitest
 - `npm run lint:check` - Check for linting issues
 - `npm run lint:fix` - Fix linting issues automatically
-- npm run type:check - Check TypeScript compilation
 - `npm run format:check` - Check code formatting
 - `npm run format:fix` - Format code with Prettier
+- npm run type:check - Check TypeScript compilation without emit
 - `npm run build` - Build production bundle
 
 ### Code Quality
 
-- ESLint and Prettier are configured—always run linters before committing
+- Generated code must pass ESLint and Prettier without modification
 - Unused variables prefixed with `_` are allowed (e.g., `_unusedParam`)
 - No floating promises—must be handled or explicitly voided
-- End-of-line is auto-configured for cross-platform compatibility
 
 ## Key Patterns to Follow
 
 1. **Domain Purity**: Keep domain logic free of framework dependencies
-2. **Fail Fast**: Validate invariants in constructors and throw domain errors immediately
+2. **Fail Fast**: All domain validation and invariant enforcement must happen in domain factories (or dedicated creation functions), not in class constructors.
 3. **Immutability**: Prefer immutable value objects and readonly fields
 4. **Encapsulation**: Hide implementation details, expose behavior through methods
 5. **Test First**: Write tests using Object Mothers for maintainable, readable tests

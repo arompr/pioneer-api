@@ -1,5 +1,5 @@
-import { HexCoordinate } from '#game/domain/coordinate/HexCoordinate';
-import { ResourceType } from '#game/domain/tile/ResourceType';
+import { HexCoordinate } from '#game/domain/shared/coordinate/HexCoordinate';
+import { ResourceType } from '#game/domain/shared/ResourceType';
 import { Tile } from '#game/domain/tile/Tile';
 import { TileBuilder } from './TestTileBuilder';
 
