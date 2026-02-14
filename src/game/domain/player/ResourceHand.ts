@@ -29,7 +29,7 @@ export class ResourceHand {
      */
     static of(resources: Partial<Record<ResourceType, number>>): ResourceHand {
         const entries = Object.entries(resources);
-        this.assertValidResourceAmounts(entries);
+        this.requireValidResourceAmounts(entries);
 
         const resourceMap = new Map<ResourceType, number>(
             entries.map(([type, amount]) => [type as ResourceType, amount])
@@ -38,7 +38,7 @@ export class ResourceHand {
         return new ResourceHand(resourceMap);
     }
 
-    private static assertValidResourceAmounts(entries: [string, number][]) {
+    private static requireValidResourceAmounts(entries: [string, number][]) {
         entries.forEach(([_, amount]) => {
             if (amount !== undefined && amount < 0) {
                 throw new InvalidResourceAmountError(amount);
@@ -71,7 +71,7 @@ export class ResourceHand {
      * @throws {InsufficientResourcesError} If any resource is insufficient.
      */
     deduct(other: ResourceHand): ResourceHand {
-        this.assertSufficientResources(this, other);
+        this.requireSufficientResources(this, other);
 
         const newResources = new Map(this._resources);
         for (const [type, amount] of other._resources.entries()) {
@@ -83,7 +83,7 @@ export class ResourceHand {
         return new ResourceHand(newResources);
     }
 
-    private assertSufficientResources(available: ResourceHand, required: ResourceHand): void {
+    private requireSufficientResources(available: ResourceHand, required: ResourceHand): void {
         for (const [type, requierdAmount] of required._resources.entries()) {
             const currentAmount = available.getAmount(type);
             if (currentAmount < requierdAmount) {
@@ -114,6 +114,16 @@ export class ResourceHand {
     }
 
     /**
+     * Returns the amount of a specific resource.
+     *
+     * @param {ResourceType} type - The resource type.
+     * @returns {number} The amount of the resource.
+     */
+    public getAmount(type: ResourceType): number {
+        return this._resources.get(type) ?? 0;
+    }
+
+    /**
      * Compares this ResourceBundle with another for equality.
      *
      * @param {ResourceHand} other - The other bundle to compare.
@@ -127,15 +137,5 @@ export class ResourceHand {
         return Array.from(other._resources.entries()).every(
             ([type, amount]) => this.getAmount(type) === amount
         );
-    }
-
-    /**
-     * Returns the amount of a specific resource.
-     *
-     * @param {ResourceType} type - The resource type.
-     * @returns {number} The amount of the resource.
-     */
-    public getAmount(type: ResourceType): number {
-        return this._resources.get(type) ?? 0;
     }
 }

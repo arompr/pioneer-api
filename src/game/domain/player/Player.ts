@@ -15,6 +15,7 @@ export class Player {
      *
      * @param {PlayerId} id - Unique identifier for the player.
      * @param {PlayerColor} color - The player's color.
+     * @param {ResourceHand} resources - The player's resources.
      */
     constructor(id: PlayerId, color: PlayerColor, resources: ResourceHand) {
         this._id = id;
