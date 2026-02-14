@@ -236,6 +236,81 @@ export class Lobby {
 - Use `@Module`, `@Controller`, `@Injectable` decorators appropriately
 - Note: Root-level `app.module.ts`, `app.controller.ts`, `app.controller.spec.ts`, and `app.service.ts` are default boilerplate and not yet representing actual project structure
 
+### Exception Filters
+
+The project uses NestJS Exception Filters to translate domain errors into HTTP responses:
+
+- **Location**: Exception filters are placed in `interface/http/{module}/filters/` directories
+- **Naming**: `[DomainError]Filter.ts` (e.g., `UnsupportedGameModeErrorFilter.ts`)
+- **Pattern**: Each filter catches a specific domain error and maps it to an appropriate HTTP response
+
+#### Exception Filter Structure
+
+```typescript
+import { SomeDomainError } from '#module/domain/path/to/error';
+import { Catch, ExceptionFilter, ArgumentsHost } from '@nestjs/common';
+import { Request, Response } from 'express';
+
+@Catch(SomeDomainError)
+export class SomeDomainErrorFilter implements ExceptionFilter<SomeDomainError> {
+    readonly statusCode = 400; // Appropriate HTTP status
+    readonly code: string = 'ERROR_CODE'; // Machine-readable error code
+
+    catch(exception: SomeDomainError, host: ArgumentsHost): void {
+        const ctx = host.switchToHttp();
+        const response = ctx.getResponse<Response>();
+        const request = ctx.getRequest<Request>();
+
+        response.status(this.statusCode).json({
+            statusCode: this.statusCode,
+            code: this.code,
+            message: 'Human-readable error message',
+            timestamp: new Date().toISOString(),
+            method: request.method,
+            path: request.url,
+        });
+    }
+}
+```
+
+#### Applying Filters
+
+- Use a **decorator function** to apply filters to controllers (e.g., `UseDomainExceptionFilters()`)
+- The decorator uses `applyDecorators` and `UseFilters` from NestJS
+- Apply the decorator at the controller class level
+
+Example decorator (`UseDomainExceptionFilters.ts`):
+
+```typescript
+import { applyDecorators, UseFilters } from '@nestjs/common';
+import { UnsupportedGameModeExceptionFilter } from './UnsupportedGameModeErrorFilter';
+
+export function UseDomainExceptionFilters() {
+    return applyDecorators(
+        UseFilters(UnsupportedGameModeExceptionFilter)
+        // Add more filters as needed
+    );
+}
+```
+
+Example usage in controller:
+
+```typescript
+@UseDomainExceptionFilters()
+@Controller('lobby')
+export class LobbyController {
+    // Controller methods
+}
+```
+
+#### Guidelines
+
+- Each domain error that can be thrown from a controller should have a corresponding exception filter
+- Status codes should match HTTP semantics (400 for client errors, 404 for not found, etc.)
+- Error codes should be SCREAMING_SNAKE_CASE and descriptive (e.g., `UNSUPPORTED_GAME_MODE`)
+- Error messages should be human-readable and may include context from the domain error
+- Access domain error properties to provide detailed error information (e.g., `exception.mode` for `UnsupportedGameModeError`)
+
 ## Development Workflow
 
 ### Commands

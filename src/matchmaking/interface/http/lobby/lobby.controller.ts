@@ -8,7 +8,9 @@ import { LobbyMapper } from './mapper/LobbyMapper';
 import { LobbyResponse } from './response/lobby/LobbyResponse';
 import { CreateLobbyResponse } from './response/lobby/CreateLobbyResponse';
 import { PrivatePlayerMapper } from './mapper/PrivatePlayerMapper';
+import { UseExceptionFilters } from './filters/UseExceptionFilters';
 
+@UseExceptionFilters()
 @Controller('lobby')
 export class LobbyController {
     constructor(
