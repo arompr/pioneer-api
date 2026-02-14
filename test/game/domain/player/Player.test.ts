@@ -39,14 +39,14 @@ describe('Player', () => {
 
             player.addResources(resources);
 
-            expect(player.resources.get(ResourceType.WOOD)).toBe(3);
+            expect(player.resources.getAmount(ResourceType.WOOD)).toBe(3);
         });
 
         it('accumulates resources over multiple additions', () => {
             player.addResources(ResourceHandMother.someWood(2));
             player.addResources(ResourceHandMother.someWood(3));
 
-            expect(player.resources.get(ResourceType.WOOD)).toBe(5);
+            expect(player.resources.getAmount(ResourceType.WOOD)).toBe(5);
         });
     });
 
@@ -58,7 +58,7 @@ describe('Player', () => {
         it('deducts resources from the player', () => {
             player.deductResources(ResourceHandMother.someWood(2));
 
-            expect(player.resources.get(ResourceType.WOOD)).toBe(3);
+            expect(player.resources.getAmount(ResourceType.WOOD)).toBe(3);
         });
 
         describe('when insufficient resources', () => {
