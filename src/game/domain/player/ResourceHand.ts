@@ -84,10 +84,10 @@ export class ResourceHand {
     }
 
     private requireSufficientResources(available: ResourceHand, required: ResourceHand): void {
-        for (const [type, requierdAmount] of required._resources.entries()) {
+        for (const [type, requiredAmount] of required._resources.entries()) {
             const currentAmount = available.getAmount(type);
-            if (currentAmount < requierdAmount) {
-                throw new InsufficientResourcesError(type, requierdAmount, currentAmount);
+            if (currentAmount < requiredAmount) {
+                throw new InsufficientResourcesError(type, requiredAmount, currentAmount);
             }
         }
     }
