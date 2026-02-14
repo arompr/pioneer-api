@@ -2,7 +2,7 @@ import { ResourceHand } from '#game/domain/player/ResourceHand';
 import { ResourceType } from '#game/domain/shared/ResourceType';
 
 /**
- * Object Mother for Resourcehand test fixtures.
+ * Object Mother for ResourceHand test fixtures.
  */
 export class ResourceHandMother {
     /**

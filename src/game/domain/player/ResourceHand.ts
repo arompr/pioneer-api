@@ -15,7 +15,7 @@ export class ResourceHand {
     }
 
     /**
-     * Creates an empty ResourceBundle.
+     * Creates an empty ResourceHand.
      */
     static empty(): ResourceHand {
         return new ResourceHand(new Map());
@@ -47,10 +47,10 @@ export class ResourceHand {
     }
 
     /**
-     * Adds resources to this bundle and returns a new ResourceBundle.
+     * Adds resources to this bundle and returns a new ResourceHand.
      *
      * @param {ResourceHand} other - The resources to add.
-     * @returns {ResourceHand} A new ResourceBundle with the combined resources.
+     * @returns {ResourceHand} A new ResourceHand with the combined resources.
      */
     add(other: ResourceHand): ResourceHand {
         const newResources = new Map(this._resources);
@@ -64,10 +64,10 @@ export class ResourceHand {
     }
 
     /**
-     * Deducts resources from this bundle and returns a new ResourceBundle.
+     * Deducts resources from this bundle and returns a new ResourceHand.
      *
      * @param {ResourceHand} other - The resources to deduct.
-     * @returns {ResourceHand} A new ResourceBundle with the resources deducted.
+     * @returns {ResourceHand} A new ResourceHand with the resources deducted.
      * @throws {InsufficientResourcesError} If any resource is insufficient.
      */
     deduct(other: ResourceHand): ResourceHand {
@@ -124,7 +124,7 @@ export class ResourceHand {
     }
 
     /**
-     * Compares this ResourceBundle with another for equality.
+     * Compares this ResourceHand with another for equality.
      *
      * @param {ResourceHand} other - The other bundle to compare.
      * @returns {boolean} True if both bundles have identical resources.
