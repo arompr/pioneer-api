@@ -2,10 +2,10 @@
  * Value Object representing a player's color in the game.
  */
 export class PlayerColor {
-    private readonly color: string;
+    private readonly _value: string;
 
     private constructor(color: string) {
-        this.color = color;
+        this._value = color;
     }
 
     static RED = new PlayerColor('RED');
@@ -16,8 +16,8 @@ export class PlayerColor {
     /**
      * Returns the string value of the PlayerColor.
      */
-    toString(): string {
-        return this.color;
+    get value(): string {
+        return this._value;
     }
 
     /**
@@ -27,6 +27,6 @@ export class PlayerColor {
      * @returns {boolean} True if the colors are identical.
      */
     equals(other: PlayerColor): boolean {
-        return this.color === other.toString();
+        return this._value === other._value;
     }
 }

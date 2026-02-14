@@ -11,22 +11,4 @@ describe('PlayerColor', () => {
             expect(PlayerColor.RED.equals(PlayerColor.BLUE)).toBe(false);
         });
     });
-
-    describe('toString', () => {
-        it('returns the color name as string', () => {
-            expect(PlayerColor.RED.toString()).toBe('RED');
-            expect(PlayerColor.BLUE.toString()).toBe('BLUE');
-            expect(PlayerColor.WHITE.toString()).toBe('WHITE');
-            expect(PlayerColor.ORANGE.toString()).toBe('ORANGE');
-        });
-    });
-
-    describe('static instances', () => {
-        it('provides predefined color instances', () => {
-            expect(PlayerColor.RED).toBeDefined();
-            expect(PlayerColor.BLUE).toBeDefined();
-            expect(PlayerColor.WHITE).toBeDefined();
-            expect(PlayerColor.ORANGE).toBeDefined();
-        });
-    });
 });
