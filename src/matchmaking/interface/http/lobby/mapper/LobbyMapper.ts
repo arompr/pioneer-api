@@ -2,7 +2,7 @@ import { LobbyAggregate } from '#matchmaking/domain/lobby/LobbyAggregate.type';
 import { LobbyResponse } from '../response/lobby/LobbyResponse';
 
 export class LobbyMapper {
-    static toApi(lobby: LobbyAggregate): LobbyResponse {
+    static toLobbyResponse(lobby: LobbyAggregate): LobbyResponse {
         return {
             id: lobby.id.value,
             status: lobby.stateType,

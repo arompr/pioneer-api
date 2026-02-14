@@ -1,7 +1,7 @@
 import { LobbyResponse } from './LobbyResponse';
-import { PlayerResponse } from '../player/PlayerResponse';
+import { PrivatePlayerResponse } from '../player/PrivatePlayerResponse';
 
-export class CreateLobbyResponse {
-    lobby!: LobbyResponse;
-    selfPlayer!: PlayerResponse;
-}
+export type CreateLobbyResponse = {
+    lobby: LobbyResponse;
+    selfPlayer: PrivatePlayerResponse;
+};
