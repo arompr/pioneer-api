@@ -2,6 +2,6 @@
 import { applyDecorators, UseFilters } from '@nestjs/common';
 import { LobbyNotFoundErrorFilter } from './usecase/LobbyNotFoundErrorFilter';
 
-export function UseUseCaseExceptionFilters() {
+export function UseUseCaseErrorFilters() {
     return applyDecorators(UseFilters(LobbyNotFoundErrorFilter));
 }

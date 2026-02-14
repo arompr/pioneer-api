@@ -3,7 +3,7 @@ import { Catch, ExceptionFilter, ArgumentsHost } from '@nestjs/common';
 import { Request, Response } from 'express';
 
 @Catch(UnsupportedGameModeError)
-export class UnsupportedGameModeExceptionFilter implements ExceptionFilter<UnsupportedGameModeError> {
+export class UnsupportedGameModeErrorFilter implements ExceptionFilter<UnsupportedGameModeError> {
     readonly statusCode = 400;
     readonly code: string = 'UNSUPPORTED_GAME_MODE';
 
