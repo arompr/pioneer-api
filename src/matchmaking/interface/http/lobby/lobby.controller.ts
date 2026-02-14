@@ -5,10 +5,12 @@ import { CreateLobbyDto } from '#matchmaking/usecase/dto/CreateLobbyDto';
 import { LobbyId } from '#matchmaking/domain/lobby/lobbyId/LobbyId';
 import { GetLobbyUseCase } from '#matchmaking/usecase/GetLobbyUseCase';
 import { LobbyMapper } from './mapper/LobbyMapper';
+import { UseErrorFilters } from './filters/UseErrorFilters';
 import type { LobbyResponse } from './response/lobby/LobbyResponse';
 import type { CreateLobbyResponse } from './response/lobby/CreateLobbyResponse';
 import { PrivatePlayerMapper } from './mapper/PrivatePlayerMapper';
 
+@UseErrorFilters()
 @Controller('lobby')
 export class LobbyController {
     constructor(
