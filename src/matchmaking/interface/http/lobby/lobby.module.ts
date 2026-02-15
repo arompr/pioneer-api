@@ -11,6 +11,9 @@ import { PlayerIdFactory } from '#matchmaking/domain/player/playerId/PlayerIdFac
 import { LobbyIdFactory } from '#matchmaking/domain/lobby/lobbyId/LobbyIdFactory';
 import { JoinLobbyUseCase } from '#matchmaking/usecase/JoinLobbyUseCase';
 import { LeaveLobbyUseCase } from '#matchmaking/usecase/LeaveLobbyUseCase';
+import { EventBus } from '#matchmaking/usecase/EventBus';
+import { InMemoryEventBus } from '#matchmaking/infastructure/event-bus/InMemoryEventBus';
+import { registerHandlers } from 'src/bootstrap/registerHandlers';
 
 @Module({
     controllers: [LobbyController],
@@ -19,6 +22,16 @@ import { LeaveLobbyUseCase } from '#matchmaking/usecase/LeaveLobbyUseCase';
         {
             provide: LOBBY_REPOSITORY,
             useClass: InMemoryLobbyRepository,
+        },
+
+        {
+            provide: 'EVENT_BUS',
+            useFactory: (lobbyRepository: InMemoryLobbyRepository) => {
+                const bus = new InMemoryEventBus();
+                registerHandlers(bus, lobbyRepository);
+                return bus;
+            },
+            inject: [LOBBY_REPOSITORY],
         },
 
         // PlayerIdFactory
@@ -71,9 +84,9 @@ import { LeaveLobbyUseCase } from '#matchmaking/usecase/LeaveLobbyUseCase';
 
         {
             provide: LeaveLobbyUseCase,
-            useFactory: (lobbyRepository: LobbyRepository) =>
-                new LeaveLobbyUseCase(lobbyRepository),
-            inject: [LOBBY_REPOSITORY],
+            useFactory: (lobbyRepository: LobbyRepository, eventBus: EventBus) =>
+                new LeaveLobbyUseCase(lobbyRepository, eventBus),
+            inject: [LOBBY_REPOSITORY, 'EVENT_BUS'],
         },
     ],
 })

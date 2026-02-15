@@ -1,10 +1,13 @@
 import { DomainEvent } from '#common/domain/events/DomainEvent';
+import { LobbyId } from '../lobbyId/LobbyId';
 
-export type LobbyClosedPayload = Record<string, never>;
+export type LobbyClosedPayload = { lobbyId: LobbyId };
 
 export class LobbyClosed implements DomainEvent<LobbyClosedPayload> {
     public readonly type = 'LobbyClosed';
-    public readonly payload: LobbyClosedPayload = {};
+    public readonly payload: LobbyClosedPayload;
 
-    constructor() {}
+    constructor(lobbyId: LobbyId) {
+        this.payload = { lobbyId };
+    }
 }
