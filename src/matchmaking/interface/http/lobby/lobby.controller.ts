@@ -14,17 +14,14 @@ import type { JoinLobbyResponse } from './response/lobby/JoinLobbyResponse';
 import { JoinLobbyDto } from '#matchmaking/usecase/dto/JoinLobbyDto';
 import { JoinLobbyUseCase } from '#matchmaking/usecase/JoinLobbyUseCase';
 import { LeaveLobbyRequest } from './request/LeaveLobbyRequest';
-import { PlayerId } from '#matchmaking/domain/player/playerId/PlayerId';
 import { LeaveLobbyUseCase } from '#matchmaking/usecase/LeaveLobbyUseCase';
+import { PlayerId } from '#common/domain/player/playerId/PlayerId';
 
 @UseErrorFilters()
 @Controller('lobby')
 export class LobbyController {
     constructor(
         private readonly createLobby: CreateLobbyUseCase,
-        private readonly getLobby: GetLobbyUseCase,
-        private readonly joinLobby: JoinLobbyUseCase,
-        private readonly leaveLobby: LeaveLobbyUseCase
         private readonly getLobby: GetLobbyUseCase,
         private readonly joinLobby: JoinLobbyUseCase,
         private readonly leaveLobby: LeaveLobbyUseCase

@@ -11,6 +11,7 @@ import { Player } from '#matchmaking/domain/player/Player';
 const mockLobbyRepository: Partial<LobbyRepository> = {
     findById: vi.fn(),
     save: vi.fn(),
+    delete: vi.fn(),
 };
 
 const mockEventBus: EventBus = {
@@ -41,18 +42,19 @@ describe('LeaveLobbyUseCase', () => {
     describe('execute', () => {
         describe('when lobby exists', () => {
             describe('when the lobby is empty after leaving', () => {
-                it('should remove player from lobby and save it', () => {
+                it('should remove the player from lobby and delete the lobby', () => {
                     const dto = new LeaveLobbyDto(lobby.id, playerToRemove.id);
 
                     useCase.execute(dto);
 
                     expect(mockLobbyRepository.findById).toHaveBeenCalledWith(lobby.id);
+                    expect(mockLobbyRepository.delete).toHaveBeenCalledWith(lobby.id);
                     expect(mockLobbyRepository.save).toHaveBeenCalledTimes(0);
                 });
             });
 
             describe('when the lobby is not empty after leaving', () => {
-                it('should remove player from lobby and save it', () => {
+                it('should remove the player from lobby and save it', () => {
                     lobby.join(player2);
                     const dto = new LeaveLobbyDto(lobby.id, playerToRemove.id);
 

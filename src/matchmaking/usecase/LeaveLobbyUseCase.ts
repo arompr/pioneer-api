@@ -10,7 +10,6 @@ export class LeaveLobbyUseCase {
     ) {}
 
     execute(dto: LeaveLobbyDto): void {
-    execute(dto: LeaveLobbyDto): void {
         const lobby = this.lobbyRepository.findById(dto.lobbyId);
         if (!lobby) {
             throw new LobbyNotFoundError(dto.lobbyId);
@@ -18,10 +17,12 @@ export class LeaveLobbyUseCase {
 
         lobby.leave(dto.playerId);
 
-        lobby.pullDomainEvents().forEach((event) => this.eventBus.publish(event));
-
-        if (!lobby.isEmpty()) {
+        if (lobby.isEmpty()) {
+            this.lobbyRepository.delete(lobby.id);
+        } else {
             this.lobbyRepository.save(lobby);
         }
+
+        lobby.pullDomainEvents().forEach((event) => this.eventBus.publish(event));
     }
 }
