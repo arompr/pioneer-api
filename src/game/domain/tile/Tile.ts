@@ -1,6 +1,6 @@
-import { HexCoordinate } from '../coordinate/HexCoordinate';
-import { Distance } from '../distance/Distance';
-import { ResourceType } from './ResourceType';
+import { HexCoordinate } from '../shared/coordinate/HexCoordinate';
+import { Distance } from '../shared/distance/Distance';
+import { ResourceType } from '../shared/ResourceType';
 
 export class Tile {
     private readonly _coordinates: HexCoordinate;
