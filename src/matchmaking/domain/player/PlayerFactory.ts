@@ -1,5 +1,5 @@
+import { PlayerIdFactory } from '#common/domain/player/playerId/PlayerIdFactory';
 import { Player } from './Player';
-import type { PlayerIdFactory } from './playerId/PlayerIdFactory.ts';
 import { PlayerStatus } from './PlayerStatus';
 
 /**

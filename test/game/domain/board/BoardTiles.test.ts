@@ -1,10 +1,10 @@
 import { describe, expect, it, beforeEach } from 'vitest';
 import { BoardTiles } from '#game/domain/board/BoardTiles';
 import { Tile } from '#game/domain/tile/Tile';
-import { HexCoordinate } from '#game/domain/coordinate/HexCoordinate';
-import { ResourceType } from '#game/domain/tile/ResourceType';
+import { HexCoordinate } from '#game/domain/shared/coordinate/HexCoordinate';
 import { TileAlreadyExistsError } from '#game/domain/board/errors/TileAlreadyExistsError';
 import { TileMother } from '#test/game/domain/tile/TileMother';
+import { ResourceType } from '#game/domain/shared/ResourceType';
 
 const TILE1: Tile = TileMother.aTile(2, 0);
 const TILE2: Tile = TileMother.aTile(1, 0);

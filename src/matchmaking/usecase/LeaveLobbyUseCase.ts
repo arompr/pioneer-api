@@ -10,6 +10,7 @@ export class LeaveLobbyUseCase {
     ) {}
 
     execute(dto: LeaveLobbyDto): void {
+    execute(dto: LeaveLobbyDto): void {
         const lobby = this.lobbyRepository.findById(dto.lobbyId);
         if (!lobby) {
             throw new LobbyNotFoundError(dto.lobbyId);

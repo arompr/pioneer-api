@@ -1,4 +1,4 @@
-import { HexCoordinate } from '../coordinate/HexCoordinate';
+import { HexCoordinate } from '../shared/coordinate/HexCoordinate';
 import { Tile } from '../tile/Tile';
 import { BoardTiles } from './BoardTiles';
 import { TileNotFoundError } from './errors/TileNotFoundError';

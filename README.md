@@ -26,6 +26,7 @@ npm run start:prod   # Run production build
 npm run test         # Run tests with Vitest
 npm run lint:check   # Check code style
 npm run lint:fix     # Fix code style issues
+npm run type:check   # TypeScript type checking without emit
 npm run format:check # Check code formatting
 npm run format:fix   # Fix code formatting
 ```

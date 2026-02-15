@@ -25,6 +25,9 @@ export class LobbyController {
         private readonly getLobby: GetLobbyUseCase,
         private readonly joinLobby: JoinLobbyUseCase,
         private readonly leaveLobby: LeaveLobbyUseCase
+        private readonly getLobby: GetLobbyUseCase,
+        private readonly joinLobby: JoinLobbyUseCase,
+        private readonly leaveLobby: LeaveLobbyUseCase
     ) {}
 
     /**

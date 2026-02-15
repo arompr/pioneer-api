@@ -1,5 +1,5 @@
 import { Player } from '#matchmaking/domain/player/Player';
-import { PlayerId } from '#matchmaking/domain/player/playerId/PlayerId';
+import { PlayerId } from '#common/domain/player/playerId/PlayerId';
 import { PlayerStatus } from '#matchmaking/domain/player/PlayerStatus';
 
 export class PlayerMother {
