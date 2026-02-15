@@ -31,7 +31,7 @@ export class PlayerMother {
      *
      * @param {number} index - The player index.
      * @param {PlayerColor} color - The player's color.
-     * @param {ResourceHand} resources - Initial resources.
+     * @param {ResourceBundle} resources - Initial resources.
      * @returns {Player} A Player with resources.
      */
     static withResources(index: number, color: PlayerColor, resources: ResourceBundle): Player {
