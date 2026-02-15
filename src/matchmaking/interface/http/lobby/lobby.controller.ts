@@ -14,8 +14,8 @@ import type { JoinLobbyResponse } from './response/lobby/JoinLobbyResponse';
 import { JoinLobbyDto } from '#matchmaking/usecase/dto/JoinLobbyDto';
 import { JoinLobbyUseCase } from '#matchmaking/usecase/JoinLobbyUseCase';
 import { LeaveLobbyRequest } from './request/LeaveLobbyRequest';
-import { LeaveLobbyUseCase } from '#matchmaking/usecase/LeaveLobbyUseCase';
 import { PlayerId } from '#common/domain/player/playerId/PlayerId';
+import { LeaveLobbyUseCase } from '#matchmaking/usecase/LeaveLobbyUseCase';
 
 @UseErrorFilters()
 @Controller('lobby')
@@ -60,10 +60,6 @@ export class LobbyController {
     /**
      * Allows a new player to join an existing lobby.
      *
-     * The player is identified using the secret key provided in the request body.
-     * Once the player is removed, the endpoint returns HTTP 204 No Content since
-     * the player leaving no longer requires any lobby information.
-     *
      * @param {string} id - The lobby ID.
      * @param {JoinLobbyRequest} joinRequest - Contains the player's name.
      * @returns {JoinLobbyResponse} The updated lobby and the joining player's private view.
@@ -99,7 +95,7 @@ export class LobbyController {
      * @param {string} id - The lobby ID provided in the URL path.
      * @param {LeaveLobbyRequest} leaveRequest - Contains the secret key identifying the player.
      *
-     * * @example
+     * @example
      * POST /lobby/3f8c9c2e-1b4d-4f2e-9c3a-8d2f1a7b9c11/leave
      * {
      *   "secretKey": "player-secret-key-123"
