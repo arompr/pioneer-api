@@ -92,11 +92,9 @@ export class LobbyController {
     /**
      * Removes a player from a lobby.
      *
-     * Behavior:
-     * - Identifies the player using the provided secret key
-     * - Removes the player from the lobby
-     * - Reassigns the host if necessary
-     * - Returns no content (HTTP 204), as the player leaving no longer needs lobby information
+     * The player is identified using the secret key provided in the request body.
+     * Once the player is removed, the endpoint returns HTTP 204 No Content since
+     * the player leaving no longer requires any lobby information.
      *
      * @param {string} id - The lobby ID provided in the URL path.
      * @param {LeaveLobbyRequest} leaveRequest - Contains the secret key identifying the player.
