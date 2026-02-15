@@ -1,5 +1,5 @@
 import { Player } from '#matchmaking/domain/player/Player';
-import { PlayerId } from '#matchmaking/domain/player/playerId/PlayerId';
+import { PlayerId } from '#common/domain/player/playerId/PlayerId';
 import { LobbyAlreadyInGameError } from '../errors/LobbyAlreadyInGameError';
 import { LobbyState } from './LobbyState';
 import { LobbyStateType } from './LobbyStateType';

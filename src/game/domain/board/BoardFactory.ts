@@ -1,5 +1,5 @@
-import { HexCoordinate } from '../coordinate/HexCoordinate';
-import { ResourceType } from '../tile/ResourceType';
+import { HexCoordinate } from '../shared/coordinate/HexCoordinate';
+import { ResourceType } from '../shared/ResourceType';
 import { Tile } from '../tile/Tile';
 import { Board } from './Board';
 import { BoardTiles } from './BoardTiles';

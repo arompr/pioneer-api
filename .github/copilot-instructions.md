@@ -3,90 +3,34 @@
 ## Instructions
 
 - Use **bullet points** for communication; keep responses concise
-- Run `npm run type:check`, `npm run lint:check`, and `npm run test` before considering a task done
+- Before considering a task done, always run the project validation skill defined in `.github/skills/validation/SKILL.md` ("Validate Project"). This runs type checks, lint, format, and tests, and summarizes results in a structured way.
 - For multi-file changes, outline a brief plan before implementing
 - When creating new files, check existing siblings for patterns to follow
 - Use **named exports** — the project avoids `export default`
-- Always use **import aliases** (`#common/*`, `#matchmaking/*`, `#game/*`, `#test/*`) instead of relative imports
 
 ## Project Overview
 
-Pioneer API is a Node.js 24 + TypeScript + NestJS backend for a multiplayer game with matchmaking and hex-based gameplay.
+Pioneer API is a Node.js 24 + TypeScript + NestJS backend for a multiplayer Catan-like game with matchmaking and hex-based gameplay.
 
 ## Architecture
 
-### Core Structure
+General principles and layering are in [architecture.md](./architecture.md).
 
-- **Domain-Driven Design (DDD)** with layered architecture: domain → usecase → interface/infrastructure
-- **Module Organization**: Feature modules (`matchmaking`, `game`, `common`)
-- **Domain Layer**: Pure business logic — entities, value objects, aggregates, domain services, domain events
-- **Use Case Layer**: Application logic orchestrating domain operations via `execute()` methods
-- **Interface Layer**: NestJS controllers, request/response DTOs, exception filters, mappers
-- **Infrastructure Layer**: Repository implementations (currently in-memory)
-- **Early Stage**: Root-level `app.module.ts`, `app.controller.ts`, `app.controller.spec.ts`, and `app.service.ts` are NestJS boilerplate — not yet part of the architecture
+Slice-specific architecture details:
 
-### Directory Structure
-
-```
-src/
-├── common/
-│   └── domain/
-│       ├── aggregate/    # AggregateRoot base class, IEventSourcedAggregate
-│       ├── events/       # DomainEvent interface, EventPayload type
-│       └── DomainError.ts
-├── matchmaking/
-│   ├── domain/
-│   │   ├── lobby/        # Lobby aggregate, states, config, errors, events, factories
-│   │   └── player/       # Player entity, value objects, errors, factories
-│   ├── usecase/          # Use cases (CreateLobby, GetLobby, JoinLobby, LeaveLobby)
-│   ├── interface/http/lobby/
-│   │   ├── filters/      # Exception filters
-│   │   │   ├── domain/   # Domain error → HTTP response filters
-│   │   │   └── usecase/  # Use case error → HTTP response filters
-│   │   ├── mapper/       # Domain ↔ HTTP mappers
-│   │   ├── request/      # Request DTOs
-│   │   └── response/     # Response DTOs
-│   └── infastructure/db/inMemory/  # InMemoryLobbyRepository
-└── game/
-    ├── domain/
-    │   ├── board/        # Game board
-    │   ├── coordinate/   # Hex coordinate system
-    │   ├── distance/     # Distance calculations
-    │   ├── tile/         # Tile entities
-    │   └── Direction.ts
-    └── infra/inMemory/events/  # Event store implementations
-
-test/                     # Mirrors src/ structure
-├── matchmaking/
-├── game/
-├── common/
-└── *.Mother.ts           # Object Mother test fixtures
-```
-
-### Import Aliases
-
-Defined in `package.json` — **always use these** instead of relative imports:
-
-- `#common/*` → `./src/common/*.ts`
-- `#matchmaking/*` → `./src/matchmaking/*.ts`
-- `#game/*` → `./src/game/*.ts`
-- `#test/*` → `./test/*.ts`
+- **Matchmaking**: See [.github/skills/MATCHMAKING_SKILL.md](./.github/skills/MATCHMAKING_SKILL.md) for event-based aggregate pattern with state management
+- **Game**: See [.github/skills/GAME_SKILL.md](./.github/skills/GAME_SKILL.md) for full event sourcing patterns
 
 ## Domain Rules
 
-### Aggregates and Events
+### Entities, Value Objects, and Factories
 
-- Aggregate roots extend `AggregateRoot` from `#common/domain/aggregate/AggregateRoot`
-- Aggregates record domain events via `this.record(event)` and expose them via `pullDomainEvents()`
-- `AggregateRoot` tracks a `version` that increments with each recorded event
-- `DomainEvent<TPayload>` has `type` (string) and `payload` properties
-
-### State Pattern
-
-- Used for entities with complex lifecycle behavior (e.g., `Lobby`)
-- Each state class extends an abstract base class (e.g., `LobbyState`)
-- States: `WaitingForPlayersState`, `ReadyToStartState`, `InGameState`, `ClosedState`
-- The context entity delegates behavior to its current state
+- Entities encapsulate invariants, but **domain business rules and validation for creation of aggregates, entities, and value objects are enforced in domain factories, not in constructors**. Constructors should assume valid input; factories are responsible for all validation and for throwing domain errors on violation.
+- Private fields with public accessor methods — no bare setters
+- **Value objects** are immutable with `equals()` for comparison (e.g., `PlayerId`, `LobbyId`, `HexCoordinate`)
+- **Factories** encapsulate creation logic and enforce all invariants (e.g., `LobbyFactory`, `PlayerFactory`, `LobbyIdFactory`). Use factories for all aggregate/entity/value object creation that involves business rules.
+- **Repositories** defined as interfaces in domain, implemented in infrastructure (e.g., `LobbyRepository` + `InMemoryLobbyRepository`)
+- DI tokens use `Symbol`: `export const LOBBY_REPOSITORY = Symbol('LobbyRepository')`
 
 ### Error Handling
 
@@ -94,15 +38,7 @@ Defined in `package.json` — **always use these** instead of relative imports:
 - Domain errors represent business rule violations and bubble up to application/presentation layers
 - Naming: `[Entity][Violation]Error` (e.g., `PlayerNotFoundInLobbyError`, `InvalidMinPlayersError`)
 - Include relevant context as `public readonly` properties
-
-### Entities, Value Objects, and Factories
-
-- Entities encapsulate invariants, validate in constructors, fail fast with domain errors
-- Private fields with public accessor methods — no bare setters
-- **Value objects** are immutable with `equals()` for comparison (e.g., `PlayerId`, `LobbyId`, `HexCoordinate`)
-- **Factories** encapsulate creation logic (e.g., `LobbyFactory`, `PlayerFactory`, `LobbyIdFactory`)
-- **Repositories** defined as interfaces in domain, implemented in infrastructure (e.g., `LobbyRepository` + `InMemoryLobbyRepository`)
-- DI tokens use `Symbol`: `export const LOBBY_REPOSITORY = Symbol('LobbyRepository')`
+- Slice-specific errors documented in MATCHMAKING_SKILL.md and GAME_SKILL.md
 
 ## Testing Conventions
 
@@ -111,6 +47,7 @@ Defined in `package.json` — **always use these** instead of relative imports:
 - **Pattern**: Arrange-Act-Assert with `describe`/`it` blocks
 - **Object Mothers**: Factory classes in `/test` (e.g., `LobbyMother`, `PlayerMother`) with descriptive methods (`baseLobby()`, `readyToStartLobby()`)
 - **Setup**: Use `beforeEach` for shared Arrange sections. Keep tests isolated — no shared mutable state.
+- See MATCHMAKING_SKILL.md and GAME_SKILL.md for slice-specific testing patterns and examples
 
 ### Test Naming
 
@@ -129,6 +66,7 @@ describe('Lobby', () => {
 - `describe`: entity/method names
 - Inner `describe`: "when" clauses for context
 - `it`: assertion starting with expected outcome
+- Additional test naming conventions in slice-specific SKILLs
 
 ## Code Style
 
@@ -145,6 +83,7 @@ describe('Lobby', () => {
 - Methods/functions: `camelCase` — Private fields: `private camelCase`
 - Constants: `SCREAMING_SNAKE_CASE` for true constants, `camelCase` for readonly
 - Test files: `[Entity].test.ts`
+- Object Mothers: `[Entity]Mother.ts`
 
 ### Comments
 
@@ -167,6 +106,7 @@ Translate domain/use case errors into HTTP responses:
 - `code` values are `SCREAMING_SNAKE_CASE` (e.g., `LOBBY_FULL`)
 - Filters are composed via decorator functions (`UseDomainExceptionFilters()`, `UseUseCaseExceptionFilters()`) applied at controller level
 - `UseExceptionFilters()` combines both domain and use case filter sets
+- See MATCHMAKING_SKILL.md and GAME_SKILL.md for slice-specific examples
 
 ## Development Workflow
 

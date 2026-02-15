@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { PlayerId } from '#matchmaking/domain/player/playerId/PlayerId';
+import { PlayerId } from '#common/domain/player/playerId/PlayerId';
 import { Player } from '#matchmaking/domain/player/Player';
 import { PlayerStatus } from '#matchmaking/domain/player/PlayerStatus';
 
