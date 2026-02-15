@@ -1,260 +1,126 @@
 # Copilot Instructions for Pioneer API
 
+## Instructions
+
+- Use **bullet points** for communication; keep responses concise
+- Before considering a task done, always run the project validation skill defined in `.github/skills/validation/SKILL.md` ("Validate Project"). This runs type checks, lint, format, and tests, and summarizes results in a structured way.
+- For multi-file changes, outline a brief plan before implementing
+- When creating new files, check existing siblings for patterns to follow
+- Use **named exports** — the project avoids `export default`
+
 ## Project Overview
 
 Pioneer API is a Node.js 24 + TypeScript + NestJS backend for a multiplayer Catan-like game with matchmaking and hex-based gameplay.
 
 ## Architecture
 
-### Core Structure
+General principles and layering are in [architecture.md](./architecture.md).
 
-- **Domain-Driven Design (DDD)**: The codebase follows DDD principles with a clear separation between domain logic and application/infrastructure layers
-- **Module Organization**: Code is organized into feature modules (`matchmaking`, `game`, `common`)
-- **Bounded contexts**: The `game` bounded context should use full event sourcing for domain state and history, while `matchmaking` should follow State-based Aggregate with Domain Events.
-- **Domain Layer**: Each module has a `domain/` directory containing pure business logic, entities, value objects, and domain services
-- **Early Stage**: The project is young; `app.module.ts`, `app.controller.ts`, `app.controller.spec.ts`, and `app.service.ts` are NestJS boilerplate files present by default and not yet part of the actual architecture
+Slice-specific architecture details:
 
-### Directory Structure
-
-```
-src/
-├── common/         # Shared domain concepts and utilities
-│   └── domain/
-├── matchmaking/    # Matchmaking lobby system
-│   └── domain/
-│       ├── lobby/  # Lobby aggregate and value objects
-│       └── player/ # Player entities
-└── game/           # Game mechanics
-    └── domain/
-        ├── board/      # Game board
-        ├── coordinate/ # Hex coordinate system
-        ├── distance/   # Distance calculations
-        └── tile/       # Tile entities
-
-test/
-├── matchmaking/    # Matchmaking tests (mirrors src structure)
-├── game/           # Game tests (mirrors src structure)
-└── *.Mother.ts     # Object Mother test fixtures
-```
-
-### Import Aliases
-
-The project uses import aliases defined in `package.json`:
-
-- `#common/*` → `./src/common/*.ts`
-- `#matchmaking/*` → `./src/matchmaking/*.ts`
-- `#game/*` → `./src/game/*.ts`
-- `#test/*` → `./test/*.ts`
-
-**Always use these aliases** instead of relative imports (e.g., `import DomainError from '#common/domain/DomainError'`).
-
-### State Pattern
-
-Entities with complex lifecycle behavior use the **State Pattern**:
-
-- Example: `Lobby` has multiple states (`WaitingForPlayersState`, `ReadyToStartState`, `InGameState`, `ClosedState`)
-- Each state class extends an abstract base class (e.g., `LobbyState`)
-- States handle state-specific behavior and transitions
-- The context entity delegates behavior to its current state
+- **Matchmaking**: See [.github/skills/MATCHMAKING_SKILL.md](./.github/skills/MATCHMAKING_SKILL.md) for event-based aggregate pattern with state management
+- **Game**: See [.github/skills/GAME_SKILL.md](./.github/skills/GAME_SKILL.md) for full event sourcing patterns
 
 ## Domain Rules
 
+### Entities, Value Objects, and Factories
+
+- Entities encapsulate invariants, but **domain business rules and validation for creation of aggregates, entities, and value objects are enforced in domain factories, not in constructors**. Constructors should assume valid input; factories are responsible for all validation and for throwing domain errors on violation.
+- Private fields with public accessor methods — no bare setters
+- **Value objects** are immutable with `equals()` for comparison (e.g., `PlayerId`, `LobbyId`, `HexCoordinate`)
+- **Factories** encapsulate creation logic and enforce all invariants (e.g., `LobbyFactory`, `PlayerFactory`, `LobbyIdFactory`). Use factories for all aggregate/entity/value object creation that involves business rules.
+- **Repositories** defined as interfaces in domain, implemented in infrastructure (e.g., `LobbyRepository` + `InMemoryLobbyRepository`)
+- DI tokens use `Symbol`: `export const LOBBY_REPOSITORY = Symbol('LobbyRepository')`
+
 ### Error Handling
 
-- **Domain Errors**: All domain errors extend `DomainError` (from `#common/domain/DomainError`)
-- Domain errors represent business rule violations
-- Domain errors are **not** caught at the domain layer—they bubble up to application/presentation layers
-- Error naming convention: `[Entity][Violation]Error` (e.g., `PlayerNotFoundInLobbyError`, `InvalidMinPlayersError`)
-- Errors should include relevant context as public readonly properties
-
-Example:
-
-```typescript
-import DomainError from '#common/domain/DomainError';
-
-export default class InvalidMinPlayersError extends DomainError {
-    public readonly min: number;
-
-    constructor(min: number) {
-        super(`Minimum players must be at least 1 (given: ${min})`);
-        this.min = min;
-    }
-}
-```
-
-### Entity Guidelines
-
-- Entities should encapsulate their invariants
-- Use **private fields** for internal state, expose through **public accessor methods**
-- Methods should represent domain operations, not just getters/setters
-- Use **value objects** for identifiers (e.g., `PlayerId`, `LobbyId`) instead of primitives
-- Equality comparison should use value object methods (e.g., `playerId.equals(otherPlayerId)`)
-
-### Value Objects
-
-- Value objects are immutable
-- Two value objects are equal if their values are equal
-- Implement an `equals()` method for comparison
-- Examples: `PlayerId`, `LobbyId`, `HexCoordinate`, `Distance`
-
-### Aggregates
-
-- `Lobby` is an aggregate root managing `LobbyPlayers` and containing `Player` references
-- Aggregate roots maintain consistency boundaries
-- External entities interact only through the aggregate root, not directly with internal entities
+- All domain errors extend `DomainError` (from `#common/domain/DomainError`)
+- Domain errors represent business rule violations and bubble up to application/presentation layers
+- Naming: `[Entity][Violation]Error` (e.g., `PlayerNotFoundInLobbyError`, `InvalidMinPlayersError`)
+- Include relevant context as `public readonly` properties
+- Slice-specific errors documented in MATCHMAKING_SKILL.md and GAME_SKILL.md
 
 ## Testing Conventions
 
-### Test Framework
-
-- **Primary**: Vitest (configured in `vitest.config.ts`)
-- Tests use the `.test.ts` suffix (e.g., `Lobby.test.ts`)
-
-### Test Organization
-
-- Tests are located in the `/test` directory, mirroring the structure of `/src`
-- Test files use the `.test.ts` suffix (e.g., `Lobby.test.ts`)
-- Test fixtures and helpers (Object Mothers) also live in `/test` directory
-- Follow Arrange-Act-Assert pattern
-
-### Object Mother Pattern
-
-Use the **Object Mother** pattern for test data creation:
-
-- Each domain entity has a corresponding "Mother" class in `/test` (e.g., `LobbyMother`, `PlayerMother`, `TileMother`)
-- Mothers provide factory methods for creating test objects in various states
-- Use descriptive method names (e.g., `baseLobby()`, `readyToStartLobby()`, `inGameLobby()`)
-- Mothers encapsulate complex object creation logic
-
-Example:
-
-```typescript
-export class PlayerMother {
-    static anyPlayer(): Player {
-        return this.create(1);
-    }
-
-    static create(index: string | number, ready = false): Player {
-        return new Player(
-            new PlayerId(`secret-${index}`),
-            new PlayerId(`public-${index}`),
-            `player-${index}`,
-            ready ? PlayerStatus.Ready : PlayerStatus.Pending
-        );
-    }
-
-    static createMany(count: number, readyCount = 0): Player[] {
-        return Array.from({ length: count }, (_, i) => this.create(i + 1, i < readyCount));
-    }
-}
-```
+- **Framework**: Vitest (configured in `vitest.config.ts`). Use Vitest for all new tests.
+- **Location**: `/test` directory mirrors `/src` structure. Suffix: `.test.ts`
+- **Pattern**: Arrange-Act-Assert with `describe`/`it` blocks
+- **Object Mothers**: Factory classes in `/test` (e.g., `LobbyMother`, `PlayerMother`) with descriptive methods (`baseLobby()`, `readyToStartLobby()`)
+- **Setup**: Use `beforeEach` for shared Arrange sections. Keep tests isolated — no shared mutable state.
+- See MATCHMAKING_SKILL.md and GAME_SKILL.md for slice-specific testing patterns and examples
 
 ### Test Naming
-
-- Describe blocks: Use entity/method names
-- Inner describe blocks: Use "when" clauses to describe context
-- It blocks: Use assertions starting with the expected outcome
-
-Example:
 
 ```typescript
 describe('Lobby', () => {
     describe('leave', () => {
         describe('when the player is in the lobby', () => {
             it('removes the player from the lobby', () => {
-                lobby.leave(player1.id);
-                expect(lobby.isEmpty()).toBe(true);
-            });
-        });
-
-        describe('when the player is not in the lobby', () => {
-            it('throws PlayerNotFoundInLobbyError', () => {
-                expect(() => lobby.leave(unknownPlayerId)).toThrow(PlayerNotFoundInLobbyError);
+                /* ... */
             });
         });
     });
 });
 ```
 
-### Test Setup
-
-- Use `beforeEach` for test data initialization when multiple tests have the same Arrange section.
-- Leverage Object Mothers for creating test fixtures
-- Keep tests isolated—no shared mutable state between tests
+- `describe`: entity/method names
+- Inner `describe`: "when" clauses for context
+- `it`: assertion starting with expected outcome
+- Additional test naming conventions in slice-specific SKILLs
 
 ## Code Style
 
 ### TypeScript
 
-- **Strict mode** enabled: `strictNullChecks`, `noImplicitAny`, `strictBindCallApply`
-- Use explicit types for public APIs (method parameters and return types)
-- Prefer `type` over `interface` for simple type aliases
-- Use `interface` for object shapes that may be extended
+- **Strict mode** enabled (`strictNullChecks`, `noImplicitAny`, `strictBindCallApply`)
+- Explicit types for public APIs (parameters and return types)
+- Prefer `type` for simple aliases, `interface` for extendable shapes
+- **Named exports only** — avoid `export default`
 
 ### Naming Conventions
 
-- Error naming: `[Entity][Violation]Error`
+- Classes: `PascalCase` — Files: match primary export (e.g., `Lobby.ts`)
+- Methods/functions: `camelCase` — Private fields: `private camelCase`
+- Constants: `SCREAMING_SNAKE_CASE` for true constants, `camelCase` for readonly
 - Test files: `[Entity].test.ts`
 - Object Mothers: `[Entity]Mother.ts`
 
 ### Comments
 
-- Use JSDoc only for public APIs
-- Do not comment obvious code
-
-Example:
-
-```typescript
-/**
- * Represents a matchmaking lobby.
- */
-export class Lobby {
-    /**
-     * Removes a player from the lobby.
-     *
-     * @param {PlayerId} playerId - The ID of the player to remove.
-     * @throws {PlayerNotFoundInLobbyError} If the player is not in the lobby.
-     */
-    leave(playerId: PlayerId): void {
-        // Implementation
-    }
-}
-```
+- JSDoc on public APIs with `@param`, `@returns`, `@throws` tags
+- Avoid obvious comments — code should be self-documenting
 
 ## NestJS Conventions
 
-- Use dependency injection for services
-- Controllers handle HTTP concerns
-- Services contain application logic
-- Domain layer is framework-agnostic (no NestJS imports in domain code)
-- Use `@Module`, `@Controller`, `@Injectable` decorators appropriately
-- Note: Root-level `app.module.ts`, `app.controller.ts`, `app.controller.spec.ts`, and `app.service.ts` are default boilerplate and not yet representing actual project structure
+- Dependency injection for services; domain layer is framework-agnostic
+- Controllers handle HTTP concerns; use cases contain application logic
+- Root-level `app.module.ts`, `app.controller.ts`, `app.service.ts` are unused boilerplate
+
+### Exception Filters
+
+Translate domain/use case errors into HTTP responses:
+
+- **Location**: `interface/http/{module}/filters/domain/` and `filters/usecase/`
+- **Naming**: `[Error]Filter.ts` (e.g., `LobbyFullErrorFilter.ts`)
+- Each filter catches one error type and returns a JSON response with `statusCode`, `code`, `message`, `timestamp`, `method`, `path`
+- `code` values are `SCREAMING_SNAKE_CASE` (e.g., `LOBBY_FULL`)
+- Filters are composed via decorator functions (`UseDomainExceptionFilters()`, `UseUseCaseExceptionFilters()`) applied at controller level
+- `UseExceptionFilters()` combines both domain and use case filter sets
+- See MATCHMAKING_SKILL.md and GAME_SKILL.md for slice-specific examples
 
 ## Development Workflow
 
 ### Commands
 
-- `npm run start:dev` - Start development server with watch mode
-- `npm run test` - Run tests with Vitest
-- `npm run lint:check` - Check for linting issues
-- `npm run lint:fix` - Fix linting issues automatically
-- `npm run format:check` - Check code formatting
-- `npm run format:fix` - Format code with Prettier
-- npm run type:check - Check TypeScript compilation without emit
-- `npm run build` - Build production bundle
+- `npm run start:dev` — Dev server with watch mode
+- `npm run test` — Run tests (Vitest)
+- `npm run type:check` — TypeScript compilation check
+- `npm run lint:check` / `npm run lint:fix` — ESLint
+- `npm run format:check` / `npm run format:fix` — Prettier
+- `npm run build` — Production build
 
 ### Code Quality
 
-- Generated code must pass ESLint and Prettier without modification
-- Unused variables prefixed with `_` are allowed (e.g., `_unusedParam`)
-- No floating promises—must be handled or explicitly voided
-
-## Key Patterns to Follow
-
-1. **Domain Purity**: Keep domain logic free of framework dependencies
-2. **Fail Fast**: All domain validation and invariant enforcement must happen in domain factories (or dedicated creation functions), not in class constructors.
-3. **Immutability**: Prefer immutable value objects and readonly fields
-4. **Encapsulation**: Hide implementation details, expose behavior through methods
-5. **Test First**: Write tests using Object Mothers for maintainable, readable tests
-6. **State Pattern**: Use for complex lifecycle management (see `Lobby` states)
-7. **DDD Ubiquitous Language**: Use domain terminology in code (e.g., "lobby", "player", "ready")
+- ESLint + Prettier configured — run before committing
+- Unused variables prefixed with `_` are allowed
+- No floating promises — handle or explicitly void

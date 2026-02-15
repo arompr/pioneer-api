@@ -21,6 +21,12 @@
         "strictBindCallApply": true,
         "noFallthroughCasesInSwitch": true,
         "baseUrl": "./",
-        "rootDir": "./"
+        "rootDir": "./",
+        "paths": {
+            "#common/*": ["./src/common/*"],
+            "#matchmaking/*": ["./src/matchmaking/*"],
+            "#game/*": ["./src/game/*"],
+            "#test/*": ["./test/*"]
+        }
     }
 }
