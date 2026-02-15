@@ -56,8 +56,8 @@ export class ResourceBundle {
         const newResources = new Map(this._resources);
 
         for (const [type, quantity] of other._resources.entries()) {
-            const currentquantity = this.quantityOf(type);
-            newResources.set(type, currentquantity + quantity);
+            const currentQuantity = this.quantityOf(type);
+            newResources.set(type, currentQuantity + quantity);
         }
 
         return new ResourceBundle(newResources);
@@ -75,8 +75,8 @@ export class ResourceBundle {
 
         const newResources = new Map(this._resources);
         for (const [type, quantity] of other._resources.entries()) {
-            const currentquantity = newResources.get(type) ?? 0;
-            const remaining = currentquantity - quantity;
+            const currentQuantity = newResources.get(type) ?? 0;
+            const remaining = currentQuantity - quantity;
             newResources.set(type, remaining);
         }
 

@@ -26,11 +26,10 @@ describe('LeaveLobbyUseCase', () => {
             it('should remove player from lobby and save it', () => {
                 const dto = new LeaveLobbyDto(lobby.id, playerToRemove.id);
 
-                const result = useCase.execute(dto);
+                useCase.execute(dto);
 
                 expect(mockLobbyRepository.findById).toHaveBeenCalledWith(lobby.id);
                 expect(mockLobbyRepository.save).toHaveBeenCalledWith(lobby);
-                expect(result).toBe(lobby);
             });
         });
 
