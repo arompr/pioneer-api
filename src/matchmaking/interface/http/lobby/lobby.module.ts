@@ -9,6 +9,8 @@ import { LobbyFactory } from '#matchmaking/domain/lobby/LobbyFactory';
 import { PlayerFactory } from '#matchmaking/domain/player/PlayerFactory';
 import { PlayerIdFactory } from '#matchmaking/domain/player/playerId/PlayerIdFactory';
 import { LobbyIdFactory } from '#matchmaking/domain/lobby/lobbyId/LobbyIdFactory';
+import { JoinLobbyUseCase } from '#matchmaking/usecase/JoinLobbyUseCase';
+import { LeaveLobbyUseCase } from '#matchmaking/usecase/LeaveLobbyUseCase';
 
 @Module({
     controllers: [LobbyController],
@@ -58,6 +60,20 @@ import { LobbyIdFactory } from '#matchmaking/domain/lobby/lobbyId/LobbyIdFactory
                     lobbyConfigFactory
                 ),
             inject: [LOBBY_REPOSITORY, LobbyFactory, PlayerFactory, LobbyConfigFactory],
+        },
+
+        {
+            provide: JoinLobbyUseCase,
+            useFactory: (lobbyRepository: LobbyRepository, playerFactory: PlayerFactory) =>
+                new JoinLobbyUseCase(lobbyRepository, playerFactory),
+            inject: [LOBBY_REPOSITORY, PlayerFactory],
+        },
+
+        {
+            provide: LeaveLobbyUseCase,
+            useFactory: (lobbyRepository: LobbyRepository) =>
+                new LeaveLobbyUseCase(lobbyRepository),
+            inject: [LOBBY_REPOSITORY],
         },
     ],
 })
