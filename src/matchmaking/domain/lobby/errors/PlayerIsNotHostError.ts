@@ -1,5 +1,5 @@
 import { DomainError } from '#common/domain/DomainError';
-import type { PlayerId } from '#matchmaking/domain/player/playerId/PlayerId';
+import type { PlayerId } from '#common/domain/player/playerId/PlayerId';
 import type { LobbyId } from '../lobbyId/LobbyId';
 
 export class PlayerIsNotHostError extends DomainError {

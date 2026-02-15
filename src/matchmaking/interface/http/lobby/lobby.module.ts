@@ -7,8 +7,8 @@ import { LOBBY_REPOSITORY, LobbyRepository } from '#matchmaking/domain/lobby/Lob
 import { LobbyConfigFactory } from '#matchmaking/domain/lobby/LobbyConfig/LobbyConfigFactory';
 import { LobbyFactory } from '#matchmaking/domain/lobby/LobbyFactory';
 import { PlayerFactory } from '#matchmaking/domain/player/PlayerFactory';
-import { PlayerIdFactory } from '#matchmaking/domain/player/playerId/PlayerIdFactory';
 import { LobbyIdFactory } from '#matchmaking/domain/lobby/lobbyId/LobbyIdFactory';
+import { PlayerIdFactory } from '#common/domain/player/playerId/PlayerIdFactory';
 
 @Module({
     controllers: [LobbyController],

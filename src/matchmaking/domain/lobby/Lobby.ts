@@ -2,7 +2,7 @@ import type { LobbyId } from './lobbyId/LobbyId';
 import { LobbyPlayers } from './LobbyPlayers';
 import type { LobbyConfig } from './LobbyConfig/LobbyConfig';
 import type { Player } from '../player/Player';
-import type { PlayerId } from '../player/playerId/PlayerId';
+import type { PlayerId } from '../../../common/domain/player/playerId/PlayerId';
 import { LobbyState } from './states/LobbyState';
 import { ClosedState } from './states/ClosedState';
 import { ILobby } from './ILobby';

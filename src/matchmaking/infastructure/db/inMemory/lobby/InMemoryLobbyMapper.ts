@@ -3,7 +3,7 @@ import { LobbyAggregate } from '#matchmaking/domain/lobby/LobbyAggregate.type';
 import { LobbyId } from '#matchmaking/domain/lobby/lobbyId/LobbyId';
 import { LobbyPlayers } from '#matchmaking/domain/lobby/LobbyPlayers';
 import { LobbyStateRegistry } from '#matchmaking/domain/lobby/states/LobbyStateRegistry';
-import { PlayerId } from '#matchmaking/domain/player/playerId/PlayerId';
+import { PlayerId } from '#common/domain/player/playerId/PlayerId';
 import { InMemoryPlayerMapper } from '../player/InMemoryPlayerMapper';
 import { InMemoryLobby } from './InMemoryLobby';
 import { InMemoryLobbyConfigMapper } from './lobbyConfig/InMemoryLobbyConfigMapper';

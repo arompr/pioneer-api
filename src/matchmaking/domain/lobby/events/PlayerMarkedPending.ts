@@ -1,5 +1,5 @@
 import { DomainEvent } from '#common/domain/events/DomainEvent';
-import { PlayerId } from '#matchmaking/domain/player/playerId/PlayerId';
+import { PlayerId } from '#common/domain/player/playerId/PlayerId';
 
 export type PlayerMarkedPendingPayload = {
     playerId: PlayerId;
