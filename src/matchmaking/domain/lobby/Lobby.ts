@@ -266,7 +266,7 @@ export class Lobby extends AggregateRoot implements ILobby {
     private reassignHost(): void {
         if (this._players.isEmpty()) {
             this.transitionTo(new ClosedState());
-            this.record(new LobbyClosed(this._id));
+            this.record(new LobbyClosed());
         } else {
             this.assignNextHost();
             this.record(new LobbyHostChanged(this._hostId));
