@@ -22,17 +22,13 @@ const mockEventBus: EventBus = {
 let useCase: LeaveLobbyUseCase;
 let lobby: Lobby;
 let playerToRemove: Player;
-let player1: Player;
-let player2: Player;
 
 describe('LeaveLobbyUseCase', () => {
     beforeEach(() => {
         const { lobby: l, players } = LobbyMother.baseLobby();
         lobby = l;
-        [player1, player2] = players;
+        [playerToRemove] = players;
 
-        lobby = LobbyMother.baseLobby().lobby;
-        playerToRemove = player1;
         mockLobbyRepository.findById = vi.fn().mockReturnValue(lobby);
 
         useCase = new LeaveLobbyUseCase(mockLobbyRepository as LobbyRepository, mockEventBus);
@@ -55,7 +51,8 @@ describe('LeaveLobbyUseCase', () => {
 
             describe('when the lobby is not empty after leaving', () => {
                 it('should remove the player from lobby and save it', () => {
-                    lobby.join(player2);
+                    lobby = LobbyMother.readyToStartLobby().lobby;
+                    mockLobbyRepository.findById = vi.fn().mockReturnValue(lobby);
                     const dto = new LeaveLobbyDto(lobby.id, playerToRemove.id);
 
                     useCase.execute(dto);
