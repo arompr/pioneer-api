@@ -8,7 +8,8 @@
         "#common/*": "./src/common/*.ts",
         "#matchmaking/*": "./src/matchmaking/*.ts",
         "#game/*": "./src/game/*.ts",
-        "#test/*": "./test/*.ts"
+        "#test/*": "./test/*.ts",
+        "#bootstrap/*": "./src/bootstrap/*.ts"
     },
     "license": "UNLICENSED",
     "scripts": {

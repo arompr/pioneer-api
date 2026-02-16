@@ -7,6 +7,8 @@ import { LOBBY_REPOSITORY, LobbyRepository } from '#matchmaking/domain/lobby/Lob
 import { LobbyConfigFactory } from '#matchmaking/domain/lobby/LobbyConfig/LobbyConfigFactory';
 import { LobbyFactory } from '#matchmaking/domain/lobby/LobbyFactory';
 import { PlayerFactory } from '#matchmaking/domain/player/PlayerFactory';
+import { EventBus } from '#matchmaking/usecase/EventBus';
+import { EVENT_BUS } from './eventBus';
 
 export const useCaseProviders: Provider[] = [
     {
@@ -42,7 +44,8 @@ export const useCaseProviders: Provider[] = [
     },
     {
         provide: LeaveLobbyUseCase,
-        useFactory: (lobbyRepository: LobbyRepository) => new LeaveLobbyUseCase(lobbyRepository),
-        inject: [LOBBY_REPOSITORY],
+        useFactory: (lobbyRepository: LobbyRepository, eventBus: EventBus) =>
+            new LeaveLobbyUseCase(lobbyRepository, eventBus),
+        inject: [LOBBY_REPOSITORY, EVENT_BUS],
     },
 ];

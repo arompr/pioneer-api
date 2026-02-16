@@ -26,7 +26,8 @@
             "#common/*": ["./src/common/*"],
             "#matchmaking/*": ["./src/matchmaking/*"],
             "#game/*": ["./src/game/*"],
-            "#test/*": ["./test/*"]
+            "#test/*": ["./test/*"],
+            "#bootstrap/*": ["./src/bootstrap/*"]
         }
     }
 }
