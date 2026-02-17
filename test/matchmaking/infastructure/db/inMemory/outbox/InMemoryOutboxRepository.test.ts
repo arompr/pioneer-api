@@ -1,20 +1,13 @@
 import { InMemoryOutboxRepository } from '#matchmaking/infastructure/db/inMemory/outbox/InMemoryOutboxRepository';
-import { OutboxMessage } from '#matchmaking/domain/outbox/OutboxMessage';
-import { OutboxMessageId } from '#matchmaking/domain/outbox/outboxMessageId/OutboxMessageId';
 import { OutboxObserver } from '#matchmaking/domain/outbox/OutboxObserver';
 import { describe, expect, it, vi } from 'vitest';
+import { OutboxMessageMother } from '#test/matchmaking/domain/outbox/OutboxMessageMother';
 
 describe('InMemoryOutboxRepository', () => {
     describe('save', () => {
         it('stores a message in the repository', () => {
             const repository = new InMemoryOutboxRepository();
-            const message = new OutboxMessage(
-                new OutboxMessageId('01JH9ABCDEFGHIJK'),
-                'PlayerJoinedLobby',
-                { lobbyId: 'lobby-123' },
-                new Date(),
-                'lobby-123'
-            );
+            const message = OutboxMessageMother.any();
 
             repository.save(message);
 
@@ -30,13 +23,7 @@ describe('InMemoryOutboxRepository', () => {
                 onMessagesAdded: onMessagesAddedMock,
             };
             repository.registerObserver(observer);
-            const message = new OutboxMessage(
-                new OutboxMessageId('01JH9ABCDEFGHIJK'),
-                'PlayerJoinedLobby',
-                { lobbyId: 'lobby-123' },
-                new Date(),
-                'lobby-123'
-            );
+            const message = OutboxMessageMother.any();
 
             repository.save(message);
 
@@ -51,13 +38,7 @@ describe('InMemoryOutboxRepository', () => {
             const observer2: OutboxObserver = { onMessagesAdded: onMessagesAddedMock2 };
             repository.registerObserver(observer1);
             repository.registerObserver(observer2);
-            const message = new OutboxMessage(
-                new OutboxMessageId('01JH9ABCDEFGHIJK'),
-                'PlayerJoinedLobby',
-                { lobbyId: 'lobby-123' },
-                new Date(),
-                'lobby-123'
-            );
+            const message = OutboxMessageMother.playerJoined();
 
             repository.save(message);
 
@@ -69,20 +50,8 @@ describe('InMemoryOutboxRepository', () => {
     describe('findUnprocessed', () => {
         it('returns all stored messages', () => {
             const repository = new InMemoryOutboxRepository();
-            const message1 = new OutboxMessage(
-                new OutboxMessageId('01JH9ABCDEFGHIJK'),
-                'PlayerJoinedLobby',
-                { lobbyId: 'lobby-123' },
-                new Date(),
-                'lobby-123'
-            );
-            const message2 = new OutboxMessage(
-                new OutboxMessageId('01JH9ABCDEFGHIJL'),
-                'PlayerLeftLobby',
-                { lobbyId: 'lobby-123' },
-                new Date(),
-                'lobby-123'
-            );
+            const message1 = OutboxMessageMother.playerJoined();
+            const message2 = OutboxMessageMother.playerLeft();
             repository.save(message1);
             repository.save(message2);
 
@@ -105,13 +74,7 @@ describe('InMemoryOutboxRepository', () => {
     describe('delete', () => {
         it('removes a message from the repository', () => {
             const repository = new InMemoryOutboxRepository();
-            const message = new OutboxMessage(
-                new OutboxMessageId('01JH9ABCDEFGHIJK'),
-                'PlayerJoinedLobby',
-                { lobbyId: 'lobby-123' },
-                new Date(),
-                'lobby-123'
-            );
+            const message = OutboxMessageMother.any();
             repository.save(message);
 
             repository.delete(message.id);
@@ -122,20 +85,8 @@ describe('InMemoryOutboxRepository', () => {
 
         it('does not affect other messages', () => {
             const repository = new InMemoryOutboxRepository();
-            const message1 = new OutboxMessage(
-                new OutboxMessageId('01JH9ABCDEFGHIJK'),
-                'PlayerJoinedLobby',
-                { lobbyId: 'lobby-123' },
-                new Date(),
-                'lobby-123'
-            );
-            const message2 = new OutboxMessage(
-                new OutboxMessageId('01JH9ABCDEFGHIJL'),
-                'PlayerLeftLobby',
-                { lobbyId: 'lobby-123' },
-                new Date(),
-                'lobby-123'
-            );
+            const message1 = OutboxMessageMother.playerJoined();
+            const message2 = OutboxMessageMother.playerLeft();
             repository.save(message1);
             repository.save(message2);
 
