@@ -1,0 +1,6 @@
+export enum WsCommandType {
+    LEAVE_LOBBY = 'LEAVE_LOBBY',
+    START_LOBBY = 'START_LOBBY',
+    MARK_READY = 'MARK_READY',
+    MARK_PENDING = 'MARK_PENDING',
+}
