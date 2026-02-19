@@ -62,6 +62,18 @@ describe('InMemoryOutboxRepository', () => {
             expect(unprocessed.some((m) => m.id.equals(message2.id))).toBe(true);
         });
 
+        it('deletes all stored messages in the outbox', () => {
+            const repository = new InMemoryOutboxRepository();
+            const message1 = OutboxMessageMother.playerJoined();
+            const message2 = OutboxMessageMother.playerLeft();
+            repository.save(message1);
+            repository.save(message2);
+
+            repository.findUnprocessed();
+
+            expect(repository.findUnprocessed()).toHaveLength(0);
+        });
+
         it('returns an empty array when no messages are stored', () => {
             const repository = new InMemoryOutboxRepository();
 

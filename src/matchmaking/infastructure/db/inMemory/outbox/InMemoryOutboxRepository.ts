@@ -32,14 +32,20 @@ export class InMemoryOutboxRepository implements OutboxRepository {
     }
 
     /**
-     * Finds all unprocessed messages in the outbox.
+     * Finds and removes all unprocessed messages in the outbox.
      *
-     * @returns {OutboxMessage[]} Array of unprocessed messages
+     * @returns {OutboxMessage[]} Array of previously unprocessed messages
      */
     findUnprocessed(): OutboxMessage[] {
-        return Array.from(this.messages.values()).map((imMessage) =>
-            InMemoryOutboxMessageMapper.toDomain(imMessage)
-        );
+        if (this.messages.size === 0) {
+            return [];
+        }
+
+        const messagesSnapshot = Array.from(this.messages.values());
+
+        this.messages.clear();
+
+        return messagesSnapshot.map((imMessage) => InMemoryOutboxMessageMapper.toDomain(imMessage));
     }
 
     /**
