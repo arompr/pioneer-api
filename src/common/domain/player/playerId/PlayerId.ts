@@ -1,26 +1,28 @@
+import { IAggregateId } from '#common/domain/aggregate/AggregateRoot';
+
 /**
  * Value Object representing a unique Player identifier.
  */
-export class PlayerId {
+export class PlayerId implements IAggregateId {
     /**
      * The unique identifier string.
      */
-    private readonly id: string;
+    private readonly _value: string;
 
     /**
      * Creates a new PlayerId.
      *
-     * @param {string} id - A valid UUID string.
+     * @param {string} id - A valid string.
      */
     constructor(id: string) {
-        this.id = id;
+        this._value = id;
     }
 
     /**
      * Returns the string value of the PlayerId.
      */
-    toString(): string {
-        return this.id;
+    get value(): string {
+        return this._value;
     }
 
     /**
@@ -30,6 +32,6 @@ export class PlayerId {
      * @returns {boolean} True if the IDs are identical.
      */
     equals(other: PlayerId): boolean {
-        return this.id === other.toString();
+        return this._value === other._value;
     }
 }

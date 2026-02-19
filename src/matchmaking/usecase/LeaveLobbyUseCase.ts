@@ -1,12 +1,12 @@
 import { LobbyRepository } from '#matchmaking/domain/lobby/LobbyRepository';
+import { OutboxService } from '#matchmaking/domain/outbox/OutboxService';
 import { LeaveLobbyDto } from './dto/LeaveLobbyDto';
-import LobbyNotFoundError from './errors/LobbyNotFoundError';
-import { EventBus } from './EventBus';
+import { LobbyNotFoundError } from './errors/LobbyNotFoundError';
 
 export class LeaveLobbyUseCase {
     constructor(
         private readonly lobbyRepository: LobbyRepository,
-        private readonly eventBus: EventBus
+        private readonly outboxService: OutboxService
     ) {}
 
     execute(dto: LeaveLobbyDto): void {
@@ -23,6 +23,6 @@ export class LeaveLobbyUseCase {
             this.lobbyRepository.save(lobby);
         }
 
-        lobby.pullDomainEvents().forEach((event) => this.eventBus.publish(event));
+        this.outboxService.publishEvents(lobby);
     }
 }

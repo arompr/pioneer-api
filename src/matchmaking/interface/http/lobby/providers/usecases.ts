@@ -7,8 +7,7 @@ import { LOBBY_REPOSITORY, LobbyRepository } from '#matchmaking/domain/lobby/Lob
 import { LobbyConfigFactory } from '#matchmaking/domain/lobby/LobbyConfig/LobbyConfigFactory';
 import { LobbyFactory } from '#matchmaking/domain/lobby/LobbyFactory';
 import { PlayerFactory } from '#matchmaking/domain/player/PlayerFactory';
-import { EventBus } from '#matchmaking/usecase/EventBus';
-import { EVENT_BUS } from './eventBus';
+import { OutboxService } from '#matchmaking/domain/outbox/OutboxService';
 
 export const useCaseProviders: Provider[] = [
     {
@@ -25,27 +24,32 @@ export const useCaseProviders: Provider[] = [
             lobbyRepository: LobbyRepository,
             lobbyFactory: LobbyFactory,
             playerFactory: PlayerFactory,
-            lobbyConfigFactory: LobbyConfigFactory
+            lobbyConfigFactory: LobbyConfigFactory,
+            outboxService: OutboxService
         ) =>
             new CreateLobbyUseCase(
                 lobbyRepository,
                 lobbyFactory,
                 playerFactory,
-                lobbyConfigFactory
+                lobbyConfigFactory,
+                outboxService
             ),
-        inject: [LOBBY_REPOSITORY, LobbyFactory, PlayerFactory, LobbyConfigFactory],
+        inject: [LOBBY_REPOSITORY, LobbyFactory, PlayerFactory, LobbyConfigFactory, OutboxService],
     },
 
     {
         provide: JoinLobbyUseCase,
-        useFactory: (lobbyRepository: LobbyRepository, playerFactory: PlayerFactory) =>
-            new JoinLobbyUseCase(lobbyRepository, playerFactory),
-        inject: [LOBBY_REPOSITORY, PlayerFactory],
+        useFactory: (
+            lobbyRepository: LobbyRepository,
+            playerFactory: PlayerFactory,
+            outboxService: OutboxService
+        ) => new JoinLobbyUseCase(lobbyRepository, playerFactory, outboxService),
+        inject: [LOBBY_REPOSITORY, PlayerFactory, OutboxService],
     },
     {
         provide: LeaveLobbyUseCase,
-        useFactory: (lobbyRepository: LobbyRepository, eventBus: EventBus) =>
-            new LeaveLobbyUseCase(lobbyRepository, eventBus),
-        inject: [LOBBY_REPOSITORY, EVENT_BUS],
+        useFactory: (lobbyRepository: LobbyRepository, outboxService: OutboxService) =>
+            new LeaveLobbyUseCase(lobbyRepository, outboxService),
+        inject: [LOBBY_REPOSITORY, OutboxService],
     },
 ];

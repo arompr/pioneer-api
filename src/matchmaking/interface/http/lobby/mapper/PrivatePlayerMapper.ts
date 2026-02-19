@@ -4,8 +4,8 @@ import { PrivatePlayerResponse } from '../response/player/PrivatePlayerResponse'
 export class PrivatePlayerMapper {
     static toPlayerResponse(player: Player, isHost: boolean): PrivatePlayerResponse {
         return {
-            secretKey: player.id.toString(),
-            publicKey: player.publicKey.toString(),
+            secretKey: player.id.value,
+            publicKey: player.publicKey.value,
             name: player.name,
             isHost: isHost,
         };

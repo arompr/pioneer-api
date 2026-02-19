@@ -6,8 +6,8 @@ import { InMemoryPlayer } from './InMemoryPlayer';
 export class InMemoryPlayerMapper {
     static toInMemory(player: Player): InMemoryPlayer {
         return new InMemoryPlayer(
-            player.id.toString(),
-            player.publicKey.toString(),
+            player.id.value,
+            player.publicKey.value,
             player.name,
             player.status.toString()
         );

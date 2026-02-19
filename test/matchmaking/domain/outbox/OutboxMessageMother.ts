@@ -1,6 +1,7 @@
 import { OutboxMessage } from '#matchmaking/domain/outbox/OutboxMessage';
 import { TestOutboxMessageBuilder } from './TestOutboxMessageBuilder';
 import { OutboxMessageId } from '#matchmaking/domain/outbox/outboxMessageId/OutboxMessageId';
+import { EventPayload } from '#common/domain/events/DomainEvent';
 
 /**
  * Test mother for OutboxMessage domain objects.
@@ -31,7 +32,7 @@ export class OutboxMessageMother {
         params?: Partial<{
             id: OutboxMessageId;
             eventType: string;
-            eventPayload: any;
+            eventPayload: EventPayload;
             createdAt: Date;
             aggregateId: string;
         }>

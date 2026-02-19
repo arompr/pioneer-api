@@ -7,6 +7,7 @@ import { PlayerFactory } from '#matchmaking/domain/player/PlayerFactory';
 import { CreateLobbyDto } from '#matchmaking/usecase/dto/CreateLobbyDto';
 import { LobbyGameMode } from '#matchmaking/domain/lobby/LobbyConfig/LobbyGameMode';
 import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
+import { OutboxService } from '#matchmaking/domain/outbox/OutboxService';
 
 const PLAYER_NAME = 'hostName';
 const GAME_MODE = LobbyGameMode.BASE;
@@ -23,6 +24,7 @@ const mockPlayerFactory: Partial<PlayerFactory> = {
 };
 const mockLobbyFactory: Partial<LobbyFactory> = { create: vi.fn().mockReturnValue(createdLobby) };
 const mockLobbyRepository: Partial<LobbyRepository> = { save: vi.fn() };
+const mockOutboxService: Partial<OutboxService> = { publishEvents: vi.fn() };
 
 let useCase: CreateLobbyUseCase;
 
@@ -32,7 +34,8 @@ describe('CreateLobbyUseCase', () => {
             mockLobbyRepository as LobbyRepository,
             mockLobbyFactory as LobbyFactory,
             mockPlayerFactory as PlayerFactory,
-            mockLobbyConfigFactory as LobbyConfigFactory
+            mockLobbyConfigFactory as LobbyConfigFactory,
+            mockOutboxService as OutboxService
         );
     });
 

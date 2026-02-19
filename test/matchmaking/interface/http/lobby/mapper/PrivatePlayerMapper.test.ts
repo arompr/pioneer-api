@@ -10,8 +10,8 @@ describe('PrivatePlayerMapper', () => {
             const response = PrivatePlayerMapper.toPlayerResponse(player, true);
 
             expect(response).toEqual({
-                secretKey: player.id.toString(),
-                publicKey: player.publicKey.toString(),
+                secretKey: player.id.value,
+                publicKey: player.publicKey.value,
                 name: player.name,
                 isHost: true,
             });

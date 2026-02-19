@@ -7,7 +7,7 @@ export class LobbyMapper {
             id: lobby.id.value,
             status: lobby.stateType,
             players: lobby.allPlayers.map((player) => ({
-                publicKey: player.publicKey.toString(),
+                publicKey: player.publicKey.value,
                 name: player.name,
                 isHost: lobby.isHost(player.id),
             })),
