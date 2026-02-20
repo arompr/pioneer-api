@@ -1,7 +1,7 @@
 import { EventBus } from '#matchmaking/usecase/EventBus';
 import { WsNotifyPlayerLeftLobbyHandler } from '#matchmaking/infastructure/handlers/WsNotifyPlayerLeftLobbyHandler';
-import { PlayerLeftLobby } from '#matchmaking/domain/lobby/events/PlayerLeftLobby';
+import { LobbyEventType } from '#matchmaking/domain/lobby/events/LobbyEventType';
 
 export function registerHandlers(bus: EventBus): void {
-    bus.register(PlayerLeftLobby, new WsNotifyPlayerLeftLobbyHandler());
+    bus.register(LobbyEventType.PlayerLeftLobby, new WsNotifyPlayerLeftLobbyHandler());
 }

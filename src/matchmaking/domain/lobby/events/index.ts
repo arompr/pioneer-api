@@ -1,3 +1,4 @@
+export * from './LobbyEventType';
 export * from './PlayerJoinedLobby';
 export * from './PlayerLeftLobby';
 export * from './LobbyStarted';

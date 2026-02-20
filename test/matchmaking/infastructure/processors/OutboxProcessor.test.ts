@@ -2,7 +2,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { OutboxProcessor } from '#matchmaking/infastructure/processors/OutboxProcessor';
 import { OutboxMessageMother } from '#test/matchmaking/domain/outbox/OutboxMessageMother';
 import { InMemoryOutboxRepository } from '#matchmaking/infastructure/db/inMemory/outbox/InMemoryOutboxRepository';
-import { DomainEvent, EventPayload } from '#common/domain/events/DomainEvent';
+import { PlayerJoinedLobby } from '#matchmaking/domain/lobby/events/PlayerJoinedLobby';
+import { PlayerLeftLobby } from '#matchmaking/domain/lobby/events/PlayerLeftLobby';
+import { DomainEvent } from '#common/domain/events/DomainEvent';
 
 const EventBusMock = vi.fn(
     class {
@@ -32,10 +34,7 @@ describe('OutboxProcessor', () => {
                 repository.save(message);
 
                 expect(mockEventBus.publish).toHaveBeenCalledOnce();
-                expect(mockEventBus.publish).toHaveBeenCalledWith({
-                    type: message.eventType,
-                    payload: message.eventPayload,
-                });
+                expect(mockEventBus.publish).toHaveBeenCalledWith(expect.any(PlayerJoinedLobby));
             });
         });
 
@@ -48,14 +47,14 @@ describe('OutboxProcessor', () => {
                 repository.save(message2);
 
                 expect(mockEventBus.publish).toHaveBeenCalledTimes(2);
-                expect(mockEventBus.publish).toHaveBeenNthCalledWith(1, {
-                    type: message1.eventType,
-                    payload: message1.eventPayload,
-                });
-                expect(mockEventBus.publish).toHaveBeenNthCalledWith(2, {
-                    type: message2.eventType,
-                    payload: message2.eventPayload,
-                });
+                expect(mockEventBus.publish).toHaveBeenNthCalledWith(
+                    1,
+                    expect.any(PlayerJoinedLobby)
+                );
+                expect(mockEventBus.publish).toHaveBeenNthCalledWith(
+                    2,
+                    expect.any(PlayerLeftLobby)
+                );
             });
         });
 
@@ -83,7 +82,7 @@ describe('OutboxProcessor', () => {
                 const message1 = OutboxMessageMother.playerJoined('lobby-1');
                 const message2 = OutboxMessageMother.playerLeft('lobby-2');
                 const message3 = OutboxMessageMother.playerJoined('lobby-3');
-                mockEventBus.publish.mockImplementationOnce((event: DomainEvent<EventPayload>) => {
+                mockEventBus.publish.mockImplementationOnce((event: DomainEvent) => {
                     if (event.type === message2.eventType) {
                         throw new Error('Processing failed for message 2');
                     }
@@ -112,10 +111,10 @@ describe('OutboxProcessor', () => {
                 repository.save(message3);
 
                 expect(mockEventBus.publish).toHaveBeenCalledTimes(3);
-                expect(mockEventBus.publish).toHaveBeenNthCalledWith(3, {
-                    type: message3.eventType,
-                    payload: message3.eventPayload,
-                });
+                expect(mockEventBus.publish).toHaveBeenNthCalledWith(
+                    3,
+                    expect.any(PlayerJoinedLobby)
+                );
             });
         });
     });
