@@ -9,7 +9,7 @@ import { InMemoryOutboxMessageMapper } from './InMemoryOutboxMessageMapper';
  * In-memory implementation of the OutboxRepository with observer pattern support.
  */
 export class InMemoryOutboxRepository implements OutboxRepository {
-    private messages = new Map<string, InMemoryOutboxMessage>();
+    private _messages = new Map<string, InMemoryOutboxMessage>();
     private observers: OutboxObserver[] = [];
 
     /**
@@ -27,7 +27,20 @@ export class InMemoryOutboxRepository implements OutboxRepository {
      * @param {OutboxMessage} message - The message to save
      */
     save(message: OutboxMessage): void {
-        this.messages.set(message.id.value, InMemoryOutboxMessageMapper.toInMemory(message));
+        this._messages.set(message.id.value, InMemoryOutboxMessageMapper.toInMemory(message));
+        this.notifyObservers();
+    }
+
+    /**
+     * Saves all outbox message to the repository and notifies observers.
+     *
+     * @param {OutboxMessage} messages - The messages to save
+     */
+    saveAll(messages: OutboxMessage[]): void {
+        for (const message of messages) {
+            this._messages.set(message.id.value, InMemoryOutboxMessageMapper.toInMemory(message));
+        }
+
         this.notifyObservers();
     }
 
@@ -37,13 +50,13 @@ export class InMemoryOutboxRepository implements OutboxRepository {
      * @returns {OutboxMessage[]} Array of previously unprocessed messages
      */
     findUnprocessed(): OutboxMessage[] {
-        if (this.messages.size === 0) {
+        if (this._messages.size === 0) {
             return [];
         }
 
-        const messagesSnapshot = Array.from(this.messages.values());
+        const messagesSnapshot = Array.from(this._messages.values());
 
-        this.messages.clear();
+        this._messages.clear();
 
         return messagesSnapshot.map((imMessage) => InMemoryOutboxMessageMapper.toDomain(imMessage));
     }
@@ -54,13 +67,15 @@ export class InMemoryOutboxRepository implements OutboxRepository {
      * @param {OutboxMessageId} id - The ID of the message to delete
      */
     delete(id: OutboxMessageId): void {
-        this.messages.delete(id.value);
+        this._messages.delete(id.value);
     }
 
     /**
      * Notifies all registered observers that messages have been added.
      */
     private notifyObservers(): void {
-        this.observers.forEach((observer) => observer.onMessagesAdded());
+        this.observers.forEach((observer) => {
+            observer.onMessagesAdded();
+        });
     }
 }

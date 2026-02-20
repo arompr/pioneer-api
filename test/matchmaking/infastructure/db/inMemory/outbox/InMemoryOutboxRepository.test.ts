@@ -47,6 +47,30 @@ describe('InMemoryOutboxRepository', () => {
         });
     });
 
+    describe('saveAll', () => {
+        it('stores multiple messages in the repository', () => {
+            const repository = new InMemoryOutboxRepository();
+            const message1 = OutboxMessageMother.playerJoined();
+            const message2 = OutboxMessageMother.playerLeft();
+            repository.saveAll([message1, message2]);
+            const unprocessed = repository.findUnprocessed();
+            expect(unprocessed).toHaveLength(2);
+            expect(unprocessed.some((m) => m.id.equals(message1.id))).toBe(true);
+            expect(unprocessed.some((m) => m.id.equals(message2.id))).toBe(true);
+        });
+
+        it('notifies registered observers once when saving multiple messages', () => {
+            const repository = new InMemoryOutboxRepository();
+            const onMessagesAddedMock = vi.fn();
+            const observer: OutboxObserver = { onMessagesAdded: onMessagesAddedMock };
+            repository.registerObserver(observer);
+            const message1 = OutboxMessageMother.playerJoined();
+            const message2 = OutboxMessageMother.playerLeft();
+            repository.saveAll([message1, message2]);
+            expect(onMessagesAddedMock).toHaveBeenCalledOnce();
+        });
+    });
+
     describe('findUnprocessed', () => {
         it('returns all stored messages', () => {
             const repository = new InMemoryOutboxRepository();

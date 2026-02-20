@@ -1,9 +1,9 @@
-import { IAggregateId } from '#common/domain/aggregate/AggregateRoot';
+import { Identity } from '#common/domain/aggregate/AggregateRoot';
 
 /**
  * Value Object representing a unique Player identifier.
  */
-export class PlayerId implements IAggregateId {
+export class PlayerId implements Identity {
     /**
      * The unique identifier string.
      */

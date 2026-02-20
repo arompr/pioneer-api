@@ -21,9 +21,10 @@ export class OutboxService {
         const events = aggregate.pullDomainEvents();
         const aggregateId: string = aggregate.id.value;
 
-        events.forEach((event) => {
-            const outboxMessage = this.outboxMessageFactory.fromDomainEvent(event, aggregateId);
-            this.outboxRepository.save(outboxMessage);
-        });
+        const messages = events.map((event) =>
+            this.outboxMessageFactory.fromDomainEvent(event, aggregateId)
+        );
+
+        this.outboxRepository.saveAll(messages);
     }
 }

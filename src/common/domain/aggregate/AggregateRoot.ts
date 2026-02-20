@@ -2,10 +2,10 @@ import { DomainEvent, EventPayload } from '../events/DomainEvent';
 import { IEventSourcedAggregate } from './IEventSourcedAggregate';
 
 /**
- * Interface for aggregate identifiers.
- * All aggregate IDs must have a string value property.
+ * Interface for domain identifiers.
+ * All IDs must have a string value property.
  */
-export interface IAggregateId {
+export interface Identity {
     readonly value: string;
 }
 
@@ -16,7 +16,7 @@ export abstract class AggregateRoot implements IEventSourcedAggregate {
     /**
      * The unique identifier of the aggregate.
      */
-    abstract get id(): IAggregateId;
+    abstract get id(): Identity;
 
     protected record(event: DomainEvent<EventPayload>): void {
         this._domainEvents.push(event);

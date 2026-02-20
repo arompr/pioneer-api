@@ -6,7 +6,7 @@ export class InMemoryEventBus implements EventBus {
     private handlers = new Map<string, EventHandler<DomainEvent<EventPayload>>[]>();
 
     publish<T extends DomainEvent<EventPayload>>(event: T): void {
-        const eventName = event.constructor.name;
+        const eventName = event.type;
         const eventHandlers = this.handlers.get(eventName);
 
         eventHandlers?.forEach((handler) => handler.handle(event));
