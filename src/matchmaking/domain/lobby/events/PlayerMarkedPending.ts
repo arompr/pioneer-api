@@ -15,6 +15,7 @@ export class PlayerMarkedPending implements DomainEvent {
     }
 
     static fromPayload(payload: EventPayload): PlayerMarkedPending {
-        return new PlayerMarkedPending(payload.playerId as PlayerId);
+        const { playerId } = payload as PlayerMarkedPendingPayload;
+        return new PlayerMarkedPending(playerId);
     }
 }

@@ -15,6 +15,7 @@ export class PlayerMarkedReady implements DomainEvent {
     }
 
     static fromPayload(payload: EventPayload): PlayerMarkedReady {
-        return new PlayerMarkedReady(payload.playerId as PlayerId);
+        const { playerId } = payload as PlayerMarkedReadyPayload;
+        return new PlayerMarkedReady(playerId);
     }
 }

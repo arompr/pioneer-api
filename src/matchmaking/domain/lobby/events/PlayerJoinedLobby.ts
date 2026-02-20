@@ -15,6 +15,7 @@ export class PlayerJoinedLobby implements DomainEvent {
     }
 
     static fromPayload(payload: EventPayload): PlayerJoinedLobby {
-        return new PlayerJoinedLobby(payload.playerId as PlayerId);
+        const { playerId } = payload as PlayerJoinedLobbyPayload;
+        return new PlayerJoinedLobby(playerId);
     }
 }

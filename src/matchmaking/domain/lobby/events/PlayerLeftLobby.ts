@@ -16,6 +16,7 @@ export class PlayerLeftLobby implements DomainEvent {
     }
 
     static fromPayload(payload: EventPayload): PlayerLeftLobby {
-        return new PlayerLeftLobby(payload.playerId as PlayerId, payload.wasHost as boolean);
+        const { playerId, wasHost } = payload as PlayerLeftLobbyPayload;
+        return new PlayerLeftLobby(playerId, wasHost);
     }
 }

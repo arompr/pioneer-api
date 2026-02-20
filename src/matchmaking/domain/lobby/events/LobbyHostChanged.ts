@@ -15,6 +15,7 @@ export class LobbyHostChanged implements DomainEvent {
     }
 
     static fromPayload(payload: EventPayload): LobbyHostChanged {
-        return new LobbyHostChanged(payload.newHostId as PlayerId);
+        const { newHostId } = payload as LobbyHostChangedPayload;
+        return new LobbyHostChanged(newHostId);
     }
 }
