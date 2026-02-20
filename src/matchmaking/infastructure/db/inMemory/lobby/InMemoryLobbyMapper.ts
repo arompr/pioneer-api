@@ -13,7 +13,7 @@ export class InMemoryLobbyMapper {
         return new InMemoryLobby(
             lobby.id.value,
             InMemoryLobbyConfigMapper.toInMemory(lobby.config),
-            lobby.hostId.toString(),
+            lobby.hostId.value,
             lobby.allPlayers.map((p) => InMemoryPlayerMapper.toInMemory(p)),
             lobby.stateType
         );

@@ -4,7 +4,7 @@
  */
 export class InMemoryEvent {
     /**
-     * Unique identifier for this event (ULID).
+     * Unique identifier for this event.
      */
     public readonly eventId: string;
 

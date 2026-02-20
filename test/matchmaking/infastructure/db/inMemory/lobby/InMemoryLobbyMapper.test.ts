@@ -15,7 +15,7 @@ describe('InMemoryLobbyMapper', () => {
             const imLobby = InMemoryLobbyMapper.toInMemory(lobby);
 
             expect(imLobby.id).toBe(lobby.id.value);
-            expect(imLobby.hostId).toBe(lobby.hostId.toString());
+            expect(imLobby.hostId).toBe(lobby.hostId.value);
             expect(imLobby.state).toBe(lobby.stateType);
             expect(imLobby.config.mode).toBe(lobby.config.getGameMode());
             expect(imLobby.config.minPlayers).toBe(lobby.config.minPlayers);
@@ -23,8 +23,8 @@ describe('InMemoryLobbyMapper', () => {
             expect(imLobby.players.length).toBe(lobby.playerCount);
             lobby.allPlayers.forEach((original, index) => {
                 const imPlayer = imLobby.players[index];
-                expect(imPlayer.id).toBe(original.id.toString());
-                expect(imPlayer.publicKey).toBe(original.publicKey.toString());
+                expect(imPlayer.id).toBe(original.id.value);
+                expect(imPlayer.publicKey).toBe(original.publicKey.value);
                 expect(imPlayer.name).toBe(original.name);
                 expect(imPlayer.status).toBe(original.status);
             });

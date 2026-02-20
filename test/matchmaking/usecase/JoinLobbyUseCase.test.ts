@@ -4,7 +4,8 @@ import { LobbyRepository } from '#matchmaking/domain/lobby/LobbyRepository';
 import { PlayerFactory } from '#matchmaking/domain/player/PlayerFactory';
 import { JoinLobbyDto } from '#matchmaking/usecase/dto/JoinLobbyDto';
 import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
-import LobbyNotFoundError from '#matchmaking/usecase/errors/LobbyNotFoundError';
+import { LobbyNotFoundError } from '#matchmaking/usecase/errors/LobbyNotFoundError';
+import { OutboxService } from '#matchmaking/domain/outbox/OutboxService';
 
 const PLAYER_NAME = 'newPlayer';
 const { lobby, players } = LobbyMother.baseLobby();
@@ -17,6 +18,9 @@ const mockLobbyRepository: Partial<LobbyRepository> = {
 const mockPlayerFactory: Partial<PlayerFactory> = {
     create: vi.fn().mockReturnValue(playerToJoin),
 };
+const mockOutboxService: Partial<OutboxService> = {
+    publishEvents: vi.fn(),
+};
 
 let useCase: JoinLobbyUseCase;
 
@@ -24,7 +28,8 @@ describe('JoinLobbyUseCase', () => {
     beforeEach(() => {
         useCase = new JoinLobbyUseCase(
             mockLobbyRepository as LobbyRepository,
-            mockPlayerFactory as PlayerFactory
+            mockPlayerFactory as PlayerFactory,
+            mockOutboxService as OutboxService
         );
         vi.clearAllMocks();
     });

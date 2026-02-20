@@ -4,6 +4,7 @@ import { LobbyFactory } from '#matchmaking/domain/lobby/LobbyFactory';
 import { LobbyRepository } from '#matchmaking/domain/lobby/LobbyRepository';
 import { Player } from '#matchmaking/domain/player/Player';
 import { PlayerFactory } from '#matchmaking/domain/player/PlayerFactory';
+import { OutboxService } from '#matchmaking/domain/outbox/OutboxService';
 import { CreateLobbyDto } from './dto/CreateLobbyDto';
 
 export type CreateLobbyResult = {
@@ -16,7 +17,8 @@ export class CreateLobbyUseCase {
         private readonly lobbyRepository: LobbyRepository,
         private readonly lobbyFactory: LobbyFactory,
         private readonly playerFactory: PlayerFactory,
-        private readonly lobbyConfigFactory: LobbyConfigFactory
+        private readonly lobbyConfigFactory: LobbyConfigFactory,
+        private readonly outboxService: OutboxService
     ) {}
 
     execute(dto: CreateLobbyDto): CreateLobbyResult {
@@ -25,6 +27,7 @@ export class CreateLobbyUseCase {
         const createdLobby = this.lobbyFactory.create(lobbyConfig, createdHostPlayer);
 
         this.lobbyRepository.save(createdLobby);
+        this.outboxService.publishEvents(createdLobby);
 
         return { createdLobby, createdHostPlayer };
     }
