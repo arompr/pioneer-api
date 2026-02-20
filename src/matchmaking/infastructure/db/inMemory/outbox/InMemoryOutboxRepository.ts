@@ -32,11 +32,14 @@ export class InMemoryOutboxRepository implements OutboxRepository {
     }
 
     /**
-     * Saves all outbox message to the repository and notifies observers.
+     * Saves all outbox messages to the repository and notifies observers.
+     * Does nothing if the messages array is empty.
      *
      * @param {OutboxMessage[]} messages - The messages to save
      */
     saveAll(messages: OutboxMessage[]): void {
+        if (messages.length === 0) return;
+
         for (const message of messages) {
             this._messages.set(message.id.value, InMemoryOutboxMessageMapper.toInMemory(message));
         }
