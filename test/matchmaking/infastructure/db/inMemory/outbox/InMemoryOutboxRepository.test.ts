@@ -59,6 +59,17 @@ describe('InMemoryOutboxRepository', () => {
             expect(unprocessed.some((m) => m.id.equals(message2.id))).toBe(true);
         });
 
+        it('does not notify observers when saving an empty array', () => {
+            const repository = new InMemoryOutboxRepository();
+            const onMessagesAddedMock = vi.fn();
+            const observer: OutboxObserver = { onMessagesAdded: onMessagesAddedMock };
+            repository.registerObserver(observer);
+
+            repository.saveAll([]);
+
+            expect(onMessagesAddedMock).not.toHaveBeenCalled();
+        });
+
         it('notifies registered observers once when saving multiple messages', () => {
             const repository = new InMemoryOutboxRepository();
             const onMessagesAddedMock = vi.fn();
