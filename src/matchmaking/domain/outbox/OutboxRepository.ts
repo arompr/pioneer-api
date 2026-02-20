@@ -17,7 +17,7 @@ export interface OutboxRepository {
     /**
      * Saves all outbox messages to the repository.
      *
-     * @param {OutboxMessage} messages - The messages to save
+     * @param {OutboxMessage[]} messages - The messages to save
      */
     saveAll(messages: OutboxMessage[]): void;
 
