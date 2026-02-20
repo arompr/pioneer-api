@@ -3,7 +3,6 @@ import { OutboxMessage } from '#matchmaking/domain/outbox/OutboxMessage';
 import { OutboxObserver } from '#matchmaking/domain/outbox/OutboxObserver';
 import { OutboxRepository } from '#matchmaking/domain/outbox/OutboxRepository';
 import { EventBus } from '#matchmaking/usecase/EventBus';
-import { console } from 'inspector';
 
 /**
  * Processor that asynchronously handles outbox messages.
