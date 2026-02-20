@@ -34,7 +34,7 @@ export class InMemoryOutboxRepository implements OutboxRepository {
     /**
      * Saves all outbox message to the repository and notifies observers.
      *
-     * @param {OutboxMessage} messages - The messages to save
+     * @param {OutboxMessage[]} messages - The messages to save
      */
     saveAll(messages: OutboxMessage[]): void {
         for (const message of messages) {
