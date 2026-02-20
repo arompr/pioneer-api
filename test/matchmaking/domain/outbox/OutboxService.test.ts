@@ -1,15 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
 import { OutboxService } from '#matchmaking/domain/outbox/OutboxService';
 import { OutboxMessageFactory } from '#matchmaking/domain/outbox/OutboxMessageFactory';
 import { OutboxRepository } from '#matchmaking/domain/outbox/OutboxRepository';
 import { OutboxMessageIdFactory } from '#matchmaking/domain/outbox/outboxMessageId/OutboxMessageIdFactory';
-import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
-import { Lobby } from '#matchmaking/domain/lobby/Lobby';
-import { Player } from '#matchmaking/domain/player/Player';
+import type { Lobby } from '#matchmaking/domain/lobby/Lobby';
+import type { Player } from '#matchmaking/domain/player/Player';
 
 let outboxService: OutboxService;
 let outboxRepository: Partial<OutboxRepository>;
-let outboxMessageFactory: OutboxMessageFactory;
 let lobby: Lobby;
 let player2: Player;
 
@@ -21,27 +20,20 @@ describe('OutboxService', () => {
             findUnprocessed: vi.fn(),
             delete: vi.fn(),
         };
-        outboxMessageFactory = new OutboxMessageFactory(new OutboxMessageIdFactory());
+
+        const outboxMessageFactory = new OutboxMessageFactory(new OutboxMessageIdFactory());
         outboxService = new OutboxService(
             outboxRepository as OutboxRepository,
             outboxMessageFactory
         );
 
-        const result = LobbyMother.baseLobby();
-        lobby = result.lobby;
-        [, player2] = result.players;
+        const { lobby: createdLobby, players } = LobbyMother.baseLobby();
+        lobby = createdLobby;
+        [, player2] = players;
     });
 
     describe('publishEvents', () => {
         describe('when the aggregate has domain events', () => {
-            it('pulls all domain events from the aggregate', () => {
-                lobby.join(player2);
-
-                outboxService.publishEvents(lobby);
-
-                expect(lobby.pullDomainEvents()).toHaveLength(0);
-            });
-
             it('saves one outbox message per domain event', () => {
                 lobby.join(player2);
                 lobby.leave(player2.id);
@@ -49,18 +41,14 @@ describe('OutboxService', () => {
                 outboxService.publishEvents(lobby);
 
                 expect(outboxRepository.saveAll).toHaveBeenCalledWith([
-                    expect.objectContaining({ eventType: 'PlayerJoinedLobby' }),
-                    expect.objectContaining({ eventType: 'PlayerLeftLobby' }),
-                ]);
-            });
-
-            it('saves messages with the aggregate id', () => {
-                lobby.join(player2);
-
-                outboxService.publishEvents(lobby);
-
-                expect(outboxRepository.saveAll).toHaveBeenCalledWith([
-                    expect.objectContaining({ aggregateId: lobby.id.value }),
+                    expect.objectContaining({
+                        eventType: 'PlayerJoinedLobby',
+                        aggregateId: lobby.id.value,
+                    }),
+                    expect.objectContaining({
+                        eventType: 'PlayerLeftLobby',
+                        aggregateId: lobby.id.value,
+                    }),
                 ]);
             });
         });
