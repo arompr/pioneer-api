@@ -1,4 +1,4 @@
-import { OutboxMessageDomainEventMapper } from './OutboxMessageDomainEventMapper';
+import { OutboxMessageDomainEventMapper } from '../db/inMemory/outbox/InMemoryOutboxMessageEventMapper';
 import { OutboxMessage } from '#matchmaking/domain/outbox/OutboxMessage';
 import { OutboxObserver } from '#matchmaking/domain/outbox/OutboxObserver';
 import { OutboxRepository } from '#matchmaking/domain/outbox/OutboxRepository';
