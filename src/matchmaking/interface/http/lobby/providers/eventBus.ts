@@ -1,7 +1,7 @@
 import { Provider } from '@nestjs/common';
 import { InMemoryEventBus } from '#matchmaking/infastructure/event-bus/InMemoryEventBus';
-import { EventBus } from '#matchmaking/usecase/EventBus';
 import { registerHandlers } from '#bootstrap/handlers';
+import { EventBus } from '#common/usecase/EventBus';
 
 export const EVENT_BUS = 'EVENT_BUS';
 export const eventBusProviders: Provider[] = [

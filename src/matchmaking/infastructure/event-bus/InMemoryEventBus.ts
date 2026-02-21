@@ -1,23 +1,20 @@
-import { DomainEvent, EventPayload } from '#common/domain/events/DomainEvent';
-import { EventBus, EventConstructor } from '#matchmaking/usecase/EventBus';
-import { EventHandler } from '#matchmaking/usecase/EventHandler';
+import { DomainEvent } from '#common/domain/events/DomainEvent';
+import { EventType } from '#common/domain/events/EventType';
+import { EventBus } from '#common/usecase/EventBus';
+import { EventHandler } from '#common/usecase/EventHandler';
 
 export class InMemoryEventBus implements EventBus {
-    private handlers = new Map<string, EventHandler<DomainEvent<EventPayload>>[]>();
+    private handlers = new Map<string, EventHandler<DomainEvent>[]>();
 
-    publish<T extends DomainEvent<EventPayload>>(event: T): void {
-        const eventName = event.constructor.name;
-        const eventHandlers = this.handlers.get(eventName);
+    publish<T extends DomainEvent>(event: T): void {
+        const eventHandlers = this.handlers.get(event.type);
 
         eventHandlers?.forEach((handler) => handler.handle(event));
     }
 
-    register<T extends DomainEvent<EventPayload>>(
-        eventClass: EventConstructor<T>,
-        handler: EventHandler<T>
-    ): void {
-        const eventName = eventClass.name;
-        const current = this.handlers.get(eventName) ?? [];
-        this.handlers.set(eventName, [...current, handler]);
+    register<T extends DomainEvent>(eventType: EventType, handler: EventHandler<T>): void {
+        const key = eventType.value;
+        const current = this.handlers.get(key) ?? [];
+        this.handlers.set(key, [...current, handler]);
     }
 }

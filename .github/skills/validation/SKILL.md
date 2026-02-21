@@ -1,3 +1,8 @@
+---
+name: validation
+description: Guide for validating the project by running type checks, lint, format, and tests. Use this when asked to run all checks, validate the project, or verify code quality.
+---
+
 ## Skill: Validate Project (Tests, Types, Lint, Format)
 
 When asked to "run all checks", "validate the project", or similar, perform the following steps and produce a structured, human‑readable summary.

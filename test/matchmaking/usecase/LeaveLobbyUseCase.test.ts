@@ -3,10 +3,10 @@ import { LeaveLobbyUseCase } from '#matchmaking/usecase/LeaveLobbyUseCase';
 import { LobbyRepository } from '#matchmaking/domain/lobby/LobbyRepository';
 import { LeaveLobbyDto } from '#matchmaking/usecase/dto/LeaveLobbyDto';
 import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
-import LobbyNotFoundError from '#matchmaking/usecase/errors/LobbyNotFoundError';
-import { EventBus } from '#matchmaking/usecase/EventBus';
+import { LobbyNotFoundError } from '#matchmaking/usecase/errors/LobbyNotFoundError';
 import { Lobby } from '#matchmaking/domain/lobby/Lobby';
 import { Player } from '#matchmaking/domain/player/Player';
+import { OutboxService } from '#matchmaking/domain/outbox/OutboxService';
 
 const mockLobbyRepository: Partial<LobbyRepository> = {
     findById: vi.fn(),
@@ -14,9 +14,8 @@ const mockLobbyRepository: Partial<LobbyRepository> = {
     delete: vi.fn(),
 };
 
-const mockEventBus: EventBus = {
-    publish: vi.fn(),
-    register: vi.fn(),
+const mockOutboxService: Partial<OutboxService> = {
+    publishEvents: vi.fn(),
 };
 
 let useCase: LeaveLobbyUseCase;
@@ -31,7 +30,10 @@ describe('LeaveLobbyUseCase', () => {
 
         mockLobbyRepository.findById = vi.fn().mockReturnValue(lobby);
 
-        useCase = new LeaveLobbyUseCase(mockLobbyRepository as LobbyRepository, mockEventBus);
+        useCase = new LeaveLobbyUseCase(
+            mockLobbyRepository as LobbyRepository,
+            mockOutboxService as OutboxService
+        );
         vi.clearAllMocks();
     });
 

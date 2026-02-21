@@ -3,7 +3,7 @@ import { GetLobbyUseCase } from '#matchmaking/usecase/GetLobbyUseCase';
 import { LobbyRepository } from '#matchmaking/domain/lobby/LobbyRepository';
 import { GetLobbyDto } from '#matchmaking/usecase/dto/GetLobbyDto';
 import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
-import LobbyNotFoundError from '#matchmaking/usecase/errors/LobbyNotFoundError';
+import { LobbyNotFoundError } from '#matchmaking/usecase/errors/LobbyNotFoundError';
 
 const { lobby } = LobbyMother.baseLobby();
 

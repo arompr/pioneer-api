@@ -1,4 +1,4 @@
-import LobbyNotFoundError from '#matchmaking/usecase/errors/LobbyNotFoundError';
+import { LobbyNotFoundError } from '#matchmaking/usecase/errors/LobbyNotFoundError';
 import { Catch, ExceptionFilter, ArgumentsHost } from '@nestjs/common';
 import { Request, Response } from 'express';
 

@@ -22,7 +22,7 @@ describe('LobbyMapper', () => {
             expect(lobbyResponse.id).toBe(lobby.id.value);
             expect(lobbyResponse.status).toBe(lobby.stateType);
             expect(lobbyResponse.players).toHaveLength(lobby.allPlayers.length);
-            expect(playerResponse.publicKey).toBe(player1.publicKey.toString());
+            expect(playerResponse.publicKey).toBe(player1.publicKey.value);
             expect(playerResponse.name).toBe(player1.name);
             expect(playerResponse.isHost).toBe(lobby.isHost(player1.id));
         });

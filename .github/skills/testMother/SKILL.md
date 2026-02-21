@@ -1,3 +1,8 @@
+---
+name: testMother
+description: Guide for creating Object Mother + Builder test data factories. Use this when asked to create a test mother, add an object mother, or create test data factories for domain entities.
+---
+
 ## Skill: Create Test Mother (with Builder)
 
 When asked to "create a test mother", "add an object mother", or similar, follow the Object Mother + Builder pattern to generate flexible test data factories.
