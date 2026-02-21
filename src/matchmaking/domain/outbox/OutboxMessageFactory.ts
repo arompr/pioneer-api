@@ -1,4 +1,4 @@
-import { DomainEvent, EventPayload } from '#common/domain/events/DomainEvent';
+import { DomainEvent } from '#common/domain/events/DomainEvent';
 import { OutboxMessage } from './OutboxMessage';
 import { OutboxMessageId } from './outboxMessageId/OutboxMessageId';
 import { OutboxMessageIdFactory } from './outboxMessageId/OutboxMessageIdFactory';
@@ -16,11 +16,11 @@ export class OutboxMessageFactory {
     /**
      * Creates an OutboxMessage from a domain event.
      *
-     * @param {DomainEvent<EventPayload>} event - The domain event to convert
+     * @param {DomainEvent} event - The domain event to convert
      * @param {string} aggregateId - The ID of the aggregate that generated the event
      * @returns {OutboxMessage} A new OutboxMessage instance
      */
-    fromDomainEvent(event: DomainEvent<EventPayload>, aggregateId: string): OutboxMessage {
+    fromDomainEvent(event: DomainEvent, aggregateId: string): OutboxMessage {
         const id: OutboxMessageId = this.outboxMessageIdFactory.generate();
         const createdAt = new Date();
 

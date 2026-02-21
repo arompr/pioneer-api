@@ -1,8 +1,9 @@
-import { DomainEvent, EventPayload } from '#common/domain/events/DomainEvent';
+import { InMemoryOutboxMessageEventMapper } from '../db/inMemory/outbox/InMemoryOutboxMessageEventMapper';
 import { OutboxMessage } from '#matchmaking/domain/outbox/OutboxMessage';
 import { OutboxObserver } from '#matchmaking/domain/outbox/OutboxObserver';
 import { OutboxRepository } from '#matchmaking/domain/outbox/OutboxRepository';
-import { EventBus } from '#matchmaking/usecase/EventBus';
+import { DomainEvent } from '#common/domain/events/DomainEvent';
+import { EventBus } from '#common/usecase/EventBus';
 
 /**
  * Processor that asynchronously handles outbox messages.
@@ -46,8 +47,8 @@ export class OutboxProcessor implements OutboxObserver {
             const message = this.queue.shift()!;
 
             try {
-                const event = this.toDomainEvent(message);
-                this.eventBus.publish(event);
+                const domainEvent = this.toDomainEvent(message);
+                this.eventBus.publish(domainEvent);
             } catch (err) {
                 console.error(`Failed to process outbox message ${message.id.value}:`, err);
             }
@@ -56,10 +57,7 @@ export class OutboxProcessor implements OutboxObserver {
         this.isProcessing = false;
     }
 
-    private toDomainEvent(message: OutboxMessage): DomainEvent<EventPayload> {
-        return {
-            type: message.eventType,
-            payload: message.eventPayload,
-        };
+    private toDomainEvent(message: OutboxMessage): DomainEvent {
+        return InMemoryOutboxMessageEventMapper.toDomainEvent(message);
     }
 }

@@ -2,8 +2,8 @@ import { Provider } from '@nestjs/common';
 import { OUTBOX_REPOSITORY } from '#matchmaking/domain/outbox/OutboxRepository';
 import { EVENT_BUS } from './eventBus';
 import { OutboxProcessor } from '#matchmaking/infastructure/processors/OutboxProcessor';
-import { EventBus } from '#matchmaking/usecase/EventBus';
 import { InMemoryOutboxRepository } from '#matchmaking/infastructure/db/inMemory/outbox/InMemoryOutboxRepository';
+import { EventBus } from '#common/usecase/EventBus';
 
 export const OUTBOX_PROCESSOR = 'OUTBOX_PROCESSOR';
 

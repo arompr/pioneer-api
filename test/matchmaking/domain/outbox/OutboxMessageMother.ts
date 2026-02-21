@@ -2,6 +2,7 @@ import { OutboxMessage } from '#matchmaking/domain/outbox/OutboxMessage';
 import { TestOutboxMessageBuilder } from './TestOutboxMessageBuilder';
 import { OutboxMessageId } from '#matchmaking/domain/outbox/outboxMessageId/OutboxMessageId';
 import { EventPayload } from '#common/domain/events/DomainEvent';
+import { PlayerId } from '#common/domain/player/playerId/PlayerId';
 
 /**
  * Test mother for OutboxMessage domain objects.
@@ -12,7 +13,7 @@ export class OutboxMessageMother {
         return new TestOutboxMessageBuilder()
             .withId(id ?? new OutboxMessageId('01JH9ABCDEFGHIJK'))
             .withEventType('PlayerJoinedLobby')
-            .withEventPayload({ playerId: 'player-123' })
+            .withEventPayload({ playerId: new PlayerId('player-123') })
             .withAggregateId(lobbyId)
             .build();
     }
@@ -22,7 +23,7 @@ export class OutboxMessageMother {
         return new TestOutboxMessageBuilder()
             .withId(id ?? new OutboxMessageId('01JH9ABCDEFGHIJL'))
             .withEventType('PlayerLeftLobby')
-            .withEventPayload({ playerId: 'player-123' })
+            .withEventPayload({ playerId: new PlayerId('player-123'), wasHost: false })
             .withAggregateId(lobbyId)
             .build();
     }
