@@ -2,8 +2,8 @@ import { InMemoryOutboxMessageEventMapper } from '../db/inMemory/outbox/InMemory
 import { OutboxMessage } from '#matchmaking/domain/outbox/OutboxMessage';
 import { OutboxObserver } from '#matchmaking/domain/outbox/OutboxObserver';
 import { OutboxRepository } from '#matchmaking/domain/outbox/OutboxRepository';
-import { EventBus } from '#matchmaking/usecase/EventBus';
 import { DomainEvent } from '#common/domain/events/DomainEvent';
+import { EventBus } from '#common/usecase/EventBus';
 
 /**
  * Processor that asynchronously handles outbox messages.

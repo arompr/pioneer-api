@@ -1,7 +1,7 @@
 import { DomainEvent } from '#common/domain/events/DomainEvent';
-import { LobbyEventType } from '#matchmaking/domain/lobby/events/LobbyEventType';
-import { EventBus } from '#matchmaking/usecase/EventBus';
-import { EventHandler } from '#matchmaking/usecase/EventHandler';
+import { EventType } from '#common/domain/events/EventType';
+import { EventBus } from '#common/usecase/EventBus';
+import { EventHandler } from '#common/usecase/EventHandler';
 
 export class InMemoryEventBus implements EventBus {
     private handlers = new Map<string, EventHandler<DomainEvent>[]>();
@@ -12,7 +12,7 @@ export class InMemoryEventBus implements EventBus {
         eventHandlers?.forEach((handler) => handler.handle(event));
     }
 
-    register<T extends DomainEvent>(eventType: LobbyEventType, handler: EventHandler<T>): void {
+    register<T extends DomainEvent>(eventType: EventType, handler: EventHandler<T>): void {
         const key = eventType.value;
         const current = this.handlers.get(key) ?? [];
         this.handlers.set(key, [...current, handler]);
