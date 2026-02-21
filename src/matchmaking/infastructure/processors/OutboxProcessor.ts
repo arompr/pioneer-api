@@ -1,4 +1,4 @@
-import { OutboxMessageDomainEventMapper } from '../db/inMemory/outbox/InMemoryOutboxMessageEventMapper';
+import { InMemoryOutboxMessageEventMapper } from '../db/inMemory/outbox/InMemoryOutboxMessageEventMapper';
 import { OutboxMessage } from '#matchmaking/domain/outbox/OutboxMessage';
 import { OutboxObserver } from '#matchmaking/domain/outbox/OutboxObserver';
 import { OutboxRepository } from '#matchmaking/domain/outbox/OutboxRepository';
@@ -58,6 +58,6 @@ export class OutboxProcessor implements OutboxObserver {
     }
 
     private toDomainEvent(message: OutboxMessage): DomainEvent {
-        return OutboxMessageDomainEventMapper.toDomainEvent(message);
+        return InMemoryOutboxMessageEventMapper.toDomainEvent(message);
     }
 }

@@ -28,7 +28,7 @@ const eventFactories: Readonly<Record<string, (message: OutboxMessage) => Domain
 /**
  * Mapper for reconstructing typed domain events from OutboxMessage instances.
  */
-export class OutboxMessageDomainEventMapper {
+export class InMemoryOutboxMessageEventMapper {
     /**
      * Converts an OutboxMessage into the corresponding typed domain event instance.
      * Falls back to a plain `{ type, payload }` object for unrecognised event types.
