@@ -11,9 +11,7 @@ export class LobbyNotFoundWsErrorFilter implements WsExceptionFilter<LobbyNotFou
     catch(exception: LobbyNotFoundError, host: ArgumentsHost): void {
         const client = host.switchToWs().getClient<LobbySocket>();
 
-        console.log('erreur', client.id);
-
-        client.emit(WsEvents.ERROR, {
+        client.emit(WsEvents.EXCEPTION, {
             code: this.code,
             message: exception.message,
             timestamp: new Date().toISOString(),

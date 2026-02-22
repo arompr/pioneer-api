@@ -16,7 +16,6 @@ export class MarkReadyCommandHandler implements WsCommandHandler<MarkReadyComman
         const playerId = new PlayerId(command.payload.playerId);
 
         const lobby = this.useCase.execute({ lobbyId, playerId });
-        console.log(lobby);
 
         server
             .to(`lobby-${lobby.id.value}`)

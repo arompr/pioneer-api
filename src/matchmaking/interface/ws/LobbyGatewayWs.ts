@@ -35,7 +35,6 @@ export class LobbyGateway implements OnGatewayDisconnect, OnGatewayConnection {
 
     @SubscribeMessage('command')
     async onCommand(client: LobbySocket, command: WsCommand): Promise<void> {
-        console.log(this.dispatcher);
         await this.dispatcher.dispatch(command, client, this.server);
     }
 }
