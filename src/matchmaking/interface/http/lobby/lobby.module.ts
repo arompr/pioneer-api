@@ -5,5 +5,6 @@ import { lobbyProviders } from './providers';
 @Module({
     controllers: [LobbyController],
     providers: lobbyProviders,
+    exports: [...lobbyProviders],
 })
 export class LobbyModule {}

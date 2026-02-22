@@ -226,6 +226,16 @@ export class Lobby extends AggregateRoot implements ILobby {
     }
 
     /**
+     * Returns a player if it exists in the lobby.
+     *
+     * @param {PlayerId} playerId - The ID of the player to find.
+     * @returns {Player} The player in the lobby.
+     */
+    findPlayer(playerId: PlayerId): Player {
+        return this._players.findById(playerId);
+    }
+
+    /**
      * Returns the current number of players.
      *
      * @returns {number} The number of players
