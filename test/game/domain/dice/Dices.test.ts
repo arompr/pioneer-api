@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { Dices } from '#game/domain/dice/Dices';
+import { DiceRoll } from '#game/domain/dice/DiceRoll';
 import { D6 } from '#game/domain/dice/D6';
 import { Dice } from '#game/domain/dice/Dice';
 
@@ -30,7 +31,7 @@ describe('Dices', () => {
             class StubDie implements Dice {
                 constructor(private readonly value: number) {}
                 roll() {
-                    return { rolls: [this.value], total: this.value };
+                    return DiceRoll.of([this.value]);
                 }
             }
             const dice: Dice[] = [new StubDie(2), new StubDie(5), new StubDie(3)];

@@ -1,4 +1,5 @@
-import { Dice, DiceRoll } from './Dice';
+import { Dice } from './Dice';
+import { DiceRoll } from './DiceRoll';
 
 /**
  * Represents a standard six-sided die (d6) with face values from 1 to 6.
@@ -32,6 +33,6 @@ export class D6 implements Dice {
      */
     public roll(): DiceRoll {
         const value = Math.floor(Math.random() * this.MAX_VALUE) + this.MIN_VALUE;
-        return { rolls: [value], total: value };
+        return DiceRoll.of([value]);
     }
 }

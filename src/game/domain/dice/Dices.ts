@@ -1,4 +1,5 @@
-import { Dice, DiceRoll } from './Dice';
+import { Dice } from './Dice';
+import { DiceRoll } from './DiceRoll';
 
 /**
  * Represents a collection of dice and provides methods to roll them.
@@ -37,7 +38,6 @@ export class Dices {
     public roll(): DiceRoll {
         const diceRolls = this._dices.map((d) => d.roll());
         const rolls = diceRolls.flatMap((r) => r.rolls);
-        const total = diceRolls.reduce((sum, r) => sum + r.total, 0);
-        return { rolls, total };
+        return DiceRoll.of(rolls);
     }
 }

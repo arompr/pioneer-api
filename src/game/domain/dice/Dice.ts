@@ -1,4 +1,4 @@
-export type DiceRoll = { rolls: number[]; total: number };
+import { DiceRoll } from './DiceRoll';
 
 /**
  * Interface for a die that produces a value when rolled.
