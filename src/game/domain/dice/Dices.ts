@@ -1,5 +1,6 @@
 import { Dice } from './Dice';
 import { DiceRoll } from './DiceRoll';
+import { EmptyDiceSetError } from './errors/EmptyDiceSetError';
 
 /**
  * Represents a collection of dice and provides methods to roll them.
@@ -25,8 +26,13 @@ export class Dices {
      *
      * @param dices - The dice to include in this set.
      * @returns A new {@link Dices} instance.
+     * @throws {EmptyDiceSetError} If dices are empty.
      */
     public static of(dices: Dice[]): Dices {
+        if (dices.length === 0) {
+            throw new EmptyDiceSetError();
+        }
+
         return new Dices(dices);
     }
 
