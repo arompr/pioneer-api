@@ -11,6 +11,7 @@ export class WsCommandDispatcher {
         const handler = this.handlers.get(command.type);
 
         if (!handler) {
+            console.log('devrait emit erreur');
             client.emit(WsEvents.ERROR, { message: `Unknown command: ${command.type}` });
             return;
         }
