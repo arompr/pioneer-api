@@ -17,7 +17,7 @@ export class DiceRoll {
     /**
      * Creates a new DiceRoll value object.
      * @param rolls - The individual dice roll results.
-     * @returns DiceRoll instance
+     * @returns A new {@link DiceRoll} instance
      */
     public static of(rolls: number[]): DiceRoll {
         return new DiceRoll(
