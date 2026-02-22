@@ -1,8 +1,7 @@
 import { LobbyNotFoundError } from '#matchmaking/usecase/errors/LobbyNotFoundError';
 import { Catch, ArgumentsHost, WsExceptionFilter } from '@nestjs/common';
-import { Request, Response } from 'express';
-import { LobbySocket } from '../LobbyGatewayWs';
-import { WsEvents } from '../WsEventsType';
+import { LobbySocket } from '../../LobbyGatewayWs';
+import { WsEvents } from '../../WsEventsType';
 
 @Catch(LobbyNotFoundError)
 export class LobbyNotFoundWsErrorFilter implements WsExceptionFilter<LobbyNotFoundError> {

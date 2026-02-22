@@ -1,8 +1,8 @@
 import { Server } from 'socket.io';
 import { WsCommand } from './WsCommand';
 import { WsCommandHandler } from './WsCommandHandler';
-import { WsEvents } from '../WsEventsType';
 import { LobbySocket } from '../LobbyGatewayWs';
+import { UnknownCommandError } from '../errors/UnknownCommandError';
 
 export class WsCommandDispatcher {
     private handlers = new Map<string, WsCommandHandler<WsCommand>>();
@@ -11,8 +11,7 @@ export class WsCommandDispatcher {
         const handler = this.handlers.get(command.type);
 
         if (!handler) {
-            client.emit(WsEvents.EXCEPTION, { message: `Unknown command: ${command.type}` });
-            return;
+            throw new UnknownCommandError(command.type);
         }
 
         await handler.handle(command, server, client);
