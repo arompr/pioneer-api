@@ -28,7 +28,7 @@ export class DiceRoll {
 
     /**
      * Checks value equality with another DiceRoll.
-     * @param other - Another DiceRoll
+     * @param {DiceRoll} other - Another DiceRoll
      * @returns {boolean} true if rolls and total are equal
      */
     public equals(other: DiceRoll): boolean {
