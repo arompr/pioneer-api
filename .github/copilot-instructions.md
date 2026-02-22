@@ -25,10 +25,13 @@ Slice-specific architecture details:
 
 ### Entities, Value Objects, and Factories
 
-- Entities encapsulate invariants, but **domain business rules and validation for creation of aggregates, entities, and value objects are enforced in domain factories, not in constructors**. Constructors should assume valid input; factories are responsible for all validation and for throwing domain errors on violation.
+- Entities encapsulate invariants. **Domain business rules and validation are split by concern:**
+  - **Data validation** (in constructors): Technical constraints that ensure values are well-formed (e.g., "a number must be positive", "a string can't be empty"). These enforce the type's inherent properties.
+  - **Domain business rules** (in factories): Rules that enforce domain logic and concepts interacting (e.g., "a lobby can't start without 2+ players", "a player can't join a full lobby"). Factories encapsulate creation logic with business rule validation and throw domain errors on violation.
+- Constructors assume valid input (data validation already passed); factories are responsible for business rule validation.
 - Private fields with public accessor methods — no bare setters
 - **Value objects** are immutable with `equals()` for comparison (e.g., `PlayerId`, `LobbyId`, `HexCoordinate`)
-- **Factories** encapsulate creation logic and enforce all invariants (e.g., `LobbyFactory`, `PlayerFactory`, `LobbyIdFactory`). Use factories for all aggregate/entity/value object creation that involves business rules.
+- **Factories** encapsulate creation logic and enforce all domain business rule invariants (e.g., `LobbyFactory`, `PlayerFactory`, `LobbyIdFactory`). Use factories for all aggregate/entity/value object creation that involves business rules.
 - **Repositories** defined as interfaces in domain, implemented in infrastructure (e.g., `LobbyRepository` + `InMemoryLobbyRepository`)
 - DI tokens use `Symbol`: `export const LOBBY_REPOSITORY = Symbol('LobbyRepository')`
 
