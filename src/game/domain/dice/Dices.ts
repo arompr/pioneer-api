@@ -17,7 +17,7 @@ export class Dices {
      * @param dices - The dice to include in this set.
      */
     private constructor(dices: Dice[]) {
-        this._dices = dices;
+        this._dices = [...dices];
     }
 
     /**
