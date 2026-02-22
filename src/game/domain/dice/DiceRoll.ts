@@ -29,7 +29,7 @@ export class DiceRoll {
     /**
      * Checks value equality with another DiceRoll.
      * @param other - Another DiceRoll
-     * @returns true if rolls and total are equal
+     * @returns {boolean} true if rolls and total are equal
      */
     public equals(other: DiceRoll): boolean {
         if (this.total !== other.total) return false;
