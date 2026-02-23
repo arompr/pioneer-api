@@ -20,6 +20,7 @@ export interface ILobby {
     isEmpty(): boolean;
     remainingPlaces(): number;
     get allPlayers(): Player[];
+    findPlayer(playerId: PlayerId): Player;
     get playerCount(): number;
     get readyPlayerCount(): number;
 }
