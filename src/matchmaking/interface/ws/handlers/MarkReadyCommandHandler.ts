@@ -11,9 +11,9 @@ import { LobbySocket } from '../LobbyGatewayWs';
 export class MarkReadyCommandHandler implements WsCommandHandler<MarkReadyCommand> {
     constructor(private readonly useCase: MarkReadyUseCase) {}
 
-    handle(command: MarkReadyCommand, server: Server, _client: LobbySocket): void {
-        const lobbyId = new LobbyId(command.payload.lobbyId);
-        const playerId = new PlayerId(command.payload.playerId);
+    handle(_command: MarkReadyCommand, server: Server, client: LobbySocket): void {
+        const lobbyId = new LobbyId(client.data.lobbyId);
+        const playerId = new PlayerId(client.data.secretKey);
 
         const lobby = this.useCase.execute({ lobbyId, playerId });
 

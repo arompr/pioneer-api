@@ -11,8 +11,8 @@ import { WsCommandDispatcher } from './command/WsCommandDispatcher';
 import { UseErrorFilters } from './filters/UseErrorFilters';
 
 export interface SocketData {
-    lobbyId?: string;
-    secretKey?: string;
+    lobbyId: string;
+    secretKey: string;
 }
 
 export type LobbySocket = Socket<any, any, any, SocketData>;
