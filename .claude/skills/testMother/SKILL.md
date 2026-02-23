@@ -15,6 +15,7 @@ The project uses a **two-tier test data creation pattern**:
 2. **Test Mother** - Named factory methods for common scenarios, delegating to builders
 
 **Why this pattern?**
+
 - Builders provide flexibility when you need custom configurations
 - Mothers provide named, semantic methods for common test scenarios
 - Mothers encapsulate builder complexity for typical use cases
@@ -23,29 +24,30 @@ The project uses a **two-tier test data creation pattern**:
 ### Steps to Execute
 
 1. **Identify the target entity**
-   - Determine which domain entity needs test support
-   - Locate entity in source code (typically `src/[module]/domain/`)
+    - Determine which domain entity needs test support
+    - Locate entity in source code (typically `src/[module]/domain/`)
 
 2. **Analyze entity structure**
-   - Review constructor parameters
-   - Identify value objects and dependencies
-   - Note different states or configurations the entity can have
+    - Review constructor parameters
+    - Identify value objects and dependencies
+    - Note different states or configurations the entity can have
 
 3. **Create Test Builder first**
-   - File: `/test/[module]/domain/[entity]/Test[Entity]Builder.ts`
-   - Named export: `export class [Entity]Builder`
-   - Fluent interface with `with*()` methods
-   - Sensible defaults for all required fields
+    - File: `/test/[module]/domain/[entity]/Test[Entity]Builder.ts`
+    - Named export: `export class [Entity]Builder`
+    - Fluent interface with `with*()` methods
+    - Sensible defaults for all required fields
 
 4. **Create Test Mother second**
-   - File: `/test/[module]/domain/[entity]/[Entity]Mother.ts`
-   - Named export: `export class [Entity]Mother`
-   - Named factory methods for scenarios
-   - Delegate to builder for object creation
+    - File: `/test/[module]/domain/[entity]/[Entity]Mother.ts`
+    - Named export: `export class [Entity]Mother`
+    - Named factory methods for scenarios
+    - Delegate to builder for object creation
 
 ### Test Builder Pattern
 
 **Structure:**
+
 ```typescript
 export class [Entity]Builder {
     private _field1: Type1 = defaultValue1;
@@ -79,6 +81,7 @@ export class [Entity]Builder {
 ```
 
 **Rules:**
+
 - Private fields prefixed with `_` for internal state
 - Each field has a sensible default value
 - Each `with*()` method:
@@ -92,6 +95,7 @@ export class [Entity]Builder {
 ### Test Mother Pattern
 
 **Structure:**
+
 ```typescript
 import { [Entity] } from '#[module]/domain/[entity]/[Entity]';
 import { [Entity]Builder } from './Test[Entity]Builder';
@@ -117,17 +121,18 @@ export class [Entity]Mother {
     public static a[Entity](param1: Type1, param2?: Type2): [Entity] {
         const builder = new [Entity]Builder()
             .withField1(param1);
-        
+
         if (param2 !== undefined) {
             builder.withField2(param2);
         }
-        
+
         return builder.build();
     }
 }
 ```
 
 **Rules:**
+
 - Static methods only
 - Method names should be semantic and descriptive
   - Good: `originTile()`, `eastOfOriginTile()`, `aTile(q, r)`
@@ -140,6 +145,7 @@ export class [Entity]Mother {
 ### Real Example: TileMother + TileBuilder
 
 **Entity:**
+
 ```typescript
 export class Tile {
     constructor(
@@ -150,6 +156,7 @@ export class Tile {
 ```
 
 **TileBuilder:**
+
 ```typescript
 import { HexCoordinate } from '#game/domain/coordinate/HexCoordinate';
 import { ResourceType } from '#game/domain/tile/ResourceType';
@@ -187,6 +194,7 @@ export class TileBuilder {
 ```
 
 **TileMother:**
+
 ```typescript
 import { HexCoordinate } from '#game/domain/coordinate/HexCoordinate';
 import { ResourceType } from '#game/domain/tile/ResourceType';
@@ -222,6 +230,7 @@ export class TileMother {
 ```
 
 **Usage in tests:**
+
 ```typescript
 // Using mother for common scenarios
 const origin = TileMother.originTile();
@@ -240,9 +249,10 @@ const special = new TileBuilder()
 ### Import Aliases
 
 Always use project import aliases:
+
 - `#common/*` - common domain objects
 - `#matchmaking/*` - matchmaking module
-- `#game/*` - game module  
+- `#game/*` - game module
 - `#test/*` - test utilities (when importing cross-module test helpers)
 
 ### Output Format

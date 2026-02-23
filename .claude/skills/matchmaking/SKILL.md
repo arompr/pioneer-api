@@ -1,3 +1,8 @@
+---
+name: matchmaking
+description: Guide for the matchmaking slice covering lobby lifecycle, state pattern, domain events, and architecture patterns. Use this when working with lobbies, players, matchmaking logic, or related domain logic.
+---
+
 # Matchmaking Slice
 
 ## Architecture Pattern

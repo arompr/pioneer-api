@@ -1,3 +1,8 @@
+---
+name: game
+description: Guide for the game slice covering event sourcing, hex coordinate system, and game state management. Use this when working with game logic, board generation, resource management, or event sourcing patterns.
+---
+
 # Game Slice
 
 ## Architecture Pattern
