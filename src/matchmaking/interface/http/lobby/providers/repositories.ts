@@ -3,6 +3,8 @@ import { InMemoryLobbyRepository } from '#matchmaking/infrastructure/db/inMemory
 import { LOBBY_REPOSITORY } from '#matchmaking/domain/lobby/LobbyRepository';
 import { InMemoryOutboxRepository } from '#matchmaking/infrastructure/db/inMemory/outbox/InMemoryOutboxRepository';
 import { OUTBOX_REPOSITORY } from '#matchmaking/domain/outbox/OutboxRepository';
+import { HASHING_SERVICE } from '#matchmaking/domain/player/token/HashingService';
+import { InMemoryHashingServiceImpl } from '#matchmaking/infrastructure/crypto/InMemoryHashingServiceImpl';
 
 export const repositoryProviders: Provider[] = [
     {
@@ -12,5 +14,9 @@ export const repositoryProviders: Provider[] = [
     {
         provide: OUTBOX_REPOSITORY,
         useClass: InMemoryOutboxRepository,
+    },
+    {
+        provide: HASHING_SERVICE,
+        useClass: InMemoryHashingServiceImpl,
     },
 ];

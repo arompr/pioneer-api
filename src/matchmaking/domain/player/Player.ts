@@ -1,4 +1,5 @@
 import type { PlayerId } from '../../../common/domain/player/playerId/PlayerId.js';
+import type { PlayerToken } from './token/PlayerToken';
 import { PlayerStatus } from './PlayerStatus';
 
 /**
@@ -7,12 +8,14 @@ import { PlayerStatus } from './PlayerStatus';
  * A player has:
  * - an internal identity (id), used for authentication and equality
  * - a publicKey, exposed to other players for interactions
+ * - a token, the hashed authentication credential
  * - a name
  * - a readiness status
  */
 export class Player {
     private _id: PlayerId;
     private _publicKey: PlayerId;
+    private _token: PlayerToken;
     private _name: string;
     private _status: PlayerStatus;
 
@@ -21,12 +24,20 @@ export class Player {
      *
      * @param {PlayerId} id - Unique and secret identifier for the player.
      * @param {PlayerId} publicKey - Unique identifier for the player.
+     * @param {PlayerToken} token - Hashed authentication credential.
      * @param {string} name - Name chosen by the player.
      * @param {PlayerStatus} status - Initial readiness status of the player.
      */
-    constructor(id: PlayerId, publicKey: PlayerId, name: string, status: PlayerStatus) {
+    constructor(
+        id: PlayerId,
+        publicKey: PlayerId,
+        token: PlayerToken,
+        name: string,
+        status: PlayerStatus
+    ) {
         this._id = id;
         this._publicKey = publicKey;
+        this._token = token;
         this._name = name;
         this._status = status;
     }
@@ -47,6 +58,15 @@ export class Player {
      */
     get id(): PlayerId {
         return this._id;
+    }
+
+    /**
+     * Accessor for the player token.
+     *
+     * @returns {PlayerToken} The hashed authentication credential.
+     */
+    get token(): PlayerToken {
+        return this._token;
     }
 
     /**

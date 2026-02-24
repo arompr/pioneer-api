@@ -4,10 +4,13 @@ import { LobbyFactory } from '#matchmaking/domain/lobby/LobbyFactory';
 import { PlayerFactory } from '#matchmaking/domain/player/PlayerFactory';
 import { LobbyIdFactory } from '#matchmaking/domain/lobby/lobbyId/LobbyIdFactory';
 import { PlayerIdFactory } from '#common/domain/player/playerId/PlayerIdFactory';
+import { PlayerTokenFactory } from '#matchmaking/domain/player/token/PlayerTokenFactory';
+import { HASHING_SERVICE } from '#matchmaking/domain/player/token/HashingService';
 import { OutboxMessageIdFactory } from '#matchmaking/domain/outbox/outboxMessageId/OutboxMessageIdFactory';
 import { OutboxMessageFactory } from '#matchmaking/domain/outbox/OutboxMessageFactory';
 import { OutboxService } from '#matchmaking/domain/outbox/OutboxService';
 import { OUTBOX_REPOSITORY, OutboxRepository } from '#matchmaking/domain/outbox/OutboxRepository';
+import type { HashingService } from '#matchmaking/domain/player/token/HashingService';
 
 export const factoryProviders: Provider[] = [
     LobbyConfigFactory,
@@ -15,9 +18,15 @@ export const factoryProviders: Provider[] = [
     LobbyIdFactory,
     OutboxMessageIdFactory,
     {
+        provide: PlayerTokenFactory,
+        useFactory: (hashingService: HashingService) => new PlayerTokenFactory(hashingService),
+        inject: [HASHING_SERVICE],
+    },
+    {
         provide: PlayerFactory,
-        useFactory: (playerIdFactory: PlayerIdFactory) => new PlayerFactory(playerIdFactory),
-        inject: [PlayerIdFactory],
+        useFactory: (playerIdFactory: PlayerIdFactory, playerTokenFactory: PlayerTokenFactory) =>
+            new PlayerFactory(playerIdFactory, playerTokenFactory),
+        inject: [PlayerIdFactory, PlayerTokenFactory],
     },
     {
         provide: LobbyFactory,

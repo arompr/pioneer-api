@@ -2,12 +2,19 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { PlayerId } from '#common/domain/player/playerId/PlayerId';
 import { Player } from '#matchmaking/domain/player/Player';
 import { PlayerStatus } from '#matchmaking/domain/player/PlayerStatus';
+import { PlayerToken } from '#matchmaking/domain/player/token/PlayerToken';
+import { PlayerTokenHash } from '#matchmaking/domain/player/token/PlayerTokenHash';
+import { PlayerTokenPrefix } from '#matchmaking/domain/player/token/PlayerTokenPrefix';
 
 const DEFAULT_PLAYER_PUBLIC_ID = new PlayerId('player-public-id');
 const DEFAULT_PLAYER_ID = new PlayerId('player-secret-id');
 const OTHER_PLAYER_PUBLIC_ID = new PlayerId('other-player-id');
 const OTHER_PLAYER_ID = new PlayerId('other-secret-id');
 const PENDING_STATUS = PlayerStatus.Pending;
+const STUB_TOKEN = new PlayerToken(
+    new PlayerTokenPrefix('00000000'),
+    new PlayerTokenHash('00000000:' + '00'.repeat(32))
+);
 
 const DEFAULT_PLAYER_NAME = 'player-name';
 let player: Player;
@@ -17,6 +24,7 @@ describe('Player', () => {
         player = new Player(
             DEFAULT_PLAYER_ID,
             DEFAULT_PLAYER_PUBLIC_ID,
+            STUB_TOKEN,
             DEFAULT_PLAYER_NAME,
             PENDING_STATUS
         );
@@ -80,6 +88,7 @@ describe('Player', () => {
                 const playerWithSameId = new Player(
                     DEFAULT_PLAYER_ID,
                     DEFAULT_PLAYER_PUBLIC_ID,
+                    STUB_TOKEN,
                     DEFAULT_PLAYER_NAME,
                     PENDING_STATUS
                 );
@@ -93,6 +102,7 @@ describe('Player', () => {
                 const playerWithSameId = new Player(
                     OTHER_PLAYER_ID,
                     OTHER_PLAYER_PUBLIC_ID,
+                    STUB_TOKEN,
                     DEFAULT_PLAYER_NAME,
                     PENDING_STATUS
                 );

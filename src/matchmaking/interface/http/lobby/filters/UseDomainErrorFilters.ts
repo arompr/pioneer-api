@@ -13,6 +13,7 @@ import { PlayerNotFoundInLobbyErrorFilter } from './domain/PlayerNotFoundInLobby
 import { MinPlayersExceedsMaxPlayersErrorFilter } from './domain/MinPlayersExceedsMaxPlayersErrorFilter';
 import { InvalidMinPlayersErrorFilter } from './domain/InvalidMinPlayersErrorFilter';
 import { InvalidPlayerStatusErrorFilter } from './domain/InvalidPlayerStatusErrorFilter';
+import { InvalidPlayerTokenErrorFilter } from './domain/InvalidPlayerTokenErrorFilter';
 
 export function UseDomainErrorFilters() {
     return applyDecorators(
@@ -29,7 +30,8 @@ export function UseDomainErrorFilters() {
             PlayerNotFoundInLobbyErrorFilter,
             MinPlayersExceedsMaxPlayersErrorFilter,
             InvalidMinPlayersErrorFilter,
-            InvalidPlayerStatusErrorFilter
+            InvalidPlayerStatusErrorFilter,
+            InvalidPlayerTokenErrorFilter
         )
     );
 }
