@@ -1,4 +1,4 @@
-import { WsNotifyPlayerLeftLobbyHandler } from '#matchmaking/infastructure/handlers/WsNotifyPlayerLeftLobbyHandler';
+import { WsNotifyPlayerLeftLobbyHandler } from '#matchmaking/infrastructure/handlers/WsNotifyPlayerLeftLobbyHandler';
 import { LobbyEventType } from '#matchmaking/domain/lobby/events/LobbyEventType';
 import { EventBus } from '#common/usecase/EventBus';
 

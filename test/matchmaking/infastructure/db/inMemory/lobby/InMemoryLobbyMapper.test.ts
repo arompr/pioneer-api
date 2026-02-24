@@ -1,4 +1,4 @@
-import { InMemoryLobbyMapper } from '#matchmaking/infastructure/db/inMemory/lobby/InMemoryLobbyMapper';
+import { InMemoryLobbyMapper } from '#matchmaking/infrastructure/db/inMemory/lobby/InMemoryLobbyMapper';
 import { describe, expect, it } from 'vitest';
 import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
 

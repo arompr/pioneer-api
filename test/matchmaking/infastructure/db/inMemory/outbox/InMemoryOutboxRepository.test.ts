@@ -1,4 +1,4 @@
-import { InMemoryOutboxRepository } from '#matchmaking/infastructure/db/inMemory/outbox/InMemoryOutboxRepository';
+import { InMemoryOutboxRepository } from '#matchmaking/infrastructure/db/inMemory/outbox/InMemoryOutboxRepository';
 import { OutboxObserver } from '#matchmaking/domain/outbox/OutboxObserver';
 import { describe, expect, it, vi } from 'vitest';
 import { OutboxMessageMother } from '#test/matchmaking/domain/outbox/OutboxMessageMother';

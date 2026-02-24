@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { OutboxProcessor } from '#matchmaking/infastructure/processors/OutboxProcessor';
+import { OutboxProcessor } from '#matchmaking/infrastructure/processors/OutboxProcessor';
 import { OutboxMessageMother } from '#test/matchmaking/domain/outbox/OutboxMessageMother';
-import { InMemoryOutboxRepository } from '#matchmaking/infastructure/db/inMemory/outbox/InMemoryOutboxRepository';
+import { InMemoryOutboxRepository } from '#matchmaking/infrastructure/db/inMemory/outbox/InMemoryOutboxRepository';
 import { PlayerJoinedLobby } from '#matchmaking/domain/lobby/events/PlayerJoinedLobby';
 import { PlayerLeftLobby } from '#matchmaking/domain/lobby/events/PlayerLeftLobby';
 import { DomainEvent } from '#common/domain/events/DomainEvent';

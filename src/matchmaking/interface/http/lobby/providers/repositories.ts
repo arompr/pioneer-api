@@ -1,7 +1,7 @@
 import { Provider } from '@nestjs/common';
-import { InMemoryLobbyRepository } from '#matchmaking/infastructure/db/inMemory/lobby/InMemoryLobbyRepository';
+import { InMemoryLobbyRepository } from '#matchmaking/infrastructure/db/inMemory/lobby/InMemoryLobbyRepository';
 import { LOBBY_REPOSITORY } from '#matchmaking/domain/lobby/LobbyRepository';
-import { InMemoryOutboxRepository } from '#matchmaking/infastructure/db/inMemory/outbox/InMemoryOutboxRepository';
+import { InMemoryOutboxRepository } from '#matchmaking/infrastructure/db/inMemory/outbox/InMemoryOutboxRepository';
 import { OUTBOX_REPOSITORY } from '#matchmaking/domain/outbox/OutboxRepository';
 
 export const repositoryProviders: Provider[] = [

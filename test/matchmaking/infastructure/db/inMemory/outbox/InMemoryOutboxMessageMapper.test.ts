@@ -1,4 +1,4 @@
-import { InMemoryOutboxMessageMapper } from '#matchmaking/infastructure/db/inMemory/outbox/InMemoryOutboxMessageMapper';
+import { InMemoryOutboxMessageMapper } from '#matchmaking/infrastructure/db/inMemory/outbox/InMemoryOutboxMessageMapper';
 import { OutboxMessage } from '#matchmaking/domain/outbox/OutboxMessage';
 import { OutboxMessageId } from '#matchmaking/domain/outbox/outboxMessageId/OutboxMessageId';
 import { describe, expect, it } from 'vitest';

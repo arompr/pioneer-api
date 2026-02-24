@@ -1,5 +1,5 @@
 import { Provider } from '@nestjs/common';
-import { InMemoryEventBus } from '#matchmaking/infastructure/event-bus/InMemoryEventBus';
+import { InMemoryEventBus } from '#matchmaking/infrastructure/event-bus/InMemoryEventBus';
 import { registerHandlers } from '#bootstrap/handlers';
 import { EventBus } from '#common/usecase/EventBus';
 

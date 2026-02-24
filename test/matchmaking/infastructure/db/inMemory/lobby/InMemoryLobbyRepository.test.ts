@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
 import { LobbyAggregate } from '#matchmaking/domain/lobby/LobbyAggregate.type';
-import { InMemoryLobbyRepository } from '#matchmaking/infastructure/db/inMemory/lobby/InMemoryLobbyRepository';
+import { InMemoryLobbyRepository } from '#matchmaking/infrastructure/db/inMemory/lobby/InMemoryLobbyRepository';
 
 let repo: InMemoryLobbyRepository;
 let lobby: LobbyAggregate;

@@ -1,4 +1,4 @@
-import { InMemoryOutboxMessageEventMapper } from '#matchmaking/infastructure/db/inMemory/outbox/InMemoryOutboxMessageEventMapper';
+import { InMemoryOutboxMessageEventMapper } from '#matchmaking/infrastructure/db/inMemory/outbox/InMemoryOutboxMessageEventMapper';
 import { LobbyClosed } from '#matchmaking/domain/lobby/events/LobbyClosed';
 import { LobbyHostChanged } from '#matchmaking/domain/lobby/events/LobbyHostChanged';
 import { LobbyStarted } from '#matchmaking/domain/lobby/events/LobbyStarted';
