@@ -1,5 +1,5 @@
-import { WsCommandDispatcher } from '#matchmaking/interface/ws/command/WsCommandDispatcher';
-import { WsCommandType } from '#matchmaking/interface/ws/command/WsCommandType';
+import { WsCommandDispatcher } from '#common/interface/ws/command/WsCommandDispatcher';
+import { WsLobbyCommandType } from '#matchmaking/interface/ws/command/WsLobbyCommandType';
 import { MarkReadyCommandHandler } from '#matchmaking/interface/ws/handlers/MarkReadyCommandHandler';
 import { SyncPlayerCommandHandler } from '#matchmaking/interface/ws/handlers/SyncPlayerCommandHandler';
 import { GetLobbyUseCase } from '#matchmaking/usecase/GetLobbyUseCase';
@@ -11,12 +11,12 @@ export function registerWsHandlers(
     getLobbyUseCase: GetLobbyUseCase
 ): void {
     commandDispatcher.register(
-        WsCommandType.MARK_READY,
+        WsLobbyCommandType.MARK_READY,
         new MarkReadyCommandHandler(markReadyUseCase)
     );
 
     commandDispatcher.register(
-        WsCommandType.SYNC_PLAYER,
+        WsLobbyCommandType.SYNC_PLAYER,
         new SyncPlayerCommandHandler(getLobbyUseCase)
     );
 }

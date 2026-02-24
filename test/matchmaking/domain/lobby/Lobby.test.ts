@@ -344,6 +344,16 @@ describe('Lobby', () => {
             });
         });
     });
+
+    describe('findPlayer', () => {
+        describe('when the player is in the lobby', () => {
+            it('returns the player', () => {
+                const player = lobby.findPlayer(player1.id);
+
+                expect(player).toBe(player1);
+            });
+        });
+    });
 });
 
 const setupClosedLobby = () => {

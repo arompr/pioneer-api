@@ -1,4 +1,4 @@
-import { LobbySocket } from '../LobbyGatewayWs';
+import { LobbySocket } from '#matchmaking/interface/ws/LobbyGatewayWs';
 import { WsCommand } from './WsCommand';
 import { Server } from 'socket.io';
 
