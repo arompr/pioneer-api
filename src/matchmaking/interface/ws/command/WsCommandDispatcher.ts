@@ -1,6 +1,6 @@
 import { Server } from 'socket.io';
-import { WsCommand } from './WsCommand';
-import { WsCommandHandler } from './WsCommandHandler';
+import { WsCommand } from '#common/interface/ws/command/WsCommand';
+import { WsCommandHandler } from '#common/interface/ws/command/WsCommandHandler';
 import { LobbySocket } from '#matchmaking/interface/ws/LobbyGatewayWs';
 import { UnknownCommandError } from '#matchmaking/interface/ws/errors/UnknownCommandError';
 

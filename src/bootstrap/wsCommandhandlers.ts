@@ -1,4 +1,4 @@
-import { WsCommandDispatcher } from '#common/interface/ws/command/WsCommandDispatcher';
+import { WsCommandDispatcher } from '#matchmaking/interface/ws/command/WsCommandDispatcher';
 import { WsLobbyCommandType } from '#matchmaking/interface/ws/command/WsLobbyCommandType';
 import { MarkReadyCommandHandler } from '#matchmaking/interface/ws/handlers/MarkReadyCommandHandler';
 import { SyncPlayerCommandHandler } from '#matchmaking/interface/ws/handlers/SyncPlayerCommandHandler';

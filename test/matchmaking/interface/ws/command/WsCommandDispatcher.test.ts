@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Server } from 'socket.io';
-import { WsCommandDispatcher } from '#common/interface/ws/command/WsCommandDispatcher';
+import { WsCommandDispatcher } from '#matchmaking/interface/ws/command/WsCommandDispatcher';
 import { UnknownCommandError } from '#matchmaking/interface/ws/errors/UnknownCommandError';
 import { LobbySocket } from '#matchmaking/interface/ws/LobbyGatewayWs';
 
