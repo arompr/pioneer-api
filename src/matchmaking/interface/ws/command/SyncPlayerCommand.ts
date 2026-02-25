@@ -1,5 +1,5 @@
-import { WsCommand } from './WsCommand';
-import { WsCommandType } from './WsCommandType';
+import { WsCommand } from '#common/interface/ws/command/WsCommand';
+import { WsLobbyCommandType } from './WsLobbyCommandType';
 
 export type SyncPlayerCommandPayload = {
     secretKey: string;
@@ -7,7 +7,7 @@ export type SyncPlayerCommandPayload = {
 };
 
 export class SyncPlayerCommand implements WsCommand {
-    readonly type = WsCommandType.SYNC_PLAYER;
+    readonly type = WsLobbyCommandType.SYNC_PLAYER;
 
     constructor(public readonly payload: SyncPlayerCommandPayload) {
         this.payload = payload;

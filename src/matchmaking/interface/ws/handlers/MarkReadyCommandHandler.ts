@@ -1,6 +1,6 @@
 import { Server } from 'socket.io';
 import { MarkReadyCommand } from '../command/MarkReadyCommand';
-import { WsCommandHandler } from '../command/WsCommandHandler';
+import { WsCommandHandler } from '#common/interface/ws/command/WsCommandHandler';
 import { MarkReadyUseCase } from '#matchmaking/usecase/MarkReadyUseCase';
 import { LobbyId } from '#matchmaking/domain/lobby/lobbyId/LobbyId';
 import { PlayerId } from '#common/domain/player/playerId/PlayerId';

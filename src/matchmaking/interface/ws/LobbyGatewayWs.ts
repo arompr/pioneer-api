@@ -6,8 +6,8 @@ import {
     WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import type { WsCommand } from './command/WsCommand';
-import { WsCommandDispatcher } from './command/WsCommandDispatcher';
+import type { WsCommand } from '#common/interface/ws/command/WsCommand';
+import { WsCommandDispatcher } from '#matchmaking/interface/ws/command/WsCommandDispatcher';
 import { UseErrorFilters } from './filters/UseErrorFilters';
 
 export interface SocketData {

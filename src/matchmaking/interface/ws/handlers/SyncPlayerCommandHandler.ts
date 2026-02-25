@@ -1,5 +1,5 @@
 import { Server } from 'socket.io';
-import { WsCommandHandler } from '../command/WsCommandHandler';
+import { WsCommandHandler } from '#common/interface/ws/command/WsCommandHandler';
 import { LobbyId } from '#matchmaking/domain/lobby/lobbyId/LobbyId';
 import { PlayerId } from '#common/domain/player/playerId/PlayerId';
 import { WsEvents } from '../WsEventsType';
