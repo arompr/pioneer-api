@@ -9,6 +9,7 @@ export class LobbyMapper {
             players: lobby.allPlayers.map((player) => ({
                 publicKey: player.publicKey.value,
                 name: player.name,
+                status: player.status,
                 isHost: lobby.isHost(player.id),
             })),
             config: {

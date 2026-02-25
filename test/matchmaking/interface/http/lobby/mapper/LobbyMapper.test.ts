@@ -24,6 +24,7 @@ describe('LobbyMapper', () => {
             expect(lobbyResponse.players).toHaveLength(lobby.allPlayers.length);
             expect(playerResponse.publicKey).toBe(player1.publicKey.value);
             expect(playerResponse.name).toBe(player1.name);
+            expect(playerResponse.status).toBe(player1.status);
             expect(playerResponse.isHost).toBe(lobby.isHost(player1.id));
         });
     });
