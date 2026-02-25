@@ -6,11 +6,14 @@ import { LobbyIdFactory } from '#matchmaking/domain/lobby/lobbyId/LobbyIdFactory
 import { PlayerIdFactory } from '#common/domain/player/playerId/PlayerIdFactory';
 import { PlayerTokenFactory } from '#matchmaking/domain/player/token/PlayerTokenFactory';
 import { HASHING_SERVICE } from '#matchmaking/domain/player/token/HashingService';
+import { PLAYER_TOKEN_GENERATOR } from '#matchmaking/domain/player/token/PlayerTokenGenerator';
 import { OutboxMessageIdFactory } from '#matchmaking/domain/outbox/outboxMessageId/OutboxMessageIdFactory';
 import { OutboxMessageFactory } from '#matchmaking/domain/outbox/OutboxMessageFactory';
 import { OutboxService } from '#matchmaking/domain/outbox/OutboxService';
 import { OUTBOX_REPOSITORY, OutboxRepository } from '#matchmaking/domain/outbox/OutboxRepository';
 import type { HashingService } from '#matchmaking/domain/player/token/HashingService';
+import type { PlayerTokenGenerator } from '#matchmaking/domain/player/token/PlayerTokenGenerator';
+import { RandomTokenGenerator } from '#matchmaking/infrastructure/crypto/RandomTokenGenerator';
 
 export const factoryProviders: Provider[] = [
     LobbyConfigFactory,
@@ -18,9 +21,14 @@ export const factoryProviders: Provider[] = [
     LobbyIdFactory,
     OutboxMessageIdFactory,
     {
+        provide: PLAYER_TOKEN_GENERATOR,
+        useClass: RandomTokenGenerator,
+    },
+    {
         provide: PlayerTokenFactory,
-        useFactory: (hashingService: HashingService) => new PlayerTokenFactory(hashingService),
-        inject: [HASHING_SERVICE],
+        useFactory: (hashingService: HashingService, playerTokenGenerator: PlayerTokenGenerator) =>
+            new PlayerTokenFactory(hashingService, playerTokenGenerator),
+        inject: [HASHING_SERVICE, PLAYER_TOKEN_GENERATOR],
     },
     {
         provide: PlayerFactory,

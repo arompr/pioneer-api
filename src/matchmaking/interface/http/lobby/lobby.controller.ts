@@ -74,7 +74,7 @@ export class LobbyController {
     join(@Param('id') id: string, @Body() joinRequest: JoinLobbyRequest): JoinLobbyResponse {
         const dto: JoinLobbyDto = { lobbyId: new LobbyId(id), playerName: joinRequest.playerName };
 
-        const { lobby, joinedPlayer } = this.joinLobby.execute(dto);
+        const { lobby, createdPlayer: joinedPlayer } = this.joinLobby.execute(dto);
 
         return {
             lobby: LobbyMapper.toLobbyResponse(lobby),

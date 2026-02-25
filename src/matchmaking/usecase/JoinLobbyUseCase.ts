@@ -1,14 +1,14 @@
 import { LobbyAggregate } from '#matchmaking/domain/lobby/LobbyAggregate.type';
 import { LobbyRepository } from '#matchmaking/domain/lobby/LobbyRepository';
-import { Player } from '#matchmaking/domain/player/Player';
 import { PlayerFactory } from '#matchmaking/domain/player/PlayerFactory';
 import { OutboxService } from '#matchmaking/domain/outbox/OutboxService';
+import { CreatePlayerDto } from './dto/CreatePlayerDto';
 import { JoinLobbyDto } from './dto/JoinLobbyDto';
 import { LobbyNotFoundError } from './errors/LobbyNotFoundError';
 
 export type JoinLobbyResult = {
     lobby: LobbyAggregate;
-    joinedPlayer: Player;
+    createdPlayer: CreatePlayerDto;
 };
 
 export class JoinLobbyUseCase {
@@ -24,12 +24,13 @@ export class JoinLobbyUseCase {
             throw new LobbyNotFoundError(dto.lobbyId);
         }
 
-        const joinedPlayer = this.playerFactory.create(dto.playerName);
-        lobby.join(joinedPlayer);
+        const { rawToken, player } = this.playerFactory.create(dto.playerName);
+        lobby.join(player);
 
         this.lobbyRepository.save(lobby);
         this.outboxService.publishEvents(lobby);
 
-        return { lobby, joinedPlayer };
+        const createdPlayer = CreatePlayerDto.of(player, rawToken);
+        return { lobby, createdPlayer };
     }
 }

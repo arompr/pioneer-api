@@ -34,11 +34,11 @@ No new npm dependencies — uses Node.js built-in `crypto`.
 
 ## Terminology Changes
 
-| Before | After |
-|---|---|
-| `publicKey` (exposed to others) | `id` (plain player identifier, already exists) |
-| `secretKey` (authentication credential, raw UUID) | `token` (hashed credential, `PlayerToken`) |
-| `client.data.secretKey` (WS session) | `client.data.playerToken` |
+| Before                                            | After                                          |
+| ------------------------------------------------- | ---------------------------------------------- |
+| `publicKey` (exposed to others)                   | `id` (plain player identifier, already exists) |
+| `secretKey` (authentication credential, raw UUID) | `token` (hashed credential, `PlayerToken`)     |
+| `client.data.secretKey` (WS session)              | `client.data.playerToken`                      |
 
 ## Implementation Phases
 
@@ -46,28 +46,42 @@ No new npm dependencies — uses Node.js built-in `crypto`.
 
 Create the core domain model:
 
-- **TokenPrefix** VO: 8-char hex prefix, immutable, with `equals()` and `value` getter
-  - `src/matchmaking/domain/player/token/TokenPrefix.ts`
-- **TokenHash** VO: scrypt output format `"<salt>:<hash>"`, immutable, with `equals()` and `value` getter
-  - `src/matchmaking/domain/player/token/TokenHash.ts`
-- **PlayerToken** VO: composite containing `prefix: TokenPrefix`, `hash: TokenHash`, `rawValue?: string` (only set during generation)
+**IMPLEMENTED:**
+
+- **PlayerTokenPrefix** VO: 8-char hex prefix, immutable, with `equals()` and `value` getter
+  - `src/matchmaking/domain/player/token/PlayerTokenPrefix.ts`
+- **PlayerTokenHash** VO: scrypt output format `"<salt>:<hash>"`, immutable, with `equals()` and `value` getter
+  - `src/matchmaking/domain/player/token/PlayerTokenHash.ts`
+- **PlayerToken** VO: composite containing `prefix: PlayerTokenPrefix`, `hash: PlayerTokenHash`
   - `src/matchmaking/domain/player/token/PlayerToken.ts`
-  - Includes `verify(rawToken: string): boolean` method
+  - **NOTE:** Missing `rawValue` field and `verify()` method (to be added)
+- **RawPlayerToken** VO: wrapper for raw token string value (additional VO, not in original plan)
+  - `src/matchmaking/domain/player/token/RawPlayerToken.ts`
+- **PlayerTokenGenerator** interface: generates secure random tokens
+  - `src/matchmaking/domain/player/token/PlayerTokenGenerator.ts`
 - **HashingService** interface: domain-level contract for token operations
   - `src/matchmaking/domain/player/token/HashingService.ts`
-  - Methods: `hash(value: string): Promise<TokenHash>` and `verify(rawToken: string, hash: TokenHash): Promise<boolean>`
-- **PlayerTokenFactory**: generates tokens via `HashingService`, returns complete `PlayerToken`
+  - Methods: `hash(value: RawPlayerToken): PlayerTokenHash` and `verify(rawToken: RawPlayerToken, hash: PlayerTokenHash): boolean`
+  - **NOTE:** Implemented as synchronous methods (not async)
+- **PlayerTokenFactory**: generates tokens via `HashingService`
   - `src/matchmaking/domain/player/token/PlayerTokenFactory.ts`
-  - Method: `generate(): Promise<PlayerToken>` — creates rawValue, derives prefix, calls hasher for hash
-- **InvalidPlayerTokenError**: new domain error for verification failures
+  - Method: `generate(): GeneratePlayerTokenResult` — returns `{ rawToken: RawPlayerToken, token: PlayerToken }`
+- **InvalidPlayerTokenError**: domain error for verification failures
   - `src/matchmaking/domain/player/errors/InvalidPlayerTokenError.ts`
   - Property: `public readonly playerToken: string`
-- Update **Player** entity: replace `_publicKey` with `_token: PlayerToken`
+- **Player** entity: added `_token: PlayerToken`
   - `src/matchmaking/domain/player/Player.ts`
-  - Constructor: `(id, token, name, status)`
-  - Add `get token(): PlayerToken` accessor
-- Update **PlayerFactory**: inject `PlayerTokenFactory`, use it to generate token
-  - `src/matchmaking/domain/player/PlayerFactory.ts`
+  - Constructor: `(id, publicKey, token, name, status)`
+  - Added `get token(): PlayerToken` accessor
+  - **NOTE:** Still has both `id` and `publicKey` - simplification to single `id` deferred
+
+**WILL NOT be IMPLEMENTED:**
+
+- **PlayerToken.verify()** method - needs to be added to `PlayerToken` VO
+
+**Not yet IMPLEMENTED**
+
+- **PlayerFactory** - currently accepts `PlayerToken` as parameter, should inject `PlayerTokenFactory` to generate tokens internally
 
 ### Phase 2: Use Cases & Domain Logic
 

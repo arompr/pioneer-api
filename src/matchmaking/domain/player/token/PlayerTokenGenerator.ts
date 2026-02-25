@@ -1,5 +1,7 @@
 import { RawPlayerToken } from './RawPlayerToken';
 
+export const PLAYER_TOKEN_GENERATOR = Symbol('PlayerTokenGenerator');
+
 /**
  * Interface for generating secure random player tokens.
  */

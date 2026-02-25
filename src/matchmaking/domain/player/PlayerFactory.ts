@@ -1,28 +1,39 @@
 import { PlayerIdFactory } from '#common/domain/player/playerId/PlayerIdFactory';
 import { Player } from './Player';
 import { PlayerStatus } from './PlayerStatus';
-import { PlayerToken } from './token/PlayerToken';
+import { PlayerTokenFactory } from './token/PlayerTokenFactory';
+import { RawPlayerToken } from './token/RawPlayerToken';
+
+export type CreatePlayerResult = {
+    rawToken: RawPlayerToken;
+    player: Player;
+};
 
 /**
  * Factory responsible for creating Player instances.
  */
 export class PlayerFactory {
-    private readonly playerIdFactory: PlayerIdFactory;
+    private readonly _playerIdFactory: PlayerIdFactory;
+    private readonly _playerTokenFactory: PlayerTokenFactory;
 
-    constructor(playerIdFactory: PlayerIdFactory) {
-        this.playerIdFactory = playerIdFactory;
+    constructor(playerIdFactory: PlayerIdFactory, playerTokenFactory: PlayerTokenFactory) {
+        this._playerIdFactory = playerIdFactory;
+        this._playerTokenFactory = playerTokenFactory;
     }
 
     /**
      * Creates a new Player.
      */
-    create(name: string, token: PlayerToken): Player {
-        return new Player(
-            this.playerIdFactory.generate(),
-            this.playerIdFactory.generate(),
+    create(name: string): CreatePlayerResult {
+        const { rawToken, token } = this._playerTokenFactory.generate();
+        const player = new Player(
+            this._playerIdFactory.generate(),
+            this._playerIdFactory.generate(),
             token,
             name,
             PlayerStatus.Pending
         );
+
+        return { rawToken, player };
     }
 }
