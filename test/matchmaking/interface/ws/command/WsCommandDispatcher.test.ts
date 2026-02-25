@@ -40,8 +40,8 @@ describe('WsCommandDispatcher', () => {
 
                 expect(commandeHandler1.handle).toHaveBeenCalledWith(
                     command,
-                    mockClient,
-                    mockServer
+                    mockServer,
+                    mockClient
                 );
             });
         });
