@@ -6,8 +6,10 @@ import { JoinLobbyDto } from '#matchmaking/usecase/dto/JoinLobbyDto';
 import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
 import { LobbyNotFoundError } from '#matchmaking/usecase/errors/LobbyNotFoundError';
 import { OutboxService } from '#matchmaking/domain/outbox/OutboxService';
+import type { JwtTokenService } from '#matchmaking/domain/auth/JwtTokenService';
 
 const PLAYER_NAME = 'newPlayer';
+const TOKEN = 'mock-jwt-token';
 const { lobby, players } = LobbyMother.baseLobby();
 const playerToJoin = players[1];
 
@@ -21,6 +23,9 @@ const mockPlayerFactory: Partial<PlayerFactory> = {
 const mockOutboxService: Partial<OutboxService> = {
     publishEvents: vi.fn(),
 };
+const mockJwtTokenService: Partial<JwtTokenService> = {
+    encode: vi.fn().mockReturnValue(TOKEN),
+};
 
 let useCase: JoinLobbyUseCase;
 
@@ -29,14 +34,15 @@ describe('JoinLobbyUseCase', () => {
         useCase = new JoinLobbyUseCase(
             mockLobbyRepository as LobbyRepository,
             mockPlayerFactory as PlayerFactory,
-            mockOutboxService as OutboxService
+            mockOutboxService as OutboxService,
+            mockJwtTokenService as JwtTokenService
         );
         vi.clearAllMocks();
     });
 
     describe('execute', () => {
         describe('when lobby exists', () => {
-            it('should add player to lobby and save it', () => {
+            it('should add player to lobby, save it, and return a token', () => {
                 const dto = new JoinLobbyDto(lobby.id, PLAYER_NAME);
 
                 const result = useCase.execute(dto);
@@ -44,8 +50,10 @@ describe('JoinLobbyUseCase', () => {
                 expect(mockLobbyRepository.findById).toHaveBeenCalledWith(lobby.id);
                 expect(mockPlayerFactory.create).toHaveBeenCalledWith(PLAYER_NAME);
                 expect(mockLobbyRepository.save).toHaveBeenCalledWith(lobby);
+                expect(mockJwtTokenService.encode).toHaveBeenCalledWith(playerToJoin.id, lobby.id);
                 expect(result.lobby).toBe(lobby);
                 expect(result.joinedPlayer).toBe(playerToJoin);
+                expect(result.token).toBe(TOKEN);
             });
         });
 

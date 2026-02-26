@@ -5,18 +5,12 @@ import { InMemoryPlayer } from './InMemoryPlayer';
 
 export class InMemoryPlayerMapper {
     static toInMemory(player: Player): InMemoryPlayer {
-        return new InMemoryPlayer(
-            player.id.value,
-            player.publicKey.value,
-            player.name,
-            player.status.toString()
-        );
+        return new InMemoryPlayer(player.id.value, player.name, player.status.toString());
     }
 
     static toDomain(imPlayer: InMemoryPlayer): Player {
         return new Player(
             new PlayerId(imPlayer.id),
-            new PlayerId(imPlayer.publicKey),
             imPlayer.name,
             playerStatusFromString(imPlayer.status)
         );

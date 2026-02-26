@@ -5,11 +5,13 @@ import { LobbyRepository } from '#matchmaking/domain/lobby/LobbyRepository';
 import { Player } from '#matchmaking/domain/player/Player';
 import { PlayerFactory } from '#matchmaking/domain/player/PlayerFactory';
 import { OutboxService } from '#matchmaking/domain/outbox/OutboxService';
+import { JwtTokenService } from '#matchmaking/domain/auth/JwtTokenService';
 import { CreateLobbyDto } from './dto/CreateLobbyDto';
 
 export type CreateLobbyResult = {
     createdLobby: LobbyAggregate;
     createdHostPlayer: Player;
+    token: string;
 };
 
 export class CreateLobbyUseCase {
@@ -18,7 +20,8 @@ export class CreateLobbyUseCase {
         private readonly lobbyFactory: LobbyFactory,
         private readonly playerFactory: PlayerFactory,
         private readonly lobbyConfigFactory: LobbyConfigFactory,
-        private readonly outboxService: OutboxService
+        private readonly outboxService: OutboxService,
+        private readonly jwtTokenService: JwtTokenService
     ) {}
 
     execute(dto: CreateLobbyDto): CreateLobbyResult {
@@ -29,6 +32,8 @@ export class CreateLobbyUseCase {
         this.lobbyRepository.save(createdLobby);
         this.outboxService.publishEvents(createdLobby);
 
-        return { createdLobby, createdHostPlayer };
+        const token = this.jwtTokenService.encode(createdHostPlayer.id, createdLobby.id);
+
+        return { createdLobby, createdHostPlayer, token };
     }
 }

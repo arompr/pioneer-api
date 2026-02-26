@@ -9,8 +9,7 @@ export class PlayerMother {
 
     static create(index: string | number, ready = false): Player {
         const player = new Player(
-            new PlayerId(`secret-${index}`),
-            new PlayerId(`public-${index}`),
+            new PlayerId(`player-${index}`),
             `player-${index}`,
             ready ? PlayerStatus.Ready : PlayerStatus.Pending
         );

@@ -1,5 +1,3 @@
-import { PlayerId } from '#common/domain/player/playerId/PlayerId';
-import { LobbyId } from '#matchmaking/domain/lobby/lobbyId/LobbyId';
 import { MarkReadyCommand } from '#matchmaking/interface/ws/command/MarkReadyCommand';
 import { MarkReadyCommandHandler } from '#matchmaking/interface/ws/handlers/MarkReadyCommandHandler';
 import { LobbySocket, SocketData } from '#matchmaking/interface/ws/LobbyGatewayWs';
@@ -14,7 +12,7 @@ const { lobby } = LobbyMother.baseLobby();
 const player = lobby.allPlayers[0];
 
 const mockClient = {
-    data: { lobbyId: lobby.id.value, secretKey: player.id.value } as SocketData,
+    data: { lobbyId: lobby.id, playerId: player.id } as SocketData,
 } as unknown as LobbySocket;
 
 const emitMock = vi.fn();
@@ -42,8 +40,8 @@ describe('MarkReadyCommandHandler', () => {
             markReadyCommandHandler.handle(command, mockServer, mockClient);
 
             expect(execute).toBeCalledWith({
-                lobbyId: new LobbyId(mockClient.data.lobbyId),
-                playerId: new PlayerId(mockClient.data.secretKey),
+                lobbyId: lobby.id,
+                playerId: player.id,
             });
             expect(toMock).toHaveBeenCalledWith(`lobby-${lobby.id.value}`);
             expect(emitMock).toHaveBeenCalledWith(

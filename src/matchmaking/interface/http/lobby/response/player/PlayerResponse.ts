@@ -1,5 +1,5 @@
 export type PlayerResponse = {
-    publicKey: string;
+    id: string;
     name: string;
     status: string;
     isHost: boolean;

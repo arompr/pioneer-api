@@ -4,11 +4,13 @@ import { MarkReadyCommandHandler } from '#matchmaking/interface/ws/handlers/Mark
 import { SyncPlayerCommandHandler } from '#matchmaking/interface/ws/handlers/SyncPlayerCommandHandler';
 import { GetLobbyUseCase } from '#matchmaking/usecase/GetLobbyUseCase';
 import { MarkReadyUseCase } from '#matchmaking/usecase/MarkReadyUseCase';
+import type { JwtTokenService } from '#matchmaking/domain/auth/JwtTokenService';
 
 export function registerWsHandlers(
     commandDispatcher: WsCommandDispatcher,
     markReadyUseCase: MarkReadyUseCase,
-    getLobbyUseCase: GetLobbyUseCase
+    getLobbyUseCase: GetLobbyUseCase,
+    jwtTokenService: JwtTokenService
 ): void {
     commandDispatcher.register(
         WsLobbyCommandType.MARK_READY,
@@ -17,6 +19,6 @@ export function registerWsHandlers(
 
     commandDispatcher.register(
         WsLobbyCommandType.SYNC_PLAYER,
-        new SyncPlayerCommandHandler(getLobbyUseCase)
+        new SyncPlayerCommandHandler(getLobbyUseCase, jwtTokenService)
     );
 }

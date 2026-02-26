@@ -6,12 +6,13 @@ describe('PrivatePlayerMapper', () => {
     describe('toPlayerResponse', () => {
         it('should map Player to PrivatePlayerResponse', () => {
             const player = PlayerMother.anyPlayer();
+            const token = 'mock-jwt-token';
 
-            const response = PrivatePlayerMapper.toPlayerResponse(player, true);
+            const response = PrivatePlayerMapper.toPlayerResponse(player, true, token);
 
             expect(response).toEqual({
-                secretKey: player.id.value,
-                publicKey: player.publicKey.value,
+                token,
+                id: player.id.value,
                 name: player.name,
                 isHost: true,
             });

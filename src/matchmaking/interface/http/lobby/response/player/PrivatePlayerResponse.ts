@@ -1,6 +1,6 @@
 export type PrivatePlayerResponse = {
-    secretKey: string;
-    publicKey: string;
+    token: string;
+    id: string;
     name: string;
     isHost: boolean;
 };

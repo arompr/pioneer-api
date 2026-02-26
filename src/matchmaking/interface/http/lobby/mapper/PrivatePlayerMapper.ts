@@ -2,12 +2,12 @@ import { Player } from '#matchmaking/domain/player/Player';
 import { PrivatePlayerResponse } from '../response/player/PrivatePlayerResponse';
 
 export class PrivatePlayerMapper {
-    static toPlayerResponse(player: Player, isHost: boolean): PrivatePlayerResponse {
+    static toPlayerResponse(player: Player, isHost: boolean, token: string): PrivatePlayerResponse {
         return {
-            secretKey: player.id.value,
-            publicKey: player.publicKey.value,
+            token,
+            id: player.id.value,
             name: player.name,
-            isHost: isHost,
+            isHost,
         };
     }
 }

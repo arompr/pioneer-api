@@ -1,5 +1,5 @@
 export type PlayerWsResponse = {
-    publicKey: string;
+    id: string;
     name: string;
     status: string;
     isHost: boolean;
