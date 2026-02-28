@@ -6,6 +6,8 @@ export type JwtTokenPayload = {
     lobbyId: LobbyId;
 };
 
+export const JWT_TOKEN_SERVICE = Symbol('JwtTokenService');
+
 /**
  * Domain service interface for encoding and decoding JWT tokens.
  */
@@ -28,5 +30,3 @@ export interface JwtTokenService {
      */
     decode(token: string): JwtTokenPayload;
 }
-
-export const JWT_TOKEN_SERVICE = Symbol('JwtTokenService');

@@ -30,7 +30,7 @@ const mockUseCase: GetLobbyUseCase = {
     execute: execute,
 } as unknown as GetLobbyUseCase;
 
-const mockJwtTokenService: Partial<JwtTokenService> = {
+const mockJwtTokenService = {
     decode: vi.fn().mockReturnValue({ playerId: player.id, lobbyId: lobby.id }),
 };
 
@@ -39,14 +39,10 @@ let command: SyncPlayerCommand;
 beforeEach(() => {
     syncPlayerCommandHandler = new SyncPlayerCommandHandler(
         mockUseCase,
-        mockJwtTokenService as JwtTokenService
+        mockJwtTokenService as unknown as JwtTokenService
     );
     mockClient.data = {} as SocketData;
     vi.clearAllMocks();
-    (mockJwtTokenService.decode as ReturnType<typeof vi.fn>).mockReturnValue({
-        playerId: player.id,
-        lobbyId: lobby.id,
-    });
     execute.mockReturnValue(lobby);
     command = new SyncPlayerCommand({ token: TOKEN });
 });

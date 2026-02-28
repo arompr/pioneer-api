@@ -7,7 +7,6 @@ import {
     HttpCode,
     HttpStatus,
     Headers,
-    Inject,
     UnauthorizedException,
 } from '@nestjs/common';
 import { CreateLobbyRequest } from './request/CreateLobbyRequest';
@@ -27,7 +26,6 @@ import { JoinLobbyUseCase } from '#matchmaking/usecase/JoinLobbyUseCase';
 import { LeaveLobbyUseCase } from '#matchmaking/usecase/LeaveLobbyUseCase';
 import { LeaveLobbyDto } from '#matchmaking/usecase/dto/LeaveLobbyDto';
 import type { JwtTokenService } from '#matchmaking/domain/auth/JwtTokenService';
-import { JWT_TOKEN_SERVICE } from '#matchmaking/domain/auth/JwtTokenService';
 
 @UseErrorFilters()
 @Controller('lobby')
@@ -37,7 +35,7 @@ export class LobbyController {
         private readonly getLobby: GetLobbyUseCase,
         private readonly joinLobby: JoinLobbyUseCase,
         private readonly leaveLobby: LeaveLobbyUseCase,
-        @Inject(JWT_TOKEN_SERVICE) private readonly jwtTokenService: JwtTokenService
+        private readonly jwtTokenService: JwtTokenService
     ) {}
 
     /**

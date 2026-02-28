@@ -5,6 +5,7 @@ import { useCaseProviders } from './usecases';
 import { eventBusProviders } from './eventBus';
 import { processorProviders } from './processors';
 import { authProviders } from './auth';
+import { controllerProviders } from './controllers';
 
 export const lobbyProviders: Provider[] = [
     ...repositoryProviders,
@@ -13,4 +14,5 @@ export const lobbyProviders: Provider[] = [
     ...processorProviders,
     ...authProviders,
     ...useCaseProviders,
+    ...controllerProviders,
 ];
