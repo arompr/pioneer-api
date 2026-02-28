@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
+import { LobbyController } from './lobby.controller';
 import { lobbyProviders } from './providers';
 
 @Module({
@@ -8,7 +9,7 @@ import { lobbyProviders } from './providers';
             secret: 'pioneer-secret',
         }),
     ],
-    controllers: [],
+    controllers: [LobbyController],
     providers: lobbyProviders,
     exports: [...lobbyProviders],
 })
