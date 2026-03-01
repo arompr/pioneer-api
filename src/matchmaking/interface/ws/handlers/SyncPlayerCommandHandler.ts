@@ -7,6 +7,9 @@ import { GetLobbyUseCase } from '#matchmaking/usecase/GetLobbyUseCase';
 import type { JwtTokenService } from '#matchmaking/domain/auth/JwtTokenService';
 import { LobbySocket } from '../LobbyGatewayWs';
 import { SocketAlreadyAuthenticatedError } from '../errors/SocketAlreadyAuthenticatedError';
+import { UnauthorizedException } from '@nestjs/common';
+import { PlayerId } from '#common/domain/player/playerId/PlayerId';
+import { LobbyId } from '#matchmaking/domain/lobby/lobbyId/LobbyId';
 
 export class SyncPlayerCommandHandler implements WsCommandHandler<SyncPlayerCommand> {
     constructor(
@@ -19,7 +22,14 @@ export class SyncPlayerCommandHandler implements WsCommandHandler<SyncPlayerComm
             throw new SocketAlreadyAuthenticatedError();
         }
 
-        const { playerId, lobbyId } = this.jwtTokenService.decode(command.payload.token);
+        let playerId: PlayerId;
+        let lobbyId: LobbyId;
+
+        try {
+            ({ playerId, lobbyId } = this.jwtTokenService.decode(command.payload.token));
+        } catch {
+            throw new UnauthorizedException();
+        }
 
         const lobby = this.useCase.execute({ lobbyId });
         const player = lobby.findPlayer(playerId);
