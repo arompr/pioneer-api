@@ -58,6 +58,7 @@ describe('SyncPlayerCommandHandler', () => {
                 expect(execute).toHaveBeenCalledWith({ lobbyId: lobby.id });
                 expect(leave).not.toHaveBeenCalled();
                 expect(join).toHaveBeenCalledWith(`lobby-${lobby.id.value}`);
+                expect(join).toHaveBeenCalledWith(`player-${player.id.value}`);
                 expect(mockClient.data).toEqual({
                     lobbyId: lobby.id,
                     playerId: player.id,
