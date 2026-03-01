@@ -1,4 +1,4 @@
-import { Server } from 'socket.io';
+import type { Server } from 'socket.io';
 import { MarkReadyCommand } from '../command/MarkReadyCommand';
 import { WsCommandHandler } from '#common/interface/ws/command/WsCommandHandler';
 import { MarkReadyUseCase } from '#matchmaking/usecase/MarkReadyUseCase';

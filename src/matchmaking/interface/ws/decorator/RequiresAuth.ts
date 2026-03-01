@@ -1,6 +1,6 @@
-import { LobbySocket } from '../LobbyGatewayWs';
-import { Server } from 'socket.io';
-import { WsCommand } from '#common/interface/ws/command/WsCommand';
+import type { LobbySocket } from '../LobbyGatewayWs';
+import type { Server } from 'socket.io';
+import type { WsCommand } from '#common/interface/ws/command/WsCommand';
 import { SocketNotAuthenticatedError } from '../errors/SocketNotAuthenticatedError';
 
 export function RequiresAuth(): MethodDecorator {

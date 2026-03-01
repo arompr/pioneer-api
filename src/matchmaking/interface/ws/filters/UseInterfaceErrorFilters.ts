@@ -2,7 +2,7 @@
 import { applyDecorators, UseFilters } from '@nestjs/common';
 import { UnknownCommandErrorFilter } from './interface/UnknownCommandErrorFilter';
 import { SocketAlreadyAuthenticatedErrorFilter } from './interface/SocketAlreadyAuthenticatedErrorFilter';
-import { SocketNotAuthenticatedErrorFilter } from './interface/SocketNotAuthenticatedErrorFilterFilter';
+import { SocketNotAuthenticatedErrorFilter } from './interface/SocketNotAuthenticatedErrorFilter';
 
 export function UseInterfaceErrorFilters() {
     return applyDecorators(

@@ -37,7 +37,7 @@ describe('@RequiresAuth decorator', () => {
     });
 
     describe('when the socket is authenticated', () => {
-        it('calls the original method if', () => {
+        it('calls the original method', () => {
             const handler = new TestHandler();
             const client: LobbySocket = {
                 data: { lobbyId: new LobbyId('123'), playerId: new PlayerId('abc') },
