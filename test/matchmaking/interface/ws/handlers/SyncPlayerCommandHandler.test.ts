@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { LobbyId } from '#matchmaking/domain/lobby/lobbyId/LobbyId';
 import { PlayerId } from '#common/domain/player/playerId/PlayerId';
 import { SyncPlayerCommand } from '#matchmaking/interface/ws/command/SyncPlayerCommand';
