@@ -9,10 +9,12 @@ import { Server, Socket } from 'socket.io';
 import type { WsCommand } from '#common/interface/ws/command/WsCommand';
 import { WsCommandDispatcher } from '#matchmaking/interface/ws/command/WsCommandDispatcher';
 import { UseErrorFilters } from './filters/UseErrorFilters';
+import type { PlayerId } from '#common/domain/player/playerId/PlayerId';
+import type { LobbyId } from '#matchmaking/domain/lobby/lobbyId/LobbyId';
 
 export interface SocketData {
-    lobbyId: string;
-    secretKey: string;
+    lobbyId: LobbyId;
+    playerId: PlayerId;
 }
 
 export type LobbySocket = Socket<any, any, any, SocketData>;

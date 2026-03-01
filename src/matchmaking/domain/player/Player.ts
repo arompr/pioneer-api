@@ -5,45 +5,32 @@ import { PlayerStatus } from './PlayerStatus';
  * Represents a player in a matchmaking lobby.
  *
  * A player has:
- * - an internal identity (id), used for authentication and equality
- * - a publicKey, exposed to other players for interactions
+ * - an id, used for identity and equality
  * - a name
  * - a readiness status
  */
 export class Player {
     private _id: PlayerId;
-    private _publicKey: PlayerId;
     private _name: string;
     private _status: PlayerStatus;
 
     /**
      * Creates a new Player instance.
      *
-     * @param {PlayerId} id - Unique and secret identifier for the player.
-     * @param {PlayerId} publicKey - Unique identifier for the player.
+     * @param {PlayerId} id - Unique identifier for the player.
      * @param {string} name - Name chosen by the player.
      * @param {PlayerStatus} status - Initial readiness status of the player.
      */
-    constructor(id: PlayerId, publicKey: PlayerId, name: string, status: PlayerStatus) {
+    constructor(id: PlayerId, name: string, status: PlayerStatus) {
         this._id = id;
-        this._publicKey = publicKey;
         this._name = name;
         this._status = status;
     }
 
     /**
-     * Accessor for the public id.
+     * Accessor for the player id.
      *
-     * @returns {PlayerId} The unique public identifier of the player.
-     */
-    get publicKey(): PlayerId {
-        return this._publicKey;
-    }
-
-    /**
-     * Accessor for the secret id.
-     *
-     * @returns {PlayerId} The unique secret identifier of the player.
+     * @returns {PlayerId} The unique identifier of the player.
      */
     get id(): PlayerId {
         return this._id;

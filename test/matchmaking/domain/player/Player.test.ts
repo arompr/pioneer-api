@@ -3,10 +3,8 @@ import { PlayerId } from '#common/domain/player/playerId/PlayerId';
 import { Player } from '#matchmaking/domain/player/Player';
 import { PlayerStatus } from '#matchmaking/domain/player/PlayerStatus';
 
-const DEFAULT_PLAYER_PUBLIC_ID = new PlayerId('player-public-id');
-const DEFAULT_PLAYER_ID = new PlayerId('player-secret-id');
-const OTHER_PLAYER_PUBLIC_ID = new PlayerId('other-player-id');
-const OTHER_PLAYER_ID = new PlayerId('other-secret-id');
+const DEFAULT_PLAYER_ID = new PlayerId('player-id');
+const OTHER_PLAYER_ID = new PlayerId('other-player-id');
 const PENDING_STATUS = PlayerStatus.Pending;
 
 const DEFAULT_PLAYER_NAME = 'player-name';
@@ -14,19 +12,13 @@ let player: Player;
 
 describe('Player', () => {
     beforeEach(() => {
-        player = new Player(
-            DEFAULT_PLAYER_ID,
-            DEFAULT_PLAYER_PUBLIC_ID,
-            DEFAULT_PLAYER_NAME,
-            PENDING_STATUS
-        );
+        player = new Player(DEFAULT_PLAYER_ID, DEFAULT_PLAYER_NAME, PENDING_STATUS);
     });
 
     describe('creation', () => {
         describe('when a player is newly created', () => {
-            it('should have the correct ids and name', () => {
+            it('should have the correct id and name', () => {
                 expect(player.id).toEqual(DEFAULT_PLAYER_ID);
-                expect(player.publicKey).toEqual(DEFAULT_PLAYER_PUBLIC_ID);
                 expect(player.name).toBe(DEFAULT_PLAYER_NAME);
             });
 
@@ -79,7 +71,6 @@ describe('Player', () => {
             it('returns true', () => {
                 const playerWithSameId = new Player(
                     DEFAULT_PLAYER_ID,
-                    DEFAULT_PLAYER_PUBLIC_ID,
                     DEFAULT_PLAYER_NAME,
                     PENDING_STATUS
                 );
@@ -90,14 +81,13 @@ describe('Player', () => {
 
         describe('when two players have different Ids', () => {
             it('returns false', () => {
-                const playerWithSameId = new Player(
+                const playerWithDifferentId = new Player(
                     OTHER_PLAYER_ID,
-                    OTHER_PLAYER_PUBLIC_ID,
                     DEFAULT_PLAYER_NAME,
                     PENDING_STATUS
                 );
 
-                expect(player.equals(playerWithSameId)).toBe(false);
+                expect(player.equals(playerWithDifferentId)).toBe(false);
             });
         });
     });

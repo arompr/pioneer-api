@@ -24,7 +24,6 @@ describe('InMemoryLobbyMapper', () => {
             lobby.allPlayers.forEach((original, index) => {
                 const imPlayer = imLobby.players[index];
                 expect(imPlayer.id).toBe(original.id.value);
-                expect(imPlayer.publicKey).toBe(original.publicKey.value);
                 expect(imPlayer.name).toBe(original.name);
                 expect(imPlayer.status).toBe(original.status);
             });
@@ -53,7 +52,6 @@ describe('InMemoryLobbyMapper', () => {
             lobby.allPlayers.forEach((original, index) => {
                 const mapped = reconstructedLobby.allPlayers[index];
                 expect(mapped.id.equals(original.id)).toBe(true);
-                expect(mapped.publicKey.equals(original.publicKey)).toBe(true);
                 expect(mapped.name).toBe(original.name);
                 expect(mapped.status).toBe(original.status);
             });

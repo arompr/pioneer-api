@@ -1,4 +1,15 @@
-import { Controller, Post, Body, Get, Param, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+    Controller,
+    Post,
+    Body,
+    Get,
+    Param,
+    HttpCode,
+    HttpStatus,
+    Request,
+    UseGuards,
+    ForbiddenException,
+} from '@nestjs/common';
 import { CreateLobbyRequest } from './request/CreateLobbyRequest';
 import { CreateLobbyUseCase } from '#matchmaking/usecase/CreateLobbyUseCase';
 import { CreateLobbyDto } from '#matchmaking/usecase/dto/CreateLobbyDto';
@@ -13,9 +24,10 @@ import { JoinLobbyRequest } from './request/JoinLobbyRequest';
 import type { JoinLobbyResponse } from './response/lobby/JoinLobbyResponse';
 import { JoinLobbyDto } from '#matchmaking/usecase/dto/JoinLobbyDto';
 import { JoinLobbyUseCase } from '#matchmaking/usecase/JoinLobbyUseCase';
-import { LeaveLobbyRequest } from './request/LeaveLobbyRequest';
-import { PlayerId } from '#common/domain/player/playerId/PlayerId';
 import { LeaveLobbyUseCase } from '#matchmaking/usecase/LeaveLobbyUseCase';
+import { LeaveLobbyDto } from '#matchmaking/usecase/dto/LeaveLobbyDto';
+import type { AuthenticatedRequest } from '../auth/AuthenticatedRequest';
+import { AuthGuard } from '../auth/auth.guard';
 
 @UseErrorFilters()
 @Controller('lobby')
@@ -49,11 +61,12 @@ export class LobbyController {
             gameMode: createLobbyRequest.gameMode,
         };
 
-        const { createdLobby, createdHostPlayer } = this.createLobby.execute(createdLobbyDto);
+        const { createdLobby, createdHostPlayer, token } =
+            this.createLobby.execute(createdLobbyDto);
 
         return {
             lobby: LobbyMapper.toLobbyResponse(createdLobby),
-            selfPlayer: PrivatePlayerMapper.toPlayerResponse(createdHostPlayer, true),
+            selfPlayer: PrivatePlayerMapper.toPlayerResponse(createdHostPlayer, true, token),
         };
     }
 
@@ -74,13 +87,14 @@ export class LobbyController {
     join(@Param('id') id: string, @Body() joinRequest: JoinLobbyRequest): JoinLobbyResponse {
         const dto: JoinLobbyDto = { lobbyId: new LobbyId(id), playerName: joinRequest.playerName };
 
-        const { lobby, joinedPlayer } = this.joinLobby.execute(dto);
+        const { lobby, joinedPlayer, token } = this.joinLobby.execute(dto);
 
         return {
             lobby: LobbyMapper.toLobbyResponse(lobby),
             selfPlayer: PrivatePlayerMapper.toPlayerResponse(
                 joinedPlayer,
-                lobby.isHost(joinedPlayer.id)
+                lobby.isHost(joinedPlayer.id),
+                token
             ),
         };
     }
@@ -88,26 +102,28 @@ export class LobbyController {
     /**
      * Removes a player from a lobby.
      *
-     * The player is identified using the secret key provided in the request body.
-     * Once the player is removed, the endpoint returns HTTP 204 No Content since
-     * the player leaving no longer requires any lobby information.
+     * The player is identified via the JWT in the Authorization header.
+     * Once the player is removed, the endpoint returns HTTP 204 No Content.
      *
      * @param {string} id - The lobby ID provided in the URL path.
-     * @param {LeaveLobbyRequest} leaveRequest - Contains the secret key identifying the player.
+     * @param {string} authorization - The Authorization header containing the Bearer JWT.
      *
      * @example
      * POST /lobby/3f8c9c2e-1b4d-4f2e-9c3a-8d2f1a7b9c11/leave
-     * {
-     *   "secretKey": "player-secret-key-123"
-     * }
+     * Authorization: Bearer <token>
      */
+    @UseGuards(AuthGuard)
     @Post(':id/leave')
     @HttpCode(HttpStatus.NO_CONTENT)
-    leave(@Param('id') id: string, @Body() leaveRequest: LeaveLobbyRequest): void {
-        this.leaveLobby.execute({
-            lobbyId: new LobbyId(id),
-            playerId: new PlayerId(leaveRequest.secretKey),
-        });
+    leave(@Param('id') id: string, @Request() req: AuthenticatedRequest): void {
+        const { playerId, lobbyId } = req;
+        const paramLobbyId = new LobbyId(id);
+
+        if (!lobbyId.equals(paramLobbyId)) {
+            throw new ForbiddenException('Token lobby does not match URL lobby');
+        }
+
+        this.leaveLobby.execute(new LeaveLobbyDto(lobbyId, playerId));
     }
 
     /**

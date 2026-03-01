@@ -1,16 +1,20 @@
 import { LobbyId } from '#matchmaking/domain/lobby/lobbyId/LobbyId';
+import { PlayerId } from '#common/domain/player/playerId/PlayerId';
 import { SyncPlayerCommand } from '#matchmaking/interface/ws/command/SyncPlayerCommand';
 import { SyncPlayerCommandHandler } from '#matchmaking/interface/ws/handlers/SyncPlayerCommandHandler';
 import { LobbySocket, SocketData } from '#matchmaking/interface/ws/LobbyGatewayWs';
 import { LobbyMapper } from '#matchmaking/interface/ws/mapper/LobbyMapper';
 import { WsEvents } from '#matchmaking/interface/ws/WsEventsType';
 import { GetLobbyUseCase } from '#matchmaking/usecase/GetLobbyUseCase';
+import type { JwtTokenService } from '#matchmaking/domain/auth/JwtTokenService';
 import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
 import { Server } from 'socket.io';
 import { it, beforeEach, describe, vi, expect } from 'vitest';
+import { SocketAlreadyAuthenticatedError } from '#matchmaking/interface/ws/errors/SocketAlreadyAuthenticatedError';
 
 const { lobby } = LobbyMother.baseLobby();
 const player = lobby.allPlayers[0];
+const TOKEN = 'mock-jwt-token';
 
 const leave = vi.fn();
 const join = vi.fn();
@@ -27,32 +31,37 @@ const mockUseCase: GetLobbyUseCase = {
     execute: execute,
 } as unknown as GetLobbyUseCase;
 
+const mockJwtTokenService = {
+    decode: vi.fn().mockReturnValue({ playerId: player.id, lobbyId: lobby.id }),
+};
+
 let syncPlayerCommandHandler: SyncPlayerCommandHandler;
 let command: SyncPlayerCommand;
 beforeEach(() => {
-    syncPlayerCommandHandler = new SyncPlayerCommandHandler(mockUseCase);
+    syncPlayerCommandHandler = new SyncPlayerCommandHandler(
+        mockUseCase,
+        mockJwtTokenService as unknown as JwtTokenService
+    );
     mockClient.data = {} as SocketData;
     vi.clearAllMocks();
-    command = new SyncPlayerCommand({
-        secretKey: player.id.value,
-        lobbyId: lobby.id.value,
-    });
+    execute.mockReturnValue(lobby);
+    command = new SyncPlayerCommand({ token: TOKEN });
 });
 
 describe('SyncPlayerCommandHandler', () => {
     describe('handle', () => {
-        describe('when the user was not in a room', () => {
-            it('adds the player to the room and emits the updated lobby', async () => {
+        describe('when the user was not sync', () => {
+            it('decodes the token, joins the room, and emits the updated lobby', async () => {
                 await syncPlayerCommandHandler.handle(command, mockServer, mockClient);
 
-                expect(execute).toHaveBeenCalledWith({
-                    lobbyId: new LobbyId(command.payload.lobbyId),
-                });
+                expect(mockJwtTokenService.decode).toHaveBeenCalledWith(TOKEN);
+                expect(execute).toHaveBeenCalledWith({ lobbyId: lobby.id });
                 expect(leave).not.toHaveBeenCalled();
                 expect(join).toHaveBeenCalledWith(`lobby-${lobby.id.value}`);
+                expect(join).toHaveBeenCalledWith(`player-${player.id.value}`);
                 expect(mockClient.data).toEqual({
-                    lobbyId: lobby.id.value,
-                    secretKey: player.id.value,
+                    lobbyId: lobby.id,
+                    playerId: player.id,
                 });
                 expect(toMock).toHaveBeenCalledWith(`lobby-${lobby.id.value}`);
                 expect(emitMock).toHaveBeenCalledWith(
@@ -62,32 +71,16 @@ describe('SyncPlayerCommandHandler', () => {
             });
         });
 
-        describe('when the user was already in a room', () => {
-            it('removes the user from the previous room', async () => {
-                mockClient.data = { secretKey: player.id.value, lobbyId: lobby.id.value };
+        describe('when the user was already sync', () => {
+            it('throw SocketAlreadyAuthenticatedError', async () => {
+                mockClient.data = {
+                    lobbyId: new LobbyId('old-lobby'),
+                    playerId: new PlayerId('old-player'),
+                };
 
-                await syncPlayerCommandHandler.handle(command, mockServer, mockClient);
-
-                expect(leave).toHaveBeenCalledWith(`lobby-${mockClient.data.lobbyId}`);
-            });
-
-            it('adds the player to the room and emits the updated lobby', async () => {
-                await syncPlayerCommandHandler.handle(command, mockServer, mockClient);
-
-                expect(execute).toHaveBeenCalledWith({
-                    lobbyId: new LobbyId(command.payload.lobbyId),
-                });
-                expect(leave).not.toHaveBeenCalled();
-                expect(join).toHaveBeenCalledWith(`lobby-${lobby.id.value}`);
-                expect(mockClient.data).toEqual({
-                    lobbyId: lobby.id.value,
-                    secretKey: player.id.value,
-                });
-                expect(toMock).toHaveBeenCalledWith(`lobby-${lobby.id.value}`);
-                expect(emitMock).toHaveBeenCalledWith(
-                    WsEvents.LOBBY_UPDATED,
-                    LobbyMapper.toLobbyWsResponse(lobby)
-                );
+                await expect(
+                    syncPlayerCommandHandler.handle(command, mockServer, mockClient)
+                ).rejects.toThrow(SocketAlreadyAuthenticatedError);
             });
         });
     });

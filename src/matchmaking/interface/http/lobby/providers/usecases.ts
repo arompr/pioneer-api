@@ -9,6 +9,7 @@ import { LobbyFactory } from '#matchmaking/domain/lobby/LobbyFactory';
 import { PlayerFactory } from '#matchmaking/domain/player/PlayerFactory';
 import { OutboxService } from '#matchmaking/domain/outbox/OutboxService';
 import { MarkReadyUseCase } from '#matchmaking/usecase/MarkReadyUseCase';
+import { JWT_TOKEN_SERVICE, JwtTokenService } from '#matchmaking/domain/auth/JwtTokenService';
 
 export const useCaseProviders: Provider[] = [
     {
@@ -26,16 +27,25 @@ export const useCaseProviders: Provider[] = [
             lobbyFactory: LobbyFactory,
             playerFactory: PlayerFactory,
             lobbyConfigFactory: LobbyConfigFactory,
-            outboxService: OutboxService
+            outboxService: OutboxService,
+            jwtTokenService: JwtTokenService
         ) =>
             new CreateLobbyUseCase(
                 lobbyRepository,
                 lobbyFactory,
                 playerFactory,
                 lobbyConfigFactory,
-                outboxService
+                outboxService,
+                jwtTokenService
             ),
-        inject: [LOBBY_REPOSITORY, LobbyFactory, PlayerFactory, LobbyConfigFactory, OutboxService],
+        inject: [
+            LOBBY_REPOSITORY,
+            LobbyFactory,
+            PlayerFactory,
+            LobbyConfigFactory,
+            OutboxService,
+            JWT_TOKEN_SERVICE,
+        ],
     },
 
     {
@@ -43,9 +53,10 @@ export const useCaseProviders: Provider[] = [
         useFactory: (
             lobbyRepository: LobbyRepository,
             playerFactory: PlayerFactory,
-            outboxService: OutboxService
-        ) => new JoinLobbyUseCase(lobbyRepository, playerFactory, outboxService),
-        inject: [LOBBY_REPOSITORY, PlayerFactory, OutboxService],
+            outboxService: OutboxService,
+            jwtTokenService: JwtTokenService
+        ) => new JoinLobbyUseCase(lobbyRepository, playerFactory, outboxService, jwtTokenService),
+        inject: [LOBBY_REPOSITORY, PlayerFactory, OutboxService, JWT_TOKEN_SERVICE],
     },
     {
         provide: LeaveLobbyUseCase,

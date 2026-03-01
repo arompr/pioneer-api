@@ -11,15 +11,11 @@ export class PlayerFactory {
     constructor(playerIdFactory: PlayerIdFactory) {
         this.playerIdFactory = playerIdFactory;
     }
+
     /**
      * Creates a new Player.
      */
     create(name: string): Player {
-        return new Player(
-            this.playerIdFactory.generate(),
-            this.playerIdFactory.generate(),
-            name,
-            PlayerStatus.Pending
-        );
+        return new Player(this.playerIdFactory.generate(), name, PlayerStatus.Pending);
     }
 }

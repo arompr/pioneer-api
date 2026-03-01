@@ -2,8 +2,7 @@ import { WsCommand } from '#common/interface/ws/command/WsCommand';
 import { WsLobbyCommandType } from './WsLobbyCommandType';
 
 export type SyncPlayerCommandPayload = {
-    secretKey: string;
-    lobbyId: string;
+    token: string;
 };
 
 export class SyncPlayerCommand implements WsCommand {

@@ -8,10 +8,12 @@ import { CreateLobbyDto } from '#matchmaking/usecase/dto/CreateLobbyDto';
 import { LobbyGameMode } from '#matchmaking/domain/lobby/LobbyConfig/LobbyGameMode';
 import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
 import { OutboxService } from '#matchmaking/domain/outbox/OutboxService';
+import type { JwtTokenService } from '#matchmaking/domain/auth/JwtTokenService';
 
 const PLAYER_NAME = 'hostName';
 const GAME_MODE = LobbyGameMode.BASE;
 const { lobby, players } = LobbyMother.baseLobby();
+const TOKEN = 'mock-jwt-token';
 
 const createdLobby = lobby;
 const createdPlayer = players[0];
@@ -25,6 +27,9 @@ const mockPlayerFactory: Partial<PlayerFactory> = {
 const mockLobbyFactory: Partial<LobbyFactory> = { create: vi.fn().mockReturnValue(createdLobby) };
 const mockLobbyRepository: Partial<LobbyRepository> = { save: vi.fn() };
 const mockOutboxService: Partial<OutboxService> = { publishEvents: vi.fn() };
+const mockJwtTokenService: Partial<JwtTokenService> = {
+    encode: vi.fn().mockReturnValue(TOKEN),
+};
 
 let useCase: CreateLobbyUseCase;
 
@@ -35,20 +40,26 @@ describe('CreateLobbyUseCase', () => {
             mockLobbyFactory as LobbyFactory,
             mockPlayerFactory as PlayerFactory,
             mockLobbyConfigFactory as LobbyConfigFactory,
-            mockOutboxService as OutboxService
+            mockOutboxService as OutboxService,
+            mockJwtTokenService as JwtTokenService
         );
     });
 
     describe('execute', () => {
-        it('create and save the new lobby', () => {
+        it('creates and saves the new lobby, and returns a token', () => {
             const result = useCase.execute(new CreateLobbyDto(PLAYER_NAME, GAME_MODE));
 
             expect(mockLobbyConfigFactory.createFromGameMode).toHaveBeenCalledWith(GAME_MODE);
             expect(mockPlayerFactory.create).toHaveBeenCalledWith(PLAYER_NAME);
             expect(mockLobbyFactory.create).toHaveBeenCalledWith(createdLobbyConfig, createdPlayer);
             expect(mockLobbyRepository.save).toHaveBeenCalledWith(createdLobby);
+            expect(mockJwtTokenService.encode).toHaveBeenCalledWith(
+                createdPlayer.id,
+                createdLobby.id
+            );
             expect(result.createdLobby.id).toBe(lobby.id);
             expect(result.createdHostPlayer.id).toBe(players[0].id);
+            expect(result.token).toBe(TOKEN);
         });
     });
 });
