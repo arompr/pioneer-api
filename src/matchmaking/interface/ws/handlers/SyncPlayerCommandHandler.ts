@@ -6,6 +6,7 @@ import { SyncPlayerCommand } from '../command/SyncPlayerCommand';
 import { GetLobbyUseCase } from '#matchmaking/usecase/GetLobbyUseCase';
 import type { JwtTokenService } from '#matchmaking/domain/auth/JwtTokenService';
 import { LobbySocket } from '../LobbyGatewayWs';
+import { SocketAlreadyAuthenticatedError } from '../errors/SocketAlreadyAuthenticatedError';
 
 export class SyncPlayerCommandHandler implements WsCommandHandler<SyncPlayerCommand> {
     constructor(
@@ -14,15 +15,17 @@ export class SyncPlayerCommandHandler implements WsCommandHandler<SyncPlayerComm
     ) {}
 
     async handle(command: SyncPlayerCommand, server: Server, client: LobbySocket): Promise<void> {
+        if (client.data.lobbyId || client.data.playerId) {
+            throw new SocketAlreadyAuthenticatedError();
+        }
+
         const { playerId, lobbyId } = this.jwtTokenService.decode(command.payload.token);
 
         const lobby = this.useCase.execute({ lobbyId });
-
-        if (client.data.lobbyId) {
-            await client.leave(`lobby-${client.data.lobbyId.value}`);
-        }
+        const player = lobby.findPlayer(playerId);
 
         await client.join(`lobby-${lobby.id.value}`);
+        await client.join(`player-${player.id.value}`);
 
         client.data.lobbyId = lobbyId;
         client.data.playerId = playerId;

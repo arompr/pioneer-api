@@ -1,6 +1,6 @@
-import { InterfaceError } from '#common/interface/errors/InterfaceError';
+import { WsError } from './WsError';
 
-export class UnknownCommandError extends InterfaceError {
+export class UnknownCommandError extends WsError {
     public readonly value: string;
 
     constructor(value: string) {

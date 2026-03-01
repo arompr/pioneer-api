@@ -1,13 +1,13 @@
 import { Catch, ArgumentsHost, WsExceptionFilter } from '@nestjs/common';
 import { LobbySocket } from '../../LobbyGatewayWs';
 import { WsEvents } from '../../WsEventsType';
-import { UnknownCommandError } from '../../errors/UnknownCommandError';
+import { SocketAlreadyAuthenticatedError } from '../../errors/SocketAlreadyAuthenticatedError';
 
-@Catch(UnknownCommandError)
-export class UnknownCommandErrorFilter implements WsExceptionFilter<UnknownCommandError> {
-    readonly code: string = 'UNKNOWN_COMMAND';
+@Catch(SocketAlreadyAuthenticatedError)
+export class SocketAlreadyAuthenticatedErrorFilter implements WsExceptionFilter<SocketAlreadyAuthenticatedError> {
+    readonly code: string = 'SOCKET_ALREADY_AUTHENTICATED';
 
-    catch(exception: UnknownCommandError, host: ArgumentsHost): void {
+    catch(exception: SocketAlreadyAuthenticatedError, host: ArgumentsHost): void {
         const client = host.switchToWs().getClient<LobbySocket>();
 
         client.emit(WsEvents.EXCEPTION, {
