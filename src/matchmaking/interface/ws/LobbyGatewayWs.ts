@@ -20,7 +20,7 @@ export interface SocketData {
 export type LobbySocket = Socket<any, any, any, SocketData>;
 
 @UseErrorFilters()
-@WebSocketGateway({ cors: { origin: '*' } })
+@WebSocketGateway({ namespace: 'lobby', cors: { origin: '*' } })
 export class LobbyGateway implements OnGatewayDisconnect, OnGatewayConnection {
     @WebSocketServer()
     private readonly server!: Server;
