@@ -2,7 +2,7 @@ import { Server } from 'socket.io';
 import { WsCommandHandler } from '#common/interface/ws/command/WsCommandHandler';
 import { WsEvents } from '../WsEventsType';
 import { LobbyMapper } from '../mapper/LobbyMapper';
-import { SyncPlayerCommand } from '../command/SyncPlayerCommand';
+import { SyncPlayerCommand, SyncPlayerCommandPayload } from '../command/SyncPlayerCommand';
 import { GetLobbyUseCase } from '#matchmaking/usecase/GetLobbyUseCase';
 import type { JwtTokenService } from '#matchmaking/domain/auth/JwtTokenService';
 import { LobbySocket } from '../LobbyGatewayWs';
@@ -16,6 +16,8 @@ export class SyncPlayerCommandHandler implements WsCommandHandler<SyncPlayerComm
         private readonly useCase: GetLobbyUseCase,
         private readonly jwtTokenService: JwtTokenService
     ) {}
+
+    payloadValidationClass = SyncPlayerCommandPayload;
 
     async handle(command: SyncPlayerCommand, server: Server, client: LobbySocket): Promise<void> {
         if (client.data.lobbyId || client.data.playerId) {
