@@ -3,15 +3,7 @@ import { WsCommand } from '#common/interface/ws/command/WsCommand';
 import { WsCommandHandler } from '#common/interface/ws/command/WsCommandHandler';
 import { LobbySocket } from '#matchmaking/interface/ws/LobbyGatewayWs';
 import { UnknownCommandError } from '#matchmaking/interface/ws/errors/UnknownCommandError';
-import { plainToInstance } from 'class-transformer';
-import { validate } from 'class-validator';
-import { WsValidationError } from '../errors/WsValidationError';
-import { formatValidationErrors } from '../errors/validation-error.util';
-
-export interface ValidationErrorFormatted {
-    property: string;
-    constraints?: Record<string, string>;
-}
+import { CommandValidator } from './CommandValidator';
 
 export class WsCommandDispatcher {
     private handlers = new Map<string, WsCommandHandler<WsCommand>>();
@@ -23,15 +15,7 @@ export class WsCommandDispatcher {
             throw new UnknownCommandError(command.type);
         }
 
-        if (handler.payloadValidationClass) {
-            const payload = plainToInstance(handler.payloadValidationClass, command.payload);
-            const errors = await validate(payload);
-
-            if (errors.length > 0) {
-                throw new WsValidationError(formatValidationErrors(errors));
-            }
-        }
-
+        await CommandValidator.validate(handler, command);
         await handler.handle(command, server, client);
     }
 

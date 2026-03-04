@@ -1,7 +1,7 @@
 import { WsCommand } from '#common/interface/ws/command/WsCommand';
 import { WsLobbyCommandType } from './WsLobbyCommandType';
 
-export type MarkReadyCommandPayload = Record<string, never>;
+export class MarkReadyCommandPayload {}
 
 export class MarkReadyCommand implements WsCommand {
     readonly type = WsLobbyCommandType.MARK_READY;

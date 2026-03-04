@@ -1,4 +1,4 @@
-import { ValidationErrorFormatted } from '../command/WsCommandDispatcher';
+import { ValidationErrorFormatted } from '#common/interface/ws/validation-error.util';
 import { WsError } from './WsError';
 
 export class WsValidationError extends WsError {
