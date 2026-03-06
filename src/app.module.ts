@@ -8,6 +8,7 @@ import { registerWsHandlers } from '#bootstrap/wsCommandhandlers';
 import { MarkReadyUseCase } from '#matchmaking/usecase/MarkReadyUseCase';
 import { GetLobbyUseCase } from '#matchmaking/usecase/GetLobbyUseCase';
 import { JWT_TOKEN_SERVICE, type JwtTokenService } from '#matchmaking/domain/auth/JwtTokenService';
+import { MarkPendingUseCase } from '#matchmaking/usecase/MarkPendingUseCase';
 
 @Module({
     imports: [LobbyModule],
@@ -19,15 +20,22 @@ import { JWT_TOKEN_SERVICE, type JwtTokenService } from '#matchmaking/domain/aut
             provide: WsCommandDispatcher,
             useFactory: (
                 markReadyUseCase: MarkReadyUseCase,
+                markPendingUseCase: MarkPendingUseCase,
                 getLobbyUseCase: GetLobbyUseCase,
                 jwtTokenService: JwtTokenService
             ) => {
                 const dispatcher = new WsCommandDispatcher();
-                registerWsHandlers(dispatcher, markReadyUseCase, getLobbyUseCase, jwtTokenService);
+                registerWsHandlers(
+                    dispatcher,
+                    markReadyUseCase,
+                    markPendingUseCase,
+                    getLobbyUseCase,
+                    jwtTokenService
+                );
 
                 return dispatcher;
             },
-            inject: [MarkReadyUseCase, GetLobbyUseCase, JWT_TOKEN_SERVICE],
+            inject: [MarkReadyUseCase, MarkPendingUseCase, GetLobbyUseCase, JWT_TOKEN_SERVICE],
         },
     ],
 })
