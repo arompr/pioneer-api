@@ -1,5 +1,6 @@
 import { defineConfig } from 'vitest/config';
 import swc from 'unplugin-swc';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
     test: {
@@ -19,6 +20,7 @@ export default defineConfig({
         },
     },
     plugins: [
+        tsconfigPaths(),
         // magic part that handles NestJS decorators
         swc.vite({
             module: { type: 'es6' },
