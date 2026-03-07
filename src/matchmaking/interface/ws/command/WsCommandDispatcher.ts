@@ -3,6 +3,7 @@ import { WsCommand } from '#common/interface/ws/command/WsCommand';
 import { WsCommandHandler } from '#common/interface/ws/command/WsCommandHandler';
 import { LobbySocket } from '#matchmaking/interface/ws/LobbyGatewayWs';
 import { UnknownCommandError } from '#matchmaking/interface/ws/errors/UnknownCommandError';
+import { CommandValidator } from './CommandValidator';
 
 export class WsCommandDispatcher {
     private handlers = new Map<string, WsCommandHandler<WsCommand>>();
@@ -14,6 +15,7 @@ export class WsCommandDispatcher {
             throw new UnknownCommandError(command.type);
         }
 
+        await CommandValidator.validate(handler, command);
         await handler.handle(command, server, client);
     }
 
