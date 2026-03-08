@@ -22,7 +22,8 @@ describe('LobbyGateway (e2e)', () => {
         app.useGlobalPipes(new ValidationPipe());
 
         await app.listen(0);
-        port = app.getHttpServer().address().port;
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        port = (app.getHttpServer() as any).address().port;
     });
 
     afterAll(async () => {
