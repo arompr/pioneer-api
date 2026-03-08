@@ -10,6 +10,7 @@ import { PlayerFactory } from '#matchmaking/domain/player/PlayerFactory';
 import { OutboxService } from '#matchmaking/domain/outbox/OutboxService';
 import { MarkReadyUseCase } from '#matchmaking/usecase/MarkReadyUseCase';
 import { JWT_TOKEN_SERVICE, JwtTokenService } from '#matchmaking/domain/auth/JwtTokenService';
+import { MarkPendingUseCase } from '#matchmaking/usecase/MarkPendingUseCase';
 
 export const useCaseProviders: Provider[] = [
     {
@@ -68,6 +69,12 @@ export const useCaseProviders: Provider[] = [
         provide: MarkReadyUseCase,
         useFactory: (lobbyRepository: LobbyRepository, outboxService: OutboxService) =>
             new MarkReadyUseCase(lobbyRepository, outboxService),
+        inject: [LOBBY_REPOSITORY, OutboxService],
+    },
+    {
+        provide: MarkPendingUseCase,
+        useFactory: (lobbyRepository: LobbyRepository, outboxService: OutboxService) =>
+            new MarkPendingUseCase(lobbyRepository, outboxService),
         inject: [LOBBY_REPOSITORY, OutboxService],
     },
 ];
