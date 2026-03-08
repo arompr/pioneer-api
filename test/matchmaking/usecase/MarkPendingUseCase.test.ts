@@ -21,13 +21,13 @@ const mockOutboxService: Partial<OutboxService> = {
 
 let useCase: MarkPendingUseCase;
 let lobby: Lobby;
-let playerToMarkReady: Player;
+let playerToMarkPending: Player;
 
 describe('MarkPendingUseCase', () => {
     beforeEach(() => {
         const { lobby: l, players } = LobbyMother.readyToStartLobby();
         lobby = l;
-        playerToMarkReady = players[0];
+        playerToMarkPending = players[0];
 
         mockLobbyRepository.findById = vi.fn().mockReturnValue(lobby);
 
@@ -41,7 +41,7 @@ describe('MarkPendingUseCase', () => {
     describe('execute', () => {
         describe('when lobby exists', () => {
             it('should mark the player as pending', () => {
-                const dto = new MarkPendingDto(lobby.id, playerToMarkReady.id);
+                const dto = new MarkPendingDto(lobby.id, playerToMarkPending.id);
 
                 useCase.execute(dto);
 
@@ -55,7 +55,7 @@ describe('MarkPendingUseCase', () => {
         describe('when lobby does not exist', () => {
             it('should throw LobbyNotFoundError', () => {
                 mockLobbyRepository.findById = vi.fn().mockReturnValue(null);
-                const dto = new MarkPendingDto(lobby.id, playerToMarkReady.id);
+                const dto = new MarkPendingDto(lobby.id, playerToMarkPending.id);
 
                 expect(() => useCase.execute(dto)).toThrow(LobbyNotFoundError);
             });
