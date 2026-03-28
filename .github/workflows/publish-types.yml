@@ -1,0 +1,43 @@
+name: Publish Types
+
+on:
+    workflow_call:
+        secrets:
+            TOKEN:
+                required: true
+    workflow_dispatch:
+
+jobs:
+    publish-types:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: '24'
+                  registry-url: 'https://npm.pkg.github.com'
+                  # For npmjs.org use: registry-url: 'https://registry.npmjs.org'
+                  always-auth: true
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.TOKEN }}
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Generate publishable types
+              run: npx typeship generate --bump patch
+              # Options:
+              #   --bump patch|minor|major   Auto-bump version
+              #   --out-dir ./generated      Output directory
+              #   --package-name @org/types  Override package name
+              #   --dry-run                  Preview without publishing
+
+            - name: Publish to GitHub Packages
+              working-directory: ./generated
+              run: |
+                  npm install
+                  npm publish
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
