@@ -5,10 +5,39 @@ on:
         branches: [develop]
     workflow_dispatch:
 
+permissions:
+    contents: read
+    packages: write
+
 jobs:
     # Call the validation workflow first
     code-quality-check:
         uses: ./.github/workflows/validate.yml
+        secrets:
+            TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    # Check if type-related files changed
+    check-types-changed:
+        runs-on: ubuntu-latest
+        outputs:
+            changed: ${{ steps.filter.outputs.types }}
+        steps:
+            - uses: actions/checkout@v4
+            - uses: dorny/paths-filter@v3
+              id: filter
+              with:
+                  filters: |
+                      types:
+                          - 'src/**/*.ts'
+                          - 'typeship.config.json'
+
+    # Publish types only if relevant files changed (or manually triggered)
+    publish-types:
+        needs: [code-quality-check, check-types-changed]
+        if: needs.check-types-changed.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
+        uses: ./.github/workflows/publish-types.yml
+        secrets:
+            TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     # Run deployment only if validation succeeds
     ci:

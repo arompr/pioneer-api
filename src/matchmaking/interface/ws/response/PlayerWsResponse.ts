@@ -1,3 +1,4 @@
+/** @publish */
 export type PlayerWsResponse = {
     id: string;
     name: string;

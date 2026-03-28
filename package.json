@@ -17,6 +17,8 @@
         "start:dev": "nest start --watch",
         "start:debug": "nest start --debug --watch",
         "start:prod": "node dist/main",
+        "container:build": "podman build --build-arg GITHUB_PAT=$(grep '^GITHUB_PAT=' .env | cut -d'=' -f2- | tr -d '\\r') -t pioneer-api .",
+        "container:run": "podman run -d -p 3000:3000 --name pioneer-api-server pioneer-api",
         "build": "nest build",
         "format:check": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
         "format:fix": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -43,6 +45,7 @@
         "uuid": "^13.0.0"
     },
     "devDependencies": {
+        "@arompr/typeship": "^0.1.1",
         "@eslint/eslintrc": "^3.2.0",
         "@eslint/js": "^9.18.0",
         "@nestjs/cli": "^11.0.0",
