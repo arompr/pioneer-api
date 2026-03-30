@@ -3,5 +3,10 @@
     "outDir": "./generated",
     "registry": "https://npm.pkg.github.com",
     "bump": "patch",
-    "tsConfig": "./tsconfig.json"
+    "tsConfig": "./tsconfig.json",
+    "outputGrouping": {
+        "common.d.ts": ["**/common/**"],
+        "game.d.ts": ["**/game/**"],
+        "matchmaking.d.ts": ["**/matchmaking/**"]
+    }
 }

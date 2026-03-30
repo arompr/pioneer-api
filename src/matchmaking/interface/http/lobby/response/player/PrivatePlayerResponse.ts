@@ -1,3 +1,4 @@
+/** @publish */
 export type PrivatePlayerResponse = {
     token: string;
     id: string;

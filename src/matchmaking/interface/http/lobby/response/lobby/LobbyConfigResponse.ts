@@ -1,3 +1,4 @@
+/** @publish */
 export type LobbyConfigResponse = {
     gameMode: string;
     minPlayers: number;

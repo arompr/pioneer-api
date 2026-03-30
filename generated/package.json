@@ -1,0 +1,12 @@
+{
+  "name": "@arompr/pioneer-api-types",
+  "version": "0.1.2",
+  "description": "TypeScript types published by typeship from @arompr/pioneer-api-types",
+  "types": "./src/index.d.ts",
+  "files": [
+    "src"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  }
+}
