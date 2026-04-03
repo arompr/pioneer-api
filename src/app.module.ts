@@ -9,6 +9,8 @@ import { MarkReadyUseCase } from '#matchmaking/usecase/MarkReadyUseCase';
 import { GetLobbyUseCase } from '#matchmaking/usecase/GetLobbyUseCase';
 import { JWT_TOKEN_SERVICE, type JwtTokenService } from '#matchmaking/domain/auth/JwtTokenService';
 import { MarkPendingUseCase } from '#matchmaking/usecase/MarkPendingUseCase';
+import { processorProviders } from '#matchmaking/interface/http/lobby/providers/processors';
+import { eventBusProviders } from '#matchmaking/interface/http/lobby/providers/eventBus';
 
 @Module({
     imports: [LobbyModule],
@@ -37,6 +39,8 @@ import { MarkPendingUseCase } from '#matchmaking/usecase/MarkPendingUseCase';
             },
             inject: [MarkReadyUseCase, MarkPendingUseCase, GetLobbyUseCase, JWT_TOKEN_SERVICE],
         },
+        ...processorProviders,
+        ...eventBusProviders,
     ],
 })
 export class AppModule {}

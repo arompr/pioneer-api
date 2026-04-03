@@ -11,6 +11,9 @@ import { WsCommandDispatcher } from '#matchmaking/interface/ws/command/WsCommand
 import { UseErrorFilters } from './filters/UseErrorFilters';
 import type { PlayerId } from '#common/domain/player/playerId/PlayerId';
 import type { LobbyId } from '#matchmaking/domain/lobby/lobbyId/LobbyId';
+import { WsEvents } from './WsEventsType';
+import type { LobbyAggregate } from '#matchmaking/domain/lobby/LobbyAggregate.type';
+import { LobbyMapper } from './mapper/LobbyMapper';
 
 export interface SocketData {
     lobbyId: LobbyId;
@@ -37,5 +40,9 @@ export class LobbyGateway implements OnGatewayDisconnect, OnGatewayConnection {
     @SubscribeMessage('command')
     async onCommand(client: LobbySocket, command: WsCommand): Promise<void> {
         await this.dispatcher.dispatch(command, client, this.server);
+    }
+
+    notifyLobby(event: WsEvents, lobby: LobbyAggregate): void {
+        this.server.to(`lobby-${lobby.id.value}`).emit(event, LobbyMapper.toLobbyWsResponse(lobby));
     }
 }
