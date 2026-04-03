@@ -1,5 +1,5 @@
 import { LobbyNotifier } from '#common/usecase/LobbyNotifier';
-import { LobbyAggregate } from '#matchmaking/domain/lobby/LobbyAggregate.type';
+import type { LobbyAggregate } from '#matchmaking/domain/lobby/LobbyAggregate.type';
 import { LobbyGateway } from '../LobbyGatewayWs';
 import { WsEvents } from '../WsEventsType';
 

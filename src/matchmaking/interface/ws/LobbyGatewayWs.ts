@@ -12,7 +12,7 @@ import { UseErrorFilters } from './filters/UseErrorFilters';
 import type { PlayerId } from '#common/domain/player/playerId/PlayerId';
 import type { LobbyId } from '#matchmaking/domain/lobby/lobbyId/LobbyId';
 import { WsEvents } from './WsEventsType';
-import { LobbyAggregate } from '#matchmaking/domain/lobby/LobbyAggregate.type';
+import type { LobbyAggregate } from '#matchmaking/domain/lobby/LobbyAggregate.type';
 import { LobbyMapper } from './mapper/LobbyMapper';
 
 export interface SocketData {

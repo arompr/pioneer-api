@@ -3,7 +3,7 @@ import { PlayerLeftLobby } from '#matchmaking/domain/lobby/events/PlayerLeftLobb
 import { PlayerLeftLobbyHandler } from '#matchmaking/interface/ws/handlers/events/PlayerLeftLobbyHandler';
 import { GetLobbyUseCase } from '#matchmaking/usecase/GetLobbyUseCase';
 import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
-import { beforeEach, describe, expect, it, vi } from 'node_modules/vitest/dist';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const { lobby } = LobbyMother.baseLobby();
 const player = lobby.allPlayers[0];
