@@ -1,9 +1,9 @@
 {
     "packageName": "@arompr/pioneer-api-types",
     "outDir": "./generated",
-    "registry": "https://npm.pkg.github.com",
     "bump": "patch",
     "tsConfig": "./tsconfig.json",
+    "declarationMapping": "type",
     "outputGrouping": {
         "common.d.ts": ["**/common/**"],
         "game.d.ts": ["**/game/**"],

@@ -1,3 +1,4 @@
+/** @publish */
 export enum WsLobbyCommandType {
     LEAVE_LOBBY = 'LEAVE_LOBBY',
     START_GAME = 'START_GAME',
