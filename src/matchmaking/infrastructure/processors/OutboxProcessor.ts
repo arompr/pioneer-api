@@ -58,6 +58,6 @@ export class OutboxProcessor implements OutboxObserver {
     }
 
     private toDomainEvent(message: OutboxMessage): DomainEvent {
-        return InMemoryOutboxMessageEventMapper.toDomainEvent(message);
+        return InMemoryOutboxMessageEventMapper.toUseCaseEvent(message);
     }
 }

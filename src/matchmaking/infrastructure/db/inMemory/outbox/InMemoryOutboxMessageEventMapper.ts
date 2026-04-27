@@ -1,42 +1,63 @@
-import { DomainEvent } from '#common/domain/events/DomainEvent';
-import { LobbyClosed } from '#matchmaking/domain/lobby/events/LobbyClosed';
+import { UseCaseEvent } from '#common/usecase/events/UseCaseEvent';
+import { PlayerId } from '#common/domain/player/playerId/PlayerId';
 import { LobbyEventType } from '#matchmaking/domain/lobby/events/LobbyEventType';
-import { LobbyHostChanged } from '#matchmaking/domain/lobby/events/LobbyHostChanged';
-import { LobbyStarted } from '#matchmaking/domain/lobby/events/LobbyStarted';
-import { PlayerJoinedLobby } from '#matchmaking/domain/lobby/events/PlayerJoinedLobby';
-import { PlayerLeftLobby } from '#matchmaking/domain/lobby/events/PlayerLeftLobby';
-import { PlayerMarkedPending } from '#matchmaking/domain/lobby/events/PlayerMarkedPending';
-import { PlayerMarkedReady } from '#matchmaking/domain/lobby/events/PlayerMarkedReady';
+import { LobbyId } from '#matchmaking/domain/lobby/lobbyId/LobbyId';
 import { OutboxMessage } from '#matchmaking/domain/outbox/OutboxMessage';
+import {
+    LobbyClosedUseCaseEvent,
+    LobbyHostChangedUseCaseEvent,
+    LobbyStartedUseCaseEvent,
+    PlayerJoinedLobbyUseCaseEvent,
+    PlayerLeftLobbyUseCaseEvent,
+    PlayerMarkedPendingUseCaseEvent,
+    PlayerMarkedReadyUseCaseEvent,
+} from '#matchmaking/usecase/events';
 
-const eventFactories: Readonly<Record<string, (message: OutboxMessage) => DomainEvent>> = {
+const eventFactories: Readonly<Record<string, (message: OutboxMessage) => UseCaseEvent>> = {
     [LobbyEventType.PlayerJoinedLobby.value]: (message) =>
-        PlayerJoinedLobby.fromPayload(message.eventPayload),
+        new PlayerJoinedLobbyUseCaseEvent(
+            new LobbyId(message.aggregateId),
+            message.eventPayload.playerId as PlayerId
+        ),
     [LobbyEventType.PlayerLeftLobby.value]: (message) =>
-        PlayerLeftLobby.fromPayload(message.eventPayload),
-    [LobbyEventType.LobbyClosed.value]: (message) => LobbyClosed.fromPayload(message.eventPayload),
+        new PlayerLeftLobbyUseCaseEvent(
+            new LobbyId(message.aggregateId),
+            message.eventPayload.playerId as PlayerId,
+            message.eventPayload.wasHost as boolean
+        ),
+    [LobbyEventType.LobbyClosed.value]: (message) =>
+        new LobbyClosedUseCaseEvent(new LobbyId(message.aggregateId)),
     [LobbyEventType.LobbyHostChanged.value]: (message) =>
-        LobbyHostChanged.fromPayload(message.eventPayload),
+        new LobbyHostChangedUseCaseEvent(
+            new LobbyId(message.aggregateId),
+            message.eventPayload.newHostId as PlayerId
+        ),
     [LobbyEventType.LobbyStarted.value]: (message) =>
-        LobbyStarted.fromPayload(message.eventPayload),
+        new LobbyStartedUseCaseEvent(new LobbyId(message.aggregateId)),
     [LobbyEventType.PlayerMarkedPending.value]: (message) =>
-        PlayerMarkedPending.fromPayload(message.eventPayload),
+        new PlayerMarkedPendingUseCaseEvent(
+            new LobbyId(message.aggregateId),
+            message.eventPayload.playerId as PlayerId
+        ),
     [LobbyEventType.PlayerMarkedReady.value]: (message) =>
-        PlayerMarkedReady.fromPayload(message.eventPayload),
+        new PlayerMarkedReadyUseCaseEvent(
+            new LobbyId(message.aggregateId),
+            message.eventPayload.playerId as PlayerId
+        ),
 };
 
 /**
- * Mapper for reconstructing typed domain events from OutboxMessage instances.
+ * Mapper for reconstructing typed use case events from OutboxMessage instances.
  */
 export class InMemoryOutboxMessageEventMapper {
     /**
-     * Converts an OutboxMessage into the corresponding typed domain event instance.
+     * Converts an OutboxMessage into the corresponding typed use case event instance.
      * Falls back to a plain `{ type, payload }` object for unrecognised event types.
      *
      * @param {OutboxMessage} message - The outbox message to convert.
-     * @returns {DomainEvent} The reconstructed domain event, or a plain event object if the type is not registered.
+     * @returns {UseCaseEvent} The reconstructed use case event, or a plain event object if the type is not registered.
      */
-    static toDomainEvent(message: OutboxMessage): DomainEvent {
+    static toUseCaseEvent(message: OutboxMessage): UseCaseEvent {
         const eventFactory = eventFactories[message.eventType];
 
         if (eventFactory) {

@@ -1,4 +1,4 @@
-import { DomainEvent, EventPayload } from '#common/domain/events/DomainEvent';
+import { DomainEvent } from '#common/domain/events/DomainEvent';
 import { PlayerId } from '#common/domain/player/playerId/PlayerId';
 import { LobbyEventType } from './LobbyEventType';
 
@@ -12,10 +12,5 @@ export class PlayerMarkedPending implements DomainEvent {
 
     constructor(playerId: PlayerId) {
         this.payload = { playerId };
-    }
-
-    static fromPayload(payload: EventPayload): PlayerMarkedPending {
-        const { playerId } = payload as PlayerMarkedPendingPayload;
-        return new PlayerMarkedPending(playerId);
     }
 }

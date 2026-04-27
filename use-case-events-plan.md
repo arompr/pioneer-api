@@ -11,9 +11,9 @@ There are currently two event layers in the matchmaking slice:
 
 **Why it's forced:** `OutboxMessage` stores `aggregateId` (= `lobby.id.value`), but `InMemoryOutboxMessageEventMapper.toDomainEvent()` ignores `aggregateId` and only uses `eventPayload` when reconstructing. So when `PlayerLeftLobbyHandler` needs to call `GetLobbyUseCase`, it needs a `lobbyId` — and the only way to get it back is if it was baked into the domain event payload.
 
-## Proposed Solution: Use Case Events
+## Solution: Use Case Events
 
-Introduce a **third event layer** — **Use Case Events** — that live in the use case layer and are enriched with aggregate context (i.e. `aggregateId`) when the outbox-to-eventbus pipeline runs.
+Introduce a **third event layer** — **Use Case Events** — that live in the use case layer and are enriched with typed aggregate context when the outbox-to-eventbus pipeline runs.
 
 ### Event Flow (before)
 ```
@@ -37,30 +37,30 @@ Lobby.leave()
 
 ## Architecture
 
-### New: `UseCaseEvent` interface (`common/usecase/events/`)
+### `UseCaseEvent` type (`common/usecase/events/`)
 ```typescript
-export interface UseCaseEvent extends DomainEvent {
-    readonly aggregateId: string;
-}
+export type UseCaseEvent = DomainEvent;
 ```
-Use case events implement `DomainEvent` so they remain compatible with the existing `EventBus` interface.
+Marker type alias — use case events are regular `DomainEvent`s that live in the use case layer. Each concrete use case event class carries only the typed fields relevant to it (e.g. `lobbyId: LobbyId`). No generic `aggregateId: string` is mandated on the type — handlers access typed properties directly.
 
-### New: Use case event classes (`matchmaking/usecase/events/`)
-One class per lobby domain event, all implementing `UseCaseEvent`:
+> **Decision:** A type alias avoids the `@typescript-eslint/no-empty-object-type` lint error that an empty `interface UseCaseEvent extends DomainEvent {}` would trigger.
+
+### Use case event classes (`matchmaking/usecase/events/`)
+One class per lobby domain event, all satisfying `UseCaseEvent`. Each carries a typed `lobbyId: LobbyId` for aggregate context (populated from `message.aggregateId` in the mapper):
 - `PlayerJoinedLobbyUseCaseEvent`
-- `PlayerLeftLobbyUseCaseEvent` ← primary motivation; includes typed `lobbyId: LobbyId`
+- `PlayerLeftLobbyUseCaseEvent` ← primary motivation; `lobbyId: LobbyId` used by handlers
 - `LobbyClosedUseCaseEvent`
 - `LobbyHostChangedUseCaseEvent`
 - `LobbyStartedUseCaseEvent`
 - `PlayerMarkedReadyUseCaseEvent`
 - `PlayerMarkedPendingUseCaseEvent`
 
-Creating all of them ensures consistency — all events published on the `EventBus` are use case events and carry `aggregateId`. Future handlers don't need to wonder whether they have aggregate context.
+Creating all of them ensures consistency — all events published on the `EventBus` are use case events and carry typed aggregate context.
 
 ### Updated mapper
-`InMemoryOutboxMessageEventMapper` gains a new `toUseCaseEvent(message): UseCaseEvent` method (renaming `toDomainEvent`). It constructs typed use case event instances (e.g. `PlayerLeftLobbyUseCaseEvent`) from the outbox message, using `message.aggregateId` to populate `lobbyId`.
+`InMemoryOutboxMessageEventMapper.toDomainEvent` renamed to `toUseCaseEvent(message): UseCaseEvent`. It constructs typed use case event instances (e.g. `PlayerLeftLobbyUseCaseEvent`) from the outbox message, using `new LobbyId(message.aggregateId)` to populate `lobbyId` and casting payload fields to their domain types.
 
-The `fromPayload` factory methods on domain events are no longer needed after this change and can be removed.
+`fromPayload` static methods on all domain events were removed as they are no longer needed.
 
 ### Cleaned domain event
 `PlayerLeftLobby` drops `lobbyId` from its payload:
@@ -87,9 +87,9 @@ this.record(new PlayerLeftLobby(playerId, wasHost));
 ### New files
 | File | Purpose |
 |---|---|
-| `src/common/usecase/events/UseCaseEvent.ts` | `UseCaseEvent` interface |
+| `src/common/usecase/events/UseCaseEvent.ts` | `UseCaseEvent` type alias |
 | `src/matchmaking/usecase/events/PlayerJoinedLobbyUseCaseEvent.ts` | |
-| `src/matchmaking/usecase/events/PlayerLeftLobbyUseCaseEvent.ts` | Includes `lobbyId: LobbyId` |
+| `src/matchmaking/usecase/events/PlayerLeftLobbyUseCaseEvent.ts` | `lobbyId: LobbyId` used by handlers |
 | `src/matchmaking/usecase/events/LobbyClosedUseCaseEvent.ts` | |
 | `src/matchmaking/usecase/events/LobbyHostChangedUseCaseEvent.ts` | |
 | `src/matchmaking/usecase/events/LobbyStartedUseCaseEvent.ts` | |
@@ -101,23 +101,29 @@ this.record(new PlayerLeftLobby(playerId, wasHost));
 | File | Change |
 |---|---|
 | `src/matchmaking/domain/lobby/events/PlayerLeftLobby.ts` | Remove `lobbyId` from payload and constructor; remove `fromPayload` |
+| `src/matchmaking/domain/lobby/events/*.ts` | Remove `fromPayload` from all lobby domain event classes |
 | `src/matchmaking/domain/lobby/Lobby.ts` | `leave()` no longer passes `this._id` to `PlayerLeftLobby` |
-| `src/matchmaking/infrastructure/db/inMemory/outbox/InMemoryOutboxMessageEventMapper.ts` | Rename `toDomainEvent` → `toUseCaseEvent`; produce typed use case events using `message.aggregateId`; remove domain event `fromPayload` usage |
-| `src/matchmaking/infrastructure/processors/OutboxProcessor.ts` | Use `toUseCaseEvent()` |
+| `src/matchmaking/infrastructure/db/inMemory/outbox/InMemoryOutboxMessageEventMapper.ts` | Rename `toDomainEvent` → `toUseCaseEvent`; produce typed use case events using `new LobbyId(message.aggregateId)` |
+| `src/matchmaking/infrastructure/processors/OutboxProcessor.ts` | Call `toUseCaseEvent()` instead of `toDomainEvent()` |
 | `src/matchmaking/interface/ws/handlers/events/PlayerLeftLobbyHandler.ts` | Type param → `PlayerLeftLobbyUseCaseEvent`; use `event.lobbyId` instead of `event.payload.lobbyId` |
 | `src/matchmaking/infrastructure/handlers/WsNotifyPlayerLeftLobbyHandler.ts` | Type param → `PlayerLeftLobbyUseCaseEvent` |
 
-### Test files to update
+### Deleted files
+| File | Reason |
+|---|---|
+| `src/matchmaking/infrastructure/processors/OutboxMessageDomainEventMapper.ts` | Dead code — unused duplicate of `InMemoryOutboxMessageEventMapper`; also used `fromPayload` |
+
+### Test files updated
 | File | Change |
 |---|---|
-| `test/matchmaking/domain/lobby/Lobby.test.ts` | Remove `lobbyId` from `PlayerLeftLobby` constructor calls/assertions |
-| `test/matchmaking/infastructure/db/inMemory/outbox/InMemoryOutboxMessageEventMapper.test.ts` | Update to assert use case event instances and `aggregateId` |
-| `test/matchmaking/infastructure/processors/OutboxProcessor.test.ts` | Update `expect.any(PlayerLeftLobby)` → `expect.any(PlayerLeftLobbyUseCaseEvent)` |
-| `test/matchmaking/interface/ws/handlers/events/PlayerLeftLobbyHandler.test.ts` | Use `PlayerLeftLobbyUseCaseEvent` instead of `PlayerLeftLobby` |
+| `test/matchmaking/domain/lobby/Lobby.test.ts` | No changes needed — only checks `instanceof PlayerLeftLobby`, no constructor args |
+| `test/matchmaking/infastructure/db/inMemory/outbox/InMemoryOutboxMessageEventMapper.test.ts` | `toDomainEvent` → `toUseCaseEvent`; assert use case event instances and `lobbyId.value` |
+| `test/matchmaking/infastructure/processors/OutboxProcessor.test.ts` | `expect.any(PlayerJoinedLobby/PlayerLeftLobby)` → use case event equivalents |
+| `test/matchmaking/interface/ws/handlers/events/PlayerLeftLobbyHandler.test.ts` | Construct `PlayerLeftLobbyUseCaseEvent` instead of `PlayerLeftLobby` |
 
-## Considerations
+## Decisions Made
 
-- **`fromPayload` static methods on domain events**: Originally added to support reconstruction from outbox payloads. After this change, the mapper creates use case events directly — `fromPayload` is no longer needed on any domain event class and can be removed (cleanup).
-- **EventBus type compatibility**: `UseCaseEvent extends DomainEvent`, so all existing `EventBus.publish()` and `EventBus.register()` signatures remain valid without modification.
-- **Naming**: Use case events follow `[EventName]UseCaseEvent` to distinguish from domain events without ambiguity.
-- **Future events**: Any future handler that needs aggregate context will get it automatically via `UseCaseEvent.aggregateId` or by accessing typed properties like `lobbyId`.
+- **`UseCaseEvent` is a type alias, not an interface** — avoids the `@typescript-eslint/no-empty-object-type` lint rule that an empty `extends` interface triggers.
+- **No generic `aggregateId: string` on `UseCaseEvent`** — each use case event stores only typed fields it needs (e.g. `lobbyId: LobbyId`). Handlers access typed properties directly rather than reconstructing from a raw string. This keeps the interface clean and avoids redundant storage.
+- **All 7 use case events include `lobbyId: LobbyId`** — for consistency; future handlers won't need to wonder whether aggregate context is available.
+

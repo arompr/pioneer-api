@@ -1,5 +1,5 @@
 import { LobbyNotifier } from '#common/usecase/LobbyNotifier';
-import { PlayerLeftLobby } from '#matchmaking/domain/lobby/events/PlayerLeftLobby';
+import { PlayerLeftLobbyUseCaseEvent } from '#matchmaking/usecase/events/PlayerLeftLobbyUseCaseEvent';
 import { PlayerLeftLobbyHandler } from '#matchmaking/interface/ws/handlers/events/PlayerLeftLobbyHandler';
 import { GetLobbyUseCase } from '#matchmaking/usecase/GetLobbyUseCase';
 import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
@@ -28,7 +28,11 @@ describe('PlayerLeftLobbyHandler', () => {
 
     describe('handle', () => {
         it('get the lobby and notify lobby', () => {
-            const playerLeftLobbyEvent = new PlayerLeftLobby(lobby.id, player.id, false);
+            const playerLeftLobbyEvent = new PlayerLeftLobbyUseCaseEvent(
+                lobby.id,
+                player.id,
+                false
+            );
 
             playerLeftLobbyHandler.handle(playerLeftLobbyEvent);
 
