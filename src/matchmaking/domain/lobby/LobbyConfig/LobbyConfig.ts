@@ -1,24 +1,24 @@
 import { InvalidMinPlayersError } from '../errors/InvalidMinPlayersError';
 import { MinPlayersExceedsMaxPlayersError } from '../errors/MinPlayersExceedsMaxPlayersError';
-import type { LobbyGameMode } from './LobbyGameMode';
+import type { GameMode } from '#game/domain/config/GameMode';
 
 /**
  * Value object representing the configuration rules of a lobby.
  */
 export class LobbyConfig {
-    public readonly mode: LobbyGameMode;
+    public readonly mode: GameMode;
     public readonly minPlayers: number;
     public readonly maxPlayers: number;
 
     /**
      * Creates a new LobbyConfig.
-     * @param {LobbyGameMode} mode - The game mode.
+     * @param {GameMode} mode - The game mode.
      * @param {number} minPlayers - Minimum number of players required.
      * @param {number} maxPlayers - Maximum number of players allowed.
      * @throws {InvalidMinPlayersError} If minPlayers is less than 1.
      * @throws {MinPlayersExceedsMaxPlayersError} If maxPlayers is less than minPlayers.
      */
-    constructor(mode: LobbyGameMode, minPlayers: number, maxPlayers: number) {
+    constructor(mode: GameMode, minPlayers: number, maxPlayers: number) {
         this.validate(minPlayers, maxPlayers);
         this.mode = mode;
         this.minPlayers = minPlayers;
@@ -28,9 +28,9 @@ export class LobbyConfig {
     /**
      * Gets the game mode associated with this configuration.
      *
-     * @returns {LobbyGameMode}
+     * @returns {GameMode}
      */
-    getGameMode(): LobbyGameMode {
+    getGameMode(): GameMode {
         return this.mode;
     }
 

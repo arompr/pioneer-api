@@ -1,5 +1,5 @@
 import { LobbyConfig } from '#matchmaking/domain/lobby/LobbyConfig/LobbyConfig';
-import { lobbyGameModeFromString } from '#matchmaking/domain/lobby/LobbyConfig/LobbyGameMode';
+import { gameModeFromString } from '#game/domain/config/GameMode';
 import { InMemoryLobbyConfig } from './InMemoryLobbyConfig';
 
 export class InMemoryLobbyConfigMapper {
@@ -13,7 +13,7 @@ export class InMemoryLobbyConfigMapper {
 
     static toDomain(imLobbyConfig: InMemoryLobbyConfig): LobbyConfig {
         return new LobbyConfig(
-            lobbyGameModeFromString(imLobbyConfig.mode),
+            gameModeFromString(imLobbyConfig.mode),
             imLobbyConfig.minPlayers,
             imLobbyConfig.maxPlayers
         );

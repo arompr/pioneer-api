@@ -1,6 +1,6 @@
 import { Lobby } from '#matchmaking/domain/lobby/Lobby';
 import { LobbyConfig } from '#matchmaking/domain/lobby/LobbyConfig/LobbyConfig';
-import { LobbyGameMode } from '#matchmaking/domain/lobby/LobbyConfig/LobbyGameMode';
+import { GameMode } from '#game/domain/config/GameMode';
 import { LobbyId } from '#matchmaking/domain/lobby/lobbyId/LobbyId';
 import { LobbyPlayers } from '#matchmaking/domain/lobby/LobbyPlayers';
 import { ClosedState } from '#matchmaking/domain/lobby/states/ClosedState';
@@ -16,7 +16,7 @@ export class LobbyMother {
     static readonly DEFAULT_MIN_PLAYERS = 2;
     static readonly DEFAULT_MAX_PLAYERS = 3;
     private static readonly DEFAULT_LOBBY_CONFIG = new LobbyConfig(
-        LobbyGameMode.BASE,
+        GameMode.BASE,
         LobbyMother.DEFAULT_MIN_PLAYERS,
         LobbyMother.DEFAULT_MAX_PLAYERS
     );

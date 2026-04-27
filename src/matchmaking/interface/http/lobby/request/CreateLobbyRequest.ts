@@ -1,4 +1,4 @@
-import { LobbyGameMode } from '#matchmaking/domain/lobby/LobbyConfig/LobbyGameMode';
+import { GameMode } from '#game/domain/config/GameMode';
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 
 /** @publish */
@@ -7,6 +7,6 @@ export class CreateLobbyRequest {
     @IsString()
     hostName!: string;
 
-    @IsEnum(LobbyGameMode)
-    gameMode!: LobbyGameMode;
+    @IsEnum(GameMode)
+    gameMode!: GameMode;
 }

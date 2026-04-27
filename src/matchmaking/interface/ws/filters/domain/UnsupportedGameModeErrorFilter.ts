@@ -1,4 +1,4 @@
-import { UnsupportedGameModeError } from '#matchmaking/domain/lobby/errors/UnsupportedGameModeError';
+import { UnsupportedGameModeError } from '#game/domain/config/errors/UnsupportedGameModeError';
 import { Catch, ArgumentsHost, WsExceptionFilter } from '@nestjs/common';
 import { LobbySocket } from '../../LobbyGatewayWs';
 import { WsEvents } from '../../WsEventsType';

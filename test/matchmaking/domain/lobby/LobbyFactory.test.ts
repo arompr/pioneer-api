@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { Player } from '#matchmaking/domain/player/Player';
 import { LobbyConfig } from '#matchmaking/domain/lobby/LobbyConfig/LobbyConfig';
-import { LobbyGameMode } from '#matchmaking/domain/lobby/LobbyConfig/LobbyGameMode';
+import { GameMode } from '#game/domain/config/GameMode';
 import { LobbyIdFactory } from '#matchmaking/domain/lobby/lobbyId/LobbyIdFactory';
 import { LobbyFactory } from '#matchmaking/domain/lobby/LobbyFactory';
 import { PlayerMother } from '#test/matchmaking/domain/player/PlayerMother';
@@ -9,7 +9,7 @@ import { LobbyAggregate } from '#matchmaking/domain/lobby/LobbyAggregate.type';
 
 const LOBBY_MIN_CAPACITY = 2;
 const LOBBY_MAX_CAPACITY = 3;
-const LOBBY_CONFIG = new LobbyConfig(LobbyGameMode.BASE, LOBBY_MIN_CAPACITY, LOBBY_MAX_CAPACITY);
+const LOBBY_CONFIG = new LobbyConfig(GameMode.BASE, LOBBY_MIN_CAPACITY, LOBBY_MAX_CAPACITY);
 const lobbyIdFactory: LobbyIdFactory = new LobbyIdFactory();
 let lobbyFactory: LobbyFactory;
 let hostPlayer: Player;

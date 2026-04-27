@@ -5,13 +5,13 @@ import { LobbyRepository } from '#matchmaking/domain/lobby/LobbyRepository';
 import { LobbyFactory } from '#matchmaking/domain/lobby/LobbyFactory';
 import { PlayerFactory } from '#matchmaking/domain/player/PlayerFactory';
 import { CreateLobbyDto } from '#matchmaking/usecase/dto/CreateLobbyDto';
-import { LobbyGameMode } from '#matchmaking/domain/lobby/LobbyConfig/LobbyGameMode';
+import { GameMode } from '#game/domain/config/GameMode';
 import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
 import { OutboxService } from '#matchmaking/domain/outbox/OutboxService';
 import type { JwtTokenService } from '#matchmaking/domain/auth/JwtTokenService';
 
 const PLAYER_NAME = 'hostName';
-const GAME_MODE = LobbyGameMode.BASE;
+const GAME_MODE = GameMode.BASE;
 const { lobby, players } = LobbyMother.baseLobby();
 const TOKEN = 'mock-jwt-token';
 

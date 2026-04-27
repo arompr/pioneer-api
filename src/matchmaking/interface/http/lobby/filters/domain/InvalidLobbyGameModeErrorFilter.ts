@@ -1,13 +1,13 @@
-import { InvalidLobbyGameModeError } from '#matchmaking/domain/lobby/errors/InvalidLobbyGameModeError';
+import { InvalidGameModeError } from '#game/domain/config/errors/InvalidGameModeError';
 import { Catch, ExceptionFilter, ArgumentsHost } from '@nestjs/common';
 import { Request, Response } from 'express';
 
-@Catch(InvalidLobbyGameModeError)
-export class InvalidLobbyGameModeErrorFilter implements ExceptionFilter<InvalidLobbyGameModeError> {
+@Catch(InvalidGameModeError)
+export class InvalidLobbyGameModeErrorFilter implements ExceptionFilter<InvalidGameModeError> {
     readonly statusCode = 400;
     readonly code: string = 'INVALID_LOBBY_GAME_MODE';
 
-    catch(exception: InvalidLobbyGameModeError, host: ArgumentsHost): void {
+    catch(exception: InvalidGameModeError, host: ArgumentsHost): void {
         const ctx = host.switchToHttp();
         const response = ctx.getResponse<Response>();
         const request = ctx.getRequest<Request>();
@@ -15,7 +15,7 @@ export class InvalidLobbyGameModeErrorFilter implements ExceptionFilter<InvalidL
         response.status(this.statusCode).json({
             statusCode: this.statusCode,
             code: this.code,
-            message: `Invalid lobby game mode: ${exception.value}`,
+            message: `Invalid game mode: ${exception.value}`,
             timestamp: new Date().toISOString(),
             method: request.method,
             path: request.url,

@@ -1,13 +1,13 @@
-import { InvalidLobbyGameModeError } from '#matchmaking/domain/lobby/errors/InvalidLobbyGameModeError';
+import { InvalidGameModeError } from '#game/domain/config/errors/InvalidGameModeError';
 import { Catch, ArgumentsHost, WsExceptionFilter } from '@nestjs/common';
 import { WsEvents } from '../../WsEventsType';
 import { LobbySocket } from '../../LobbyGatewayWs';
 
-@Catch(InvalidLobbyGameModeError)
-export class InvalidLobbyGameModeErrorFilter implements WsExceptionFilter<InvalidLobbyGameModeError> {
+@Catch(InvalidGameModeError)
+export class InvalidLobbyGameModeErrorFilter implements WsExceptionFilter<InvalidGameModeError> {
     readonly code: string = 'INVALID_LOBBY_GAME_MODE';
 
-    catch(exception: InvalidLobbyGameModeError, host: ArgumentsHost): void {
+    catch(exception: InvalidGameModeError, host: ArgumentsHost): void {
         const client = host.switchToWs().getClient<LobbySocket>();
 
         client.emit(WsEvents.EXCEPTION, {

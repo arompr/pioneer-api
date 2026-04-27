@@ -8,12 +8,19 @@ import { OutboxMessageIdFactory } from '#matchmaking/domain/outbox/outboxMessage
 import { OutboxMessageFactory } from '#matchmaking/domain/outbox/OutboxMessageFactory';
 import { OutboxService } from '#matchmaking/domain/outbox/OutboxService';
 import { OUTBOX_REPOSITORY, OutboxRepository } from '#matchmaking/domain/outbox/OutboxRepository';
+import { GameConfigFactory } from '#game/domain/config/GameConfigFactory';
 
 export const factoryProviders: Provider[] = [
-    LobbyConfigFactory,
+    GameConfigFactory,
     PlayerIdFactory,
     LobbyIdFactory,
     OutboxMessageIdFactory,
+    {
+        provide: LobbyConfigFactory,
+        useFactory: (gameConfigFactory: GameConfigFactory) =>
+            new LobbyConfigFactory(gameConfigFactory),
+        inject: [GameConfigFactory],
+    },
     {
         provide: PlayerFactory,
         useFactory: (playerIdFactory: PlayerIdFactory) => new PlayerFactory(playerIdFactory),

@@ -1,4 +1,4 @@
-import { UnsupportedGameModeError } from '#matchmaking/domain/lobby/errors/UnsupportedGameModeError';
+import { UnsupportedGameModeError } from '#game/domain/config/errors/UnsupportedGameModeError';
 import { Catch, ExceptionFilter, ArgumentsHost } from '@nestjs/common';
 import { Request, Response } from 'express';
 

@@ -1,18 +1,24 @@
 import { describe, expect, it } from 'vitest';
-import { LobbyConfigFactory } from '#matchmaking/domain/lobby/LobbyConfig/LobbyConfigFactory';
-import { GameMode } from '#game/domain/config/GameMode';
 import { GameConfigFactory } from '#game/domain/config/GameConfigFactory';
+import { GameMode } from '#game/domain/config/GameMode';
 import { UnsupportedGameModeError } from '#game/domain/config/errors/UnsupportedGameModeError';
 
-const factory = new LobbyConfigFactory(new GameConfigFactory());
+const factory = new GameConfigFactory();
 
-describe('LobbyConfigFactory', () => {
+describe('GameConfigFactory', () => {
     describe('createFromGameMode', () => {
         describe('when the game mode is supported', () => {
-            it('creates a LobbyConfig with the correct mode', () => {
+            it('creates a GameConfig with the correct mode', () => {
                 const config = factory.createFromGameMode(GameMode.BASE);
 
-                expect(config.getGameMode()).toBe(GameMode.BASE);
+                expect(config.gameMode).toBe(GameMode.BASE);
+            });
+
+            it('creates a GameConfig with the correct player limits for BASE mode', () => {
+                const config = factory.createFromGameMode(GameMode.BASE);
+
+                expect(config.minPlayers).toBe(3);
+                expect(config.maxPlayers).toBe(4);
             });
         });
 
