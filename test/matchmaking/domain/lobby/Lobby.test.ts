@@ -3,6 +3,7 @@ import { Lobby } from '#matchmaking/domain/lobby/Lobby';
 import { Player } from '#matchmaking/domain/player/Player';
 import { PlayerNotFoundInLobbyError } from '#matchmaking/domain/lobby/errors/PlayerNotFoundInLobbyError';
 import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
+import { GameConfigId } from '#game/domain/config/GameConfigId';
 import { PlayerJoinedLobby } from '#matchmaking/domain/lobby/events/PlayerJoinedLobby';
 import { PlayerLeftLobby } from '#matchmaking/domain/lobby/events/PlayerLeftLobby';
 import { LobbyClosed } from '#matchmaking/domain/lobby/events/LobbyClosed';
@@ -24,13 +25,49 @@ describe('Lobby', () => {
     });
 
     describe('creation', () => {
-        describe('when Lobby is created', () => {
+        describe('when Lobby is created without gameConfigId', () => {
             it('the lobby players are set', () => {
                 expect(lobby.playerCount).toBe(1);
             });
 
             it('has the provided ID', () => {
                 expect(lobby.id).toBe(LobbyMother.DEFAULT_LOBBY_ID);
+            });
+
+            it('gameConfigId is undefined', () => {
+                expect(lobby.gameConfigId).toBeUndefined();
+            });
+        });
+
+        describe('when Lobby is created with gameConfigId', () => {
+            beforeEach(() => {
+                const { lobby: l, players } = LobbyMother.baseLobbyWithGameConfigId();
+                lobby = l;
+                [player1, player2, player3] = players;
+            });
+
+            it('the lobby players are set', () => {
+                expect(lobby.playerCount).toBe(1);
+            });
+
+            it('has the provided ID', () => {
+                expect(lobby.id).toBe(LobbyMother.DEFAULT_LOBBY_ID);
+            });
+
+            it('gameConfigId is set to the provided value', () => {
+                expect(lobby.gameConfigId).toBeDefined();
+                expect(lobby.gameConfigId?.equals(LobbyMother.DEFAULT_GAME_CONFIG_ID)).toBe(true);
+            });
+        });
+
+        describe('when Lobby is created with a specific gameConfigId', () => {
+            it('gameConfigId matches the provided value', () => {
+                const customGameConfigId = new GameConfigId('custom-game-config-id');
+                const { lobby: customLobby } =
+                    LobbyMother.baseLobbyWithGameConfigId(customGameConfigId);
+
+                expect(customLobby.gameConfigId).toBeDefined();
+                expect(customLobby.gameConfigId?.equals(customGameConfigId)).toBe(true);
             });
         });
     });
@@ -123,6 +160,17 @@ describe('Lobby', () => {
                 lobby.start(player1.id);
 
                 expect(lobby.pullDomainEvents().some((e) => e instanceof LobbyStarted)).toBe(true);
+            });
+        });
+
+        describe('when the host starts a game with gameConfigId', () => {
+            it('emits LobbyStarted', () => {
+                lobby = LobbyMother.readyToStartLobbyWithGameConfigId().lobby;
+
+                lobby.start(player1.id);
+
+                expect(lobby.pullDomainEvents().some((e) => e instanceof LobbyStarted)).toBe(true);
+                expect(lobby.gameConfigId).toBeDefined();
             });
         });
     });

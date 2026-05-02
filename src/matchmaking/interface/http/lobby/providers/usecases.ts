@@ -4,7 +4,6 @@ import { GetLobbyUseCase } from '#matchmaking/usecase/GetLobbyUseCase';
 import { JoinLobbyUseCase } from '#matchmaking/usecase/JoinLobbyUseCase';
 import { LeaveLobbyUseCase } from '#matchmaking/usecase/LeaveLobbyUseCase';
 import { LOBBY_REPOSITORY, LobbyRepository } from '#matchmaking/domain/lobby/LobbyRepository';
-import { LobbyConfigFactory } from '#matchmaking/domain/lobby/LobbyConfig/LobbyConfigFactory';
 import { LobbyFactory } from '#matchmaking/domain/lobby/LobbyFactory';
 import { PlayerFactory } from '#matchmaking/domain/player/PlayerFactory';
 import { OutboxService } from '#matchmaking/domain/outbox/OutboxService';
@@ -27,7 +26,6 @@ export const useCaseProviders: Provider[] = [
             lobbyRepository: LobbyRepository,
             lobbyFactory: LobbyFactory,
             playerFactory: PlayerFactory,
-            lobbyConfigFactory: LobbyConfigFactory,
             outboxService: OutboxService,
             jwtTokenService: JwtTokenService
         ) =>
@@ -35,18 +33,10 @@ export const useCaseProviders: Provider[] = [
                 lobbyRepository,
                 lobbyFactory,
                 playerFactory,
-                lobbyConfigFactory,
                 outboxService,
                 jwtTokenService
             ),
-        inject: [
-            LOBBY_REPOSITORY,
-            LobbyFactory,
-            PlayerFactory,
-            LobbyConfigFactory,
-            OutboxService,
-            JWT_TOKEN_SERVICE,
-        ],
+        inject: [LOBBY_REPOSITORY, LobbyFactory, PlayerFactory, OutboxService, JWT_TOKEN_SERVICE],
     },
 
     {

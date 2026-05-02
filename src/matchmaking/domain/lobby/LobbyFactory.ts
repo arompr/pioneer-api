@@ -1,3 +1,4 @@
+import type { GameConfigId } from '#game/domain/config/GameConfigId';
 import { Player } from '../player/Player';
 import { Lobby } from './Lobby';
 import { LobbyAggregate } from './LobbyAggregate.type';
@@ -17,14 +18,23 @@ export class LobbyFactory {
     /**
      * Creates a new Lobby with a host player.
      *
-     * @param hostName Optional name for the host. If not provided, a default name will be used.
-     * @param config The configuration for the lobby.
+     * @param {LobbyConfig} config - The configuration for the lobby.
+     * @param {Player} host - The host player for the lobby.
+     * @param {GameConfigId | undefined} gameConfigId - Optional game config ID association.
+     * @returns {LobbyAggregate} A new lobby instance.
      */
-    create(config: LobbyConfig, host: Player): LobbyAggregate {
+    create(config: LobbyConfig, host: Player, gameConfigId?: GameConfigId): LobbyAggregate {
         const lobbyId: LobbyId = this.lobbyIdFactory.generate();
         const players = new LobbyPlayers();
         players.add(host);
 
-        return new Lobby(lobbyId, config, host.id, players, new WaitingForPlayersState());
+        return new Lobby(
+            lobbyId,
+            config,
+            host.id,
+            players,
+            new WaitingForPlayersState(),
+            gameConfigId
+        );
     }
 }

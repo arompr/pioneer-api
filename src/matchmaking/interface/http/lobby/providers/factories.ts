@@ -1,5 +1,4 @@
 import { Provider } from '@nestjs/common';
-import { LobbyConfigFactory } from '#matchmaking/domain/lobby/LobbyConfig/LobbyConfigFactory';
 import { LobbyFactory } from '#matchmaking/domain/lobby/LobbyFactory';
 import { PlayerFactory } from '#matchmaking/domain/player/PlayerFactory';
 import { LobbyIdFactory } from '#matchmaking/domain/lobby/lobbyId/LobbyIdFactory';
@@ -8,19 +7,11 @@ import { OutboxMessageIdFactory } from '#matchmaking/domain/outbox/outboxMessage
 import { OutboxMessageFactory } from '#matchmaking/domain/outbox/OutboxMessageFactory';
 import { OutboxService } from '#matchmaking/domain/outbox/OutboxService';
 import { OUTBOX_REPOSITORY, OutboxRepository } from '#matchmaking/domain/outbox/OutboxRepository';
-import { GameConfigFactory } from '#game/domain/config/GameConfigFactory';
 
 export const factoryProviders: Provider[] = [
-    GameConfigFactory,
     PlayerIdFactory,
     LobbyIdFactory,
     OutboxMessageIdFactory,
-    {
-        provide: LobbyConfigFactory,
-        useFactory: (gameConfigFactory: GameConfigFactory) =>
-            new LobbyConfigFactory(gameConfigFactory),
-        inject: [GameConfigFactory],
-    },
     {
         provide: PlayerFactory,
         useFactory: (playerIdFactory: PlayerIdFactory) => new PlayerFactory(playerIdFactory),

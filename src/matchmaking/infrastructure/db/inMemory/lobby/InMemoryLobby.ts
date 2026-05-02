@@ -7,6 +7,7 @@ export class InMemoryLobby {
         public config: InMemoryLobbyConfig,
         public hostId: string,
         public players: InMemoryPlayer[],
-        public state: string
+        public state: string,
+        public gameConfigId?: string
     ) {}
 }

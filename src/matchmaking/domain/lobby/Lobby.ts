@@ -17,6 +17,7 @@ import {
 } from './events';
 import { LobbyStateType } from './states/LobbyStateType';
 import { PlayerId } from '#common/domain/player/playerId/PlayerId';
+import { GameConfigId } from '#game/domain/config/GameConfigId';
 
 /**
  * Represents a matchmaking lobby.
@@ -27,20 +28,25 @@ export class Lobby extends AggregateRoot implements ILobby {
     private readonly _config: LobbyConfig;
     private _hostId: PlayerId;
     private _lobbyState: LobbyState;
+    private readonly _gameConfigId?: GameConfigId;
 
     /**
      * Creates a new Lobby instance.
      *
      * @param {LobbyId} id - Unique identifier for the lobby.
      * @param {LobbyConfig} config - The configuration containing mode and limits.
-     *
+     * @param {PlayerId} hostId - The unique identifier of the lobby host.
+     * @param {LobbyPlayers} players - The collection of players in the lobby.
+     * @param {LobbyState} lobbyState - The current state of the lobby.
+     * @param {GameConfigId} [gameConfigId] - Optional unique identifier for the game configuration.
      */
     constructor(
         id: LobbyId,
         config: LobbyConfig,
         hostId: PlayerId,
         players: LobbyPlayers,
-        lobbyState: LobbyState
+        lobbyState: LobbyState,
+        gameConfigId?: GameConfigId
     ) {
         super();
         this._id = id;
@@ -48,6 +54,7 @@ export class Lobby extends AggregateRoot implements ILobby {
         this._hostId = hostId;
         this._players = players;
         this._lobbyState = lobbyState;
+        this._gameConfigId = gameConfigId;
         this.transitionTo(lobbyState);
     }
 
@@ -67,6 +74,15 @@ export class Lobby extends AggregateRoot implements ILobby {
      */
     get config(): LobbyConfig {
         return this._config;
+    }
+
+    /**
+     * Gets the game configuration identifier if set.
+     *
+     * @returns {GameConfigId | undefined} The game configuration ID, or undefined if not set.
+     */
+    get gameConfigId(): GameConfigId | undefined {
+        return this._gameConfigId;
     }
 
     /**

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { GameConfigFactory } from '#game/domain/config/GameConfigFactory';
 import { GameMode } from '#game/domain/config/GameMode';
 import { UnsupportedGameModeError } from '#game/domain/config/errors/UnsupportedGameModeError';
+import { GameConfigId } from '#game/domain/config/GameConfigId';
 
 const factory = new GameConfigFactory();
 
@@ -20,6 +21,23 @@ describe('GameConfigFactory', () => {
                 expect(config.minPlayers).toBe(3);
                 expect(config.maxPlayers).toBe(4);
             });
+
+            it('generates a unique GameConfigId', () => {
+                const config1 = factory.createFromGameMode(GameMode.BASE);
+                const config2 = factory.createFromGameMode(GameMode.BASE);
+
+                expect(config1.gameConfigId.value).not.toBe(config2.gameConfigId.value);
+            });
+
+            it('returns a valid GameConfig instance with all properties set', () => {
+                const config = factory.createFromGameMode(GameMode.BASE);
+
+                expect(config).toBeDefined();
+                expect(config.gameConfigId).toBeDefined();
+                expect(config.gameMode).toBeDefined();
+                expect(config.minPlayers).toBeDefined();
+                expect(config.maxPlayers).toBeDefined();
+            });
         });
 
         describe('when the game mode is not supported', () => {
@@ -27,6 +45,69 @@ describe('GameConfigFactory', () => {
                 const unsupportedMode = 'nonexistent-mode' as GameMode;
 
                 expect(() => factory.createFromGameMode(unsupportedMode)).toThrow(
+                    UnsupportedGameModeError
+                );
+            });
+
+            it('includes the unsupported mode in the error', () => {
+                const unsupportedMode = 'invalid-mode' as GameMode;
+
+                expect(() => factory.createFromGameMode(unsupportedMode)).toThrow(
+                    UnsupportedGameModeError
+                );
+            });
+        });
+    });
+
+    describe('createWithId', () => {
+        describe('when called with a GameMode and GameConfigId', () => {
+            it('creates a GameConfig with the provided ID', () => {
+                const providedId = new GameConfigId('custom-id-123');
+                const config = factory.createWithId(GameMode.BASE, providedId);
+
+                expect(config.gameConfigId).toBe(providedId);
+                expect(config.gameConfigId.equals(providedId)).toBe(true);
+            });
+
+            it('uses the provided ID instead of generating a new one', () => {
+                const providedId = new GameConfigId('specific-id');
+                const config = factory.createWithId(GameMode.BASE, providedId);
+
+                expect(config.gameConfigId.value).toBe('specific-id');
+            });
+
+            it('creates a GameConfig with correct player limits', () => {
+                const providedId = new GameConfigId('test-id');
+                const config = factory.createWithId(GameMode.BASE, providedId);
+
+                expect(config.minPlayers).toBe(3);
+                expect(config.maxPlayers).toBe(4);
+            });
+        });
+
+        describe('when called with only a GameMode (no ID provided)', () => {
+            it('generates a new GameConfigId', () => {
+                const config = factory.createWithId(GameMode.BASE);
+
+                expect(config.gameConfigId).toBeDefined();
+                expect(config.gameConfigId.value).toBeDefined();
+                expect(config.gameConfigId.value.length).toBeGreaterThan(0);
+            });
+
+            it('generates unique IDs for multiple calls', () => {
+                const config1 = factory.createWithId(GameMode.BASE);
+                const config2 = factory.createWithId(GameMode.BASE);
+
+                expect(config1.gameConfigId.value).not.toBe(config2.gameConfigId.value);
+            });
+        });
+
+        describe('when the game mode is not supported', () => {
+            it('throws UnsupportedGameModeError even with a provided ID', () => {
+                const providedId = new GameConfigId('id-for-invalid-mode');
+                const unsupportedMode = 'unsupported' as GameMode;
+
+                expect(() => factory.createWithId(unsupportedMode, providedId)).toThrow(
                     UnsupportedGameModeError
                 );
             });
