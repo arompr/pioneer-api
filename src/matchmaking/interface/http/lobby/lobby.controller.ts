@@ -44,14 +44,13 @@ export class LobbyController {
      * - the public lobby view (visible to all players)
      * - the private view of the player who created the lobby (selfPlayer)
      *
-     * @param {CreateLobbyRequest} createLobbyRequest - The request body containing host name, game mode, and optional game config ID.
+     * @param {CreateLobbyRequest} createLobbyRequest - The request body containing host name and optional game config ID.
      * @returns {CreateLobbyResponse} The created lobby and the private representation of the host player.
      *
      * @example
      * POST /lobby
      * {
      *   "hostName": "Panadis",
-     *   "gameMode": "BASE",
      *   "gameConfigId": "cfg-123" (optional)
      * }
      */
@@ -59,7 +58,6 @@ export class LobbyController {
     create(@Body() createLobbyRequest: CreateLobbyRequest): CreateLobbyResponse {
         const createdLobbyDto: CreateLobbyDto = {
             hostName: createLobbyRequest.hostName,
-            gameMode: createLobbyRequest.gameMode,
             gameConfigId: createLobbyRequest.gameConfigId,
         };
 

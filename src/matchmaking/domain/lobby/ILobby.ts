@@ -3,7 +3,7 @@ import { Player } from '../player/Player';
 import { LobbyConfig } from './LobbyConfig/LobbyConfig';
 import { LobbyId } from './lobbyId/LobbyId';
 import { LobbyStateType } from './states/LobbyStateType';
-import { GameConfigId } from '#game/domain/config/GameConfigId';
+import type { GameConfigId } from '../gameConfig/GameConfigId';
 
 export interface ILobby {
     get id(): LobbyId;
@@ -18,9 +18,7 @@ export interface ILobby {
     markAsPending(id: PlayerId): void;
     canStart(): boolean;
     isHost(id: PlayerId): boolean;
-    isFull(): boolean;
     isEmpty(): boolean;
-    remainingPlaces(): number;
     get allPlayers(): Player[];
     findPlayer(playerId: PlayerId): Player;
     get playerCount(): number;

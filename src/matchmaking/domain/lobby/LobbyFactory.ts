@@ -1,4 +1,4 @@
-import type { GameConfigId } from '#game/domain/config/GameConfigId';
+import type { GameConfigId } from '../gameConfig/GameConfigId';
 import { Player } from '../player/Player';
 import { Lobby } from './Lobby';
 import { LobbyAggregate } from './LobbyAggregate.type';

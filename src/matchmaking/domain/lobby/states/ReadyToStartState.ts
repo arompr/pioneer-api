@@ -1,6 +1,5 @@
 import { Player } from '#matchmaking/domain/player/Player';
 import { PlayerId } from '#common/domain/player/playerId/PlayerId';
-import { LobbyFullError } from '../errors/LobbyFullError';
 import { PlayerIsNotHostError } from '../errors/PlayerIsNotHostError';
 import { InGameState } from './InGameState';
 import { LobbyState } from './LobbyState';
@@ -23,19 +22,16 @@ export class ReadyToStartState extends LobbyState {
     public readonly stateType: LobbyStateType = LobbyStateType.ReadyToStart;
 
     /**
-     * Adds a player to the lobby if it is not full.
+     * Adds a player to the lobby.
      *
      * Joining is allowed in this state, but may cause the lobby to lose
      * its "ready to start" status if the new player is not ready.
      *
+     * Note: Capacity validation is handled at the use case level via GameGateway.
+     *
      * @param {Player} player - The player attempting to join.
-     * @throws {LobbyFullError} If the lobby has reached maximum capacity.
      */
     join(player: Player): void {
-        if (this.lobby.isFull()) {
-            throw new LobbyFullError(this.lobby.id);
-        }
-
         this.lobby.internalAddPlayer(player);
 
         if (!this.lobby.meetsRequirementsToStart()) {

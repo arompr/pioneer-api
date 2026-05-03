@@ -1,10 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { GameMode } from '#game/domain/config/GameMode';
+import { GameConfigId } from '#matchmaking/domain/gameConfig/GameConfigId';
 import { LobbyConfig } from '#matchmaking/domain/lobby/LobbyConfig/LobbyConfig';
-import { InvalidMinPlayersError } from '#matchmaking/domain/lobby/errors/InvalidMinPlayersError';
-import { MinPlayersExceedsMaxPlayersError } from '#matchmaking/domain/lobby/errors/MinPlayersExceedsMaxPlayersError';
 
-const DEFAULT_MODE: GameMode = GameMode.BASE;
+const DEFAULT_GAME_CONFIG_ID = new GameConfigId('game-config-id');
 const DEFAULT_MIN_PLAYERS = 3;
 const DEFAULT_MAX_PLAYERS = 4;
 
@@ -13,12 +11,12 @@ describe('LobbyConfig', () => {
         describe('when the parameters are valid', () => {
             it('sets the config correctly', () => {
                 const config = new LobbyConfig(
-                    DEFAULT_MODE,
+                    DEFAULT_GAME_CONFIG_ID,
                     DEFAULT_MIN_PLAYERS,
                     DEFAULT_MAX_PLAYERS
                 );
 
-                expect(config.getGameMode()).toBe(DEFAULT_MODE);
+                expect(config.getGameConfigId()).toEqual(DEFAULT_GAME_CONFIG_ID);
                 expect(config.getMinPlayers()).toBe(DEFAULT_MIN_PLAYERS);
                 expect(config.getMaxPlayers()).toBe(DEFAULT_MAX_PLAYERS);
             });
@@ -27,30 +25,14 @@ describe('LobbyConfig', () => {
         describe('when minPlayers equals maxPlayers', () => {
             it('sets the config correctly', () => {
                 const config = new LobbyConfig(
-                    DEFAULT_MODE,
+                    DEFAULT_GAME_CONFIG_ID,
                     DEFAULT_MAX_PLAYERS,
                     DEFAULT_MAX_PLAYERS
                 );
 
-                expect(config.getGameMode()).toBe(DEFAULT_MODE);
+                expect(config.getGameConfigId()).toEqual(DEFAULT_GAME_CONFIG_ID);
                 expect(config.getMinPlayers()).toBe(DEFAULT_MAX_PLAYERS);
                 expect(config.getMaxPlayers()).toBe(DEFAULT_MAX_PLAYERS);
-            });
-        });
-
-        describe('when minPlayers is less than 1', () => {
-            it('throws InvalidMinPlayersError', () => {
-                expect(() => new LobbyConfig(DEFAULT_MODE, 0, DEFAULT_MAX_PLAYERS)).toThrow(
-                    InvalidMinPlayersError
-                );
-            });
-        });
-
-        describe('when minPlayers exceeds maxPlayers', () => {
-            it('throws MinPlayersExceedsMaxPlayersError', () => {
-                expect(() => new LobbyConfig(DEFAULT_MODE, 5, 4)).toThrow(
-                    MinPlayersExceedsMaxPlayersError
-                );
             });
         });
     });

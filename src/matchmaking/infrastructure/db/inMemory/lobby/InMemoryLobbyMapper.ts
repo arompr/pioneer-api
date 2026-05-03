@@ -4,7 +4,7 @@ import { LobbyId } from '#matchmaking/domain/lobby/lobbyId/LobbyId';
 import { LobbyPlayers } from '#matchmaking/domain/lobby/LobbyPlayers';
 import { LobbyStateRegistry } from '#matchmaking/domain/lobby/states/LobbyStateRegistry';
 import { PlayerId } from '#common/domain/player/playerId/PlayerId';
-import { GameConfigId } from '#game/domain/config/GameConfigId';
+import { GameConfigId } from '#matchmaking/domain/gameConfig/GameConfigId';
 import { InMemoryPlayerMapper } from '../player/InMemoryPlayerMapper';
 import { InMemoryLobby } from './InMemoryLobby';
 import { InMemoryLobbyConfigMapper } from './lobbyConfig/InMemoryLobbyConfigMapper';

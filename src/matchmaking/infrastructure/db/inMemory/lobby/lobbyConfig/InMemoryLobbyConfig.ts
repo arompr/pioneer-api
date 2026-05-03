@@ -1,6 +1,6 @@
 export class InMemoryLobbyConfig {
     constructor(
-        public mode: string,
+        public gameConfigId: string,
         public minPlayers: number,
         public maxPlayers: number
     ) {}

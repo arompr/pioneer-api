@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { Lobby } from '#matchmaking/domain/lobby/Lobby';
 import { Player } from '#matchmaking/domain/player/Player';
-import { LobbyFullError } from '#matchmaking/domain/lobby/errors/LobbyFullError';
 import { PlayerIsNotHostError } from '#matchmaking/domain/lobby/errors/PlayerIsNotHostError';
 import { PlayerNotFoundInLobbyError } from '#matchmaking/domain/lobby/errors/PlayerNotFoundInLobbyError';
 import { LobbyAlreadyInGameError } from '#matchmaking/domain/lobby/errors/LobbyAlreadyInGameError';
@@ -11,13 +10,13 @@ let lobby: Lobby;
 let player1: Player;
 let player2: Player;
 let player3: Player;
-let player4: Player;
+let _player4: Player;
 
 describe('ReadyToStartState', () => {
     beforeEach(() => {
         const { lobby: l, players } = LobbyMother.readyToStartLobby();
         lobby = l;
-        [player1, player2, player3, player4] = players;
+        [player1, player2, player3, _player4] = players;
     });
 
     describe('join', () => {
@@ -32,16 +31,6 @@ describe('ReadyToStartState', () => {
                 lobby.join(player3);
 
                 expect(lobby.canStart()).toBe(false);
-            });
-        });
-
-        describe('when the lobby is full', () => {
-            it('throws LobbyFullError', () => {
-                lobby.join(player3);
-
-                expect(() => {
-                    lobby.join(player4);
-                }).toThrow(LobbyFullError);
             });
         });
     });

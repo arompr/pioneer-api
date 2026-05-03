@@ -13,7 +13,7 @@ export class LobbyMapper {
                 isHost: lobby.isHost(player.id),
             })),
             config: {
-                gameMode: lobby.config.getGameMode(),
+                gameConfigId: lobby.config.getGameConfigId().value,
                 maxPlayers: lobby.config.maxPlayers,
                 minPlayers: lobby.config.minPlayers,
             },

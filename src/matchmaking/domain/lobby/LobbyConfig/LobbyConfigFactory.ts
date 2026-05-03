@@ -1,24 +1,24 @@
 import { LobbyConfig } from './LobbyConfig';
-import { GameConfigFactory } from '#game/domain/config/GameConfigFactory';
-import type { GameMode } from '#game/domain/config/GameMode';
+import type { GameConfigId } from '../../gameConfig/GameConfigId';
 
 /**
- * Factory responsible for creating LobbyConfig instances based on game mode.
- * Delegates to GameConfigFactory for authoritative game-mode configuration rules.
+ * Factory responsible for creating LobbyConfig instances.
+ * Wraps game config IDs into LobbyConfig value objects.
  */
 export class LobbyConfigFactory {
-    constructor(private readonly gameConfigFactory: GameConfigFactory) {}
-
     /**
-     * Creates a configuration specific to an existing game mode.
+     * Creates a configuration for the given game config ID with optional player limits.
      *
-     * @param {GameMode} mode - The chosen game mode.
+     * @param {GameConfigId} gameConfigId - The game configuration identifier.
+     * @param {number} [minPlayers=3] - Minimum players (TODO: fetch from game).
+     * @param {number} [maxPlayers=4] - Maximum players (TODO: fetch from game).
      * @returns {LobbyConfig} The corresponding lobby configuration.
-     * @throws {UnsupportedGameModeError} If the game mode is not supported.
      */
-    public createFromGameMode(mode: GameMode): LobbyConfig {
-        const gameConfig = this.gameConfigFactory.createFromGameMode(mode);
-
-        return new LobbyConfig(gameConfig.gameMode, gameConfig.minPlayers, gameConfig.maxPlayers);
+    public createFromGameConfigId(
+        gameConfigId: GameConfigId,
+        minPlayers: number = 3,
+        maxPlayers: number = 4
+    ): LobbyConfig {
+        return new LobbyConfig(gameConfigId, minPlayers, maxPlayers);
     }
 }

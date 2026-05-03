@@ -17,7 +17,7 @@ describe('InMemoryLobbyMapper', () => {
             expect(imLobby.id).toBe(lobby.id.value);
             expect(imLobby.hostId).toBe(lobby.hostId.value);
             expect(imLobby.state).toBe(lobby.stateType);
-            expect(imLobby.config.mode).toBe(lobby.config.getGameMode());
+            expect(imLobby.config.gameConfigId).toBe(lobby.config.getGameConfigId().value);
             expect(imLobby.config.minPlayers).toBe(lobby.config.minPlayers);
             expect(imLobby.config.maxPlayers).toBe(lobby.config.maxPlayers);
             expect(imLobby.players.length).toBe(lobby.playerCount);
@@ -45,7 +45,9 @@ describe('InMemoryLobbyMapper', () => {
             expect(reconstructedLobby.id.equals(lobby.id)).toBe(true);
             expect(reconstructedLobby.hostId.equals(lobby.hostId)).toBe(true);
             expect(reconstructedLobby.stateType).toBe(lobby.stateType);
-            expect(reconstructedLobby.config.getGameMode()).toBe(lobby.config.getGameMode());
+            expect(
+                reconstructedLobby.config.getGameConfigId().equals(lobby.config.getGameConfigId())
+            ).toBe(true);
             expect(reconstructedLobby.config.minPlayers).toBe(lobby.config.minPlayers);
             expect(reconstructedLobby.config.maxPlayers).toBe(lobby.config.maxPlayers);
             expect(reconstructedLobby.playerCount).toBe(lobby.playerCount);

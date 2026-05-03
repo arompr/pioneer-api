@@ -1,41 +1,41 @@
-import { InvalidMinPlayersError } from '../errors/InvalidMinPlayersError';
-import { MinPlayersExceedsMaxPlayersError } from '../errors/MinPlayersExceedsMaxPlayersError';
-import type { GameMode } from '#game/domain/config/GameMode';
+import type { GameConfigId } from '#matchmaking/domain/gameConfig/GameConfigId';
 
 /**
- * Value object representing the configuration rules of a lobby.
+ * Value object representing the configuration of a lobby.
+ * Maintains a reference to the game configuration via gameConfigId.
+ *
+ * TODO (Future Refactoring): Player limits should come from the game domain via gateway queries.
+ * Currently stored here with defaults for backward compatibility during transition.
  */
 export class LobbyConfig {
-    public readonly mode: GameMode;
+    public readonly gameConfigId: GameConfigId;
     public readonly minPlayers: number;
     public readonly maxPlayers: number;
 
     /**
      * Creates a new LobbyConfig.
-     * @param {GameMode} mode - The game mode.
-     * @param {number} minPlayers - Minimum number of players required.
-     * @param {number} maxPlayers - Maximum number of players allowed.
-     * @throws {InvalidMinPlayersError} If minPlayers is less than 1.
-     * @throws {MinPlayersExceedsMaxPlayersError} If maxPlayers is less than minPlayers.
+     * @param {GameConfigId} gameConfigId - Reference to the game configuration.
+     * @param {number} [minPlayers=3] - Minimum players (TODO: fetch from game via gateway).
+     * @param {number} [maxPlayers=4] - Maximum players (TODO: fetch from game via gateway).
      */
-    constructor(mode: GameMode, minPlayers: number, maxPlayers: number) {
-        this.validate(minPlayers, maxPlayers);
-        this.mode = mode;
+    constructor(gameConfigId: GameConfigId, minPlayers: number = 3, maxPlayers: number = 4) {
+        this.gameConfigId = gameConfigId;
         this.minPlayers = minPlayers;
         this.maxPlayers = maxPlayers;
     }
 
     /**
-     * Gets the game mode associated with this configuration.
+     * Gets the game config ID associated with this configuration.
      *
-     * @returns {GameMode}
+     * @returns {GameConfigId}
      */
-    getGameMode(): GameMode {
-        return this.mode;
+    getGameConfigId(): GameConfigId {
+        return this.gameConfigId;
     }
 
     /**
      * Gets the minimum number of players allowed.
+     * TODO: Fetch from game domain via gateway.
      *
      * @returns {number}
      */
@@ -45,16 +45,11 @@ export class LobbyConfig {
 
     /**
      * Gets the maximum number of players allowed.
+     * TODO: Fetch from game domain via gateway.
      *
      * @returns {number}
      */
     getMaxPlayers(): number {
         return this.maxPlayers;
-    }
-
-    private validate(minPlayers: number, maxPlayers: number): void {
-        if (minPlayers < 1) throw new InvalidMinPlayersError(minPlayers);
-        if (maxPlayers < minPlayers)
-            throw new MinPlayersExceedsMaxPlayersError(minPlayers, maxPlayers);
     }
 }

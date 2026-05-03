@@ -3,7 +3,7 @@ import { Lobby } from '#matchmaking/domain/lobby/Lobby';
 import { Player } from '#matchmaking/domain/player/Player';
 import { PlayerNotFoundInLobbyError } from '#matchmaking/domain/lobby/errors/PlayerNotFoundInLobbyError';
 import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
-import { GameConfigId } from '#game/domain/config/GameConfigId';
+import { GameConfigId } from '#matchmaking/domain/gameConfig/GameConfigId';
 import { PlayerJoinedLobby } from '#matchmaking/domain/lobby/events/PlayerJoinedLobby';
 import { PlayerLeftLobby } from '#matchmaking/domain/lobby/events/PlayerLeftLobby';
 import { LobbyClosed } from '#matchmaking/domain/lobby/events/LobbyClosed';
@@ -15,13 +15,13 @@ import { PlayerMarkedPending } from '#matchmaking/domain/lobby/events/PlayerMark
 let lobby: Lobby;
 let player1: Player;
 let player2: Player;
-let player3: Player;
+let _player3: Player;
 
 describe('Lobby', () => {
     beforeEach(() => {
         const { lobby: l, players } = LobbyMother.baseLobby();
         lobby = l;
-        [player1, player2, player3] = players;
+        [player1, player2, _player3] = players;
     });
 
     describe('creation', () => {
@@ -43,7 +43,7 @@ describe('Lobby', () => {
             beforeEach(() => {
                 const { lobby: l, players } = LobbyMother.baseLobbyWithGameConfigId();
                 lobby = l;
-                [player1, player2, player3] = players;
+                [player1, player2, _player3] = players;
             });
 
             it('the lobby players are set', () => {
@@ -229,34 +229,6 @@ describe('Lobby', () => {
         });
     });
 
-    describe('isFull', () => {
-        describe('when the lobby has reached max capacity', () => {
-            it('returns true', () => {
-                lobby.join(player2);
-                lobby.join(player3);
-
-                expect(lobby.isFull()).toBe(true);
-            });
-        });
-
-        describe('when the lobby is not as max capacity', () => {
-            it('returns false', () => {
-                expect(lobby.isFull()).toBe(false);
-            });
-        });
-
-        describe('when a player leaves a full lobby', () => {
-            it('returns false again', () => {
-                lobby.join(player2);
-                lobby.join(player3);
-
-                lobby.leave(player1.id);
-
-                expect(lobby.isFull()).toBe(false);
-            });
-        });
-    });
-
     describe('isEmpty', () => {
         describe('when there is no player in the lobby', () => {
             it('returns true', () => {
@@ -277,67 +249,6 @@ describe('Lobby', () => {
                 lobby.leave(player1.id);
 
                 expect(lobby.isEmpty()).toBe(true);
-            });
-        });
-    });
-
-    describe('hasReachedMinimum', () => {
-        describe('when the number of ready players exactly reaches the minimum', () => {
-            it('returns true', () => {
-                lobby.join(player2);
-
-                expect(lobby.hasReachedMinimum()).toBe(true);
-            });
-        });
-
-        describe('when the number of players is below the minimum', () => {
-            it('returns true', () => {
-                expect(lobby.hasReachedMinimum()).toBe(false);
-            });
-        });
-
-        describe('when the number of players exceeds the minimum', () => {
-            it('returns true', () => {
-                lobby.join(player2);
-                lobby.join(player3);
-
-                expect(lobby.hasReachedMinimum()).toBe(true);
-            });
-        });
-    });
-
-    describe('remainingPlaces', () => {
-        describe('when the lobby is empty', () => {
-            it('returns the maximum capacity', () => {
-                setupClosedLobby();
-
-                expect(lobby.remainingPlaces()).toBe(LobbyMother.DEFAULT_MAX_PLAYERS);
-            });
-        });
-
-        describe('when players join the lobby', () => {
-            it('decreases the count of remaining places', () => {
-                expect(lobby.remainingPlaces()).toBe(LobbyMother.DEFAULT_MAX_PLAYERS - 1);
-            });
-        });
-
-        describe('when the lobby is full', () => {
-            it('returns zero', () => {
-                lobby.join(player2);
-                lobby.join(player3);
-
-                expect(lobby.remainingPlaces()).toBe(0);
-            });
-        });
-
-        describe('when a player leaves', () => {
-            it('inscreases the count of remaining place again', () => {
-                lobby.join(player2);
-                lobby.join(player3);
-
-                lobby.leave(player3.id);
-
-                expect(lobby.remainingPlaces()).toBe(1);
             });
         });
     });

@@ -1,11 +1,11 @@
 import { LobbyConfig } from '#matchmaking/domain/lobby/LobbyConfig/LobbyConfig';
-import { gameModeFromString } from '#game/domain/config/GameMode';
+import { GameConfigId } from '#matchmaking/domain/gameConfig/GameConfigId';
 import { InMemoryLobbyConfig } from './InMemoryLobbyConfig';
 
 export class InMemoryLobbyConfigMapper {
     static toInMemory(config: LobbyConfig): InMemoryLobbyConfig {
         return new InMemoryLobbyConfig(
-            config.mode.toString(),
+            config.getGameConfigId().value,
             config.minPlayers,
             config.maxPlayers
         );
@@ -13,7 +13,7 @@ export class InMemoryLobbyConfigMapper {
 
     static toDomain(imLobbyConfig: InMemoryLobbyConfig): LobbyConfig {
         return new LobbyConfig(
-            gameModeFromString(imLobbyConfig.mode),
+            new GameConfigId(imLobbyConfig.gameConfigId),
             imLobbyConfig.minPlayers,
             imLobbyConfig.maxPlayers
         );

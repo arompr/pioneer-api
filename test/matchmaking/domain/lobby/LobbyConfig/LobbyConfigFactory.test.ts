@@ -1,28 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import { LobbyConfigFactory } from '#matchmaking/domain/lobby/LobbyConfig/LobbyConfigFactory';
-import { GameMode } from '#game/domain/config/GameMode';
-import { GameConfigFactory } from '#game/domain/config/GameConfigFactory';
-import { UnsupportedGameModeError } from '#game/domain/config/errors/UnsupportedGameModeError';
+import { GameConfigId } from '#matchmaking/domain/gameConfig/GameConfigId';
 
-const factory = new LobbyConfigFactory(new GameConfigFactory());
+const factory = new LobbyConfigFactory();
 
 describe('LobbyConfigFactory', () => {
-    describe('createFromGameMode', () => {
-        describe('when the game mode is supported', () => {
-            it('creates a LobbyConfig with the correct mode', () => {
-                const config = factory.createFromGameMode(GameMode.BASE);
+    describe('createFromGameConfigId', () => {
+        describe('when the game config ID is provided', () => {
+            it('creates a LobbyConfig with the correct game config ID', () => {
+                const gameConfigId = new GameConfigId('game-config-id');
+                const config = factory.createFromGameConfigId(gameConfigId);
 
-                expect(config.getGameMode()).toBe(GameMode.BASE);
-            });
-        });
-
-        describe('when the game mode is not supported', () => {
-            it('throws an UnsupportedGameModeError', () => {
-                const unsupportedMode = 'nonexistent-mode' as GameMode;
-
-                expect(() => factory.createFromGameMode(unsupportedMode)).toThrow(
-                    UnsupportedGameModeError
-                );
+                expect(config.getGameConfigId()).toEqual(gameConfigId);
             });
         });
     });

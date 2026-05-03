@@ -1,6 +1,6 @@
 /** @publish */
 export type LobbyConfigWsResponse = {
-    gameMode: string;
+    gameConfigId: string;
     minPlayers: number;
     maxPlayers: number;
 };

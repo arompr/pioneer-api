@@ -17,7 +17,7 @@ import {
 } from './events';
 import { LobbyStateType } from './states/LobbyStateType';
 import { PlayerId } from '#common/domain/player/playerId/PlayerId';
-import { GameConfigId } from '#game/domain/config/GameConfigId';
+import type { GameConfigId } from '../gameConfig/GameConfigId';
 
 /**
  * Represents a matchmaking lobby.
@@ -197,39 +197,12 @@ export class Lobby extends AggregateRoot implements ILobby {
     }
 
     /**
-     * Checks if the lobby has reached or exceeded its maximum capacity.
-     *
-     * @returns {boolean} True if the lobby is full, false otherwise.
-     */
-    isFull(): boolean {
-        return this.remainingPlaces() === 0;
-    }
-
-    /**
      * Checks if the lobby is empty and can be safely deleted.
      *
      * @returns {boolean} True if the lobby is empty, false otherwise.
      */
     isEmpty(): boolean {
         return this._players.isEmpty();
-    }
-
-    /**
-     * Checks if the lobby has reached the minimum required players to start.
-     *
-     * @returns {boolean} True if the lobby has reached the minimum capacity, false otherwise.
-     */
-    hasReachedMinimum(): boolean {
-        return this._players.count >= this._config.getMinPlayers();
-    }
-
-    /**
-     * Calculates the number of available places remaining in the lobby.
-     *
-     * @returns {number} The number of players that can still join.
-     */
-    remainingPlaces(): number {
-        return Math.max(0, this._config.getMaxPlayers() - this._players.count);
     }
 
     /**
@@ -275,10 +248,12 @@ export class Lobby extends AggregateRoot implements ILobby {
      * 1. The player count must meet the minimum defined in the config.
      * 2. Every player currently in the lobby must have marked themselves as ready.
      *
-     * @returns {boolean} True if player count and readiness requirements are satisfied.
+     * @returns {boolean} True if all players are ready.
      */
     meetsRequirementsToStart(): boolean {
-        return this.hasReachedMinimum() && this._players.areAllReady();
+        // TODO: Minimum player validation should be done at use case level via GameGateway
+        // This method now only checks if all players are ready
+        return this._players.areAllReady();
     }
 
     /**
