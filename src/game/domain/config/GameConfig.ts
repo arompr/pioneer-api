@@ -7,7 +7,7 @@ import type { GameConfigId } from './GameConfigId';
  * Value object representing the configuration rules for a game mode.
  */
 export class GameConfig {
-    public readonly gameConfigId: GameConfigId;
+    public readonly id: GameConfigId;
     public readonly gameMode: GameMode;
     public readonly minPlayers: number;
     public readonly maxPlayers: number;
@@ -28,7 +28,7 @@ export class GameConfig {
         maxPlayers: number
     ) {
         this.validate(minPlayers, maxPlayers);
-        this.gameConfigId = gameConfigId;
+        this.id = gameConfigId;
         this.gameMode = gameMode;
         this.minPlayers = minPlayers;
         this.maxPlayers = maxPlayers;

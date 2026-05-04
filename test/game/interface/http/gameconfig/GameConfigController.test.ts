@@ -55,7 +55,7 @@ describe('GameConfigController', () => {
 
                 const response = controller.create(request);
 
-                expect(response.id).toBe(config.gameConfigId.value);
+                expect(response.id).toBe(config.id.value);
                 expect(response.gameMode).toBe(config.gameMode);
                 expect(response.minPlayers).toBe(config.minPlayers);
                 expect(response.maxPlayers).toBe(config.maxPlayers);
@@ -118,13 +118,13 @@ describe('GameConfigController', () => {
                     foundConfig: config,
                 });
 
-                controller.getById(config.gameConfigId.value);
+                controller.getById(config.id.value);
 
                 // Verify the ID was converted to GameConfigId and passed correctly
                 expect(mockGetUseCase.execute).toHaveBeenCalledTimes(1);
                 const callArg = (mockGetUseCase.execute as unknown as ReturnType<typeof vi.fn>).mock
                     .calls[0][0] as InstanceType<typeof GameConfigId>;
-                expect(callArg.value).toBe(config.gameConfigId.value);
+                expect(callArg.value).toBe(config.id.value);
             });
 
             it('returns a GameConfigResponse with the found config data', () => {
@@ -133,9 +133,9 @@ describe('GameConfigController', () => {
                     foundConfig: config,
                 });
 
-                const response = controller.getById(config.gameConfigId.value);
+                const response = controller.getById(config.id.value);
 
-                expect(response.id).toBe(config.gameConfigId.value);
+                expect(response.id).toBe(config.id.value);
                 expect(response.gameMode).toBe(config.gameMode);
                 expect(response.minPlayers).toBe(config.minPlayers);
                 expect(response.maxPlayers).toBe(config.maxPlayers);
@@ -147,7 +147,7 @@ describe('GameConfigController', () => {
                     foundConfig: config,
                 });
 
-                const idString = config.gameConfigId.value;
+                const idString = config.id.value;
                 controller.getById(idString);
 
                 const mockFn = mockGetUseCase.execute as unknown as ReturnType<typeof vi.fn>;
@@ -162,7 +162,7 @@ describe('GameConfigController', () => {
                     foundConfig: config,
                 });
 
-                const response = controller.getById(config.gameConfigId.value);
+                const response = controller.getById(config.id.value);
 
                 expect(response).toHaveProperty('id');
                 expect(response).toHaveProperty('gameMode');
@@ -237,7 +237,7 @@ describe('GameConfigController', () => {
                 const response = controller.create(request);
 
                 expect(response).toEqual({
-                    id: config.gameConfigId.value,
+                    id: config.id.value,
                     gameMode: config.gameMode,
                     minPlayers: 1,
                     maxPlayers: 6,

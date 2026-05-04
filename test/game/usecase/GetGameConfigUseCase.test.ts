@@ -26,7 +26,7 @@ describe('GetGameConfigUseCase', () => {
                     config
                 );
 
-                const result = useCase.execute(config.gameConfigId);
+                const result = useCase.execute(config.id);
 
                 expect(result.foundConfig).toBe(config);
             });
@@ -37,9 +37,9 @@ describe('GetGameConfigUseCase', () => {
                     config
                 );
 
-                useCase.execute(config.gameConfigId);
+                useCase.execute(config.id);
 
-                expect(mockRepository.findById).toHaveBeenCalledWith(config.gameConfigId);
+                expect(mockRepository.findById).toHaveBeenCalledWith(config.id);
                 expect(mockRepository.findById).toHaveBeenCalledTimes(1);
             });
 
@@ -49,9 +49,9 @@ describe('GetGameConfigUseCase', () => {
                     config
                 );
 
-                const result = useCase.execute(config.gameConfigId);
+                const result = useCase.execute(config.id);
 
-                expect(result.foundConfig.gameConfigId).toBe(config.gameConfigId);
+                expect(result.foundConfig.id).toBe(config.id);
                 expect(result.foundConfig.gameMode).toBe(config.gameMode);
                 expect(result.foundConfig.minPlayers).toBe(config.minPlayers);
                 expect(result.foundConfig.maxPlayers).toBe(config.maxPlayers);
@@ -63,17 +63,17 @@ describe('GetGameConfigUseCase', () => {
 
                 (mockRepository.findById as unknown as ReturnType<typeof vi.fn>).mockImplementation(
                     (id: GameConfigId) => {
-                        if (id.equals(config1.gameConfigId)) return config1;
-                        if (id.equals(config2.gameConfigId)) return config2;
+                        if (id.equals(config1.id)) return config1;
+                        if (id.equals(config2.id)) return config2;
                         return null;
                     }
                 );
 
-                const result1 = useCase.execute(config1.gameConfigId);
-                const result2 = useCase.execute(config2.gameConfigId);
+                const result1 = useCase.execute(config1.id);
+                const result2 = useCase.execute(config2.id);
 
-                expect(result1.foundConfig.gameConfigId.equals(config1.gameConfigId)).toBe(true);
-                expect(result2.foundConfig.gameConfigId.equals(config2.gameConfigId)).toBe(true);
+                expect(result1.foundConfig.id.equals(config1.id)).toBe(true);
+                expect(result2.foundConfig.id.equals(config2.id)).toBe(true);
             });
         });
 
@@ -128,7 +128,7 @@ describe('GetGameConfigUseCase', () => {
 
                 const result = useCase.execute(uuidId);
 
-                expect(result.foundConfig.gameConfigId.equals(uuidId)).toBe(true);
+                expect(result.foundConfig.id.equals(uuidId)).toBe(true);
             });
 
             it('handles simple string IDs', () => {
@@ -140,7 +140,7 @@ describe('GetGameConfigUseCase', () => {
 
                 const result = useCase.execute(simpleId);
 
-                expect(result.foundConfig.gameConfigId.equals(simpleId)).toBe(true);
+                expect(result.foundConfig.id.equals(simpleId)).toBe(true);
             });
 
             it('handles numeric string IDs', () => {
@@ -152,7 +152,7 @@ describe('GetGameConfigUseCase', () => {
 
                 const result = useCase.execute(numericId);
 
-                expect(result.foundConfig.gameConfigId.equals(numericId)).toBe(true);
+                expect(result.foundConfig.id.equals(numericId)).toBe(true);
             });
         });
 
@@ -163,7 +163,7 @@ describe('GetGameConfigUseCase', () => {
                     config
                 );
 
-                useCase.execute(config.gameConfigId);
+                useCase.execute(config.id);
 
                 expect(mockRepository.save).not.toHaveBeenCalled();
                 expect(mockRepository.delete).not.toHaveBeenCalled();

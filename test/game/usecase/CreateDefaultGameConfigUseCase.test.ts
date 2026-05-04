@@ -39,7 +39,7 @@ describe('CreateDefaultGameConfigUseCase', () => {
                 const result = useCase.execute(dto);
 
                 expect(result.createdConfig).toBeDefined();
-                expect(result.createdConfig.gameConfigId).toBeDefined();
+                expect(result.createdConfig.id).toBeDefined();
                 expect(result.createdConfig.minPlayers).toBe(3);
                 expect(result.createdConfig.maxPlayers).toBe(4);
             });
@@ -67,8 +67,8 @@ describe('CreateDefaultGameConfigUseCase', () => {
 
                 const result = useCase.execute(dto);
 
-                expect(result.createdConfig.gameConfigId.value).toBeDefined();
-                expect(result.createdConfig.gameConfigId.value.length).toBeGreaterThan(0);
+                expect(result.createdConfig.id.value).toBeDefined();
+                expect(result.createdConfig.id.value.length).toBeGreaterThan(0);
             });
 
             it('generates a unique GameConfigId for each execution', () => {
@@ -77,9 +77,7 @@ describe('CreateDefaultGameConfigUseCase', () => {
                 const result1 = useCase.execute(dto);
                 const result2 = useCase.execute(dto);
 
-                expect(result1.createdConfig.gameConfigId.value).not.toBe(
-                    result2.createdConfig.gameConfigId.value
-                );
+                expect(result1.createdConfig.id.value).not.toBe(result2.createdConfig.id.value);
             });
         });
 
@@ -112,9 +110,7 @@ describe('CreateDefaultGameConfigUseCase', () => {
                 const savedConfig = (mockRepository.save as unknown as ReturnType<typeof vi.fn>)
                     .mock.calls[0][0] as typeof result.createdConfig;
 
-                expect(savedConfig.gameConfigId.equals(result.createdConfig.gameConfigId)).toBe(
-                    true
-                );
+                expect(savedConfig.id.equals(result.createdConfig.id)).toBe(true);
                 expect(savedConfig.gameMode).toBe(result.createdConfig.gameMode);
                 expect(savedConfig.minPlayers).toBe(result.createdConfig.minPlayers);
                 expect(savedConfig.maxPlayers).toBe(result.createdConfig.maxPlayers);
@@ -130,9 +126,9 @@ describe('CreateDefaultGameConfigUseCase', () => {
                 const result3 = useCase.execute(dto);
 
                 const ids = [
-                    result1.createdConfig.gameConfigId.value,
-                    result2.createdConfig.gameConfigId.value,
-                    result3.createdConfig.gameConfigId.value,
+                    result1.createdConfig.id.value,
+                    result2.createdConfig.id.value,
+                    result3.createdConfig.id.value,
                 ];
 
                 expect(new Set(ids).size).toBe(3);

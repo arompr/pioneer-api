@@ -26,14 +26,14 @@ describe('GameConfigFactory', () => {
                 const config1 = factory.createFromGameMode(GameMode.BASE);
                 const config2 = factory.createFromGameMode(GameMode.BASE);
 
-                expect(config1.gameConfigId.value).not.toBe(config2.gameConfigId.value);
+                expect(config1.id.value).not.toBe(config2.id.value);
             });
 
             it('returns a valid GameConfig instance with all properties set', () => {
                 const config = factory.createFromGameMode(GameMode.BASE);
 
                 expect(config).toBeDefined();
-                expect(config.gameConfigId).toBeDefined();
+                expect(config.id).toBeDefined();
                 expect(config.gameMode).toBeDefined();
                 expect(config.minPlayers).toBeDefined();
                 expect(config.maxPlayers).toBeDefined();
@@ -65,15 +65,15 @@ describe('GameConfigFactory', () => {
                 const providedId = new GameConfigId('custom-id-123');
                 const config = factory.createWithId(GameMode.BASE, providedId);
 
-                expect(config.gameConfigId).toBe(providedId);
-                expect(config.gameConfigId.equals(providedId)).toBe(true);
+                expect(config.id).toBe(providedId);
+                expect(config.id.equals(providedId)).toBe(true);
             });
 
             it('uses the provided ID instead of generating a new one', () => {
                 const providedId = new GameConfigId('specific-id');
                 const config = factory.createWithId(GameMode.BASE, providedId);
 
-                expect(config.gameConfigId.value).toBe('specific-id');
+                expect(config.id.value).toBe('specific-id');
             });
 
             it('creates a GameConfig with correct player limits', () => {
@@ -89,16 +89,16 @@ describe('GameConfigFactory', () => {
             it('generates a new GameConfigId', () => {
                 const config = factory.createWithId(GameMode.BASE);
 
-                expect(config.gameConfigId).toBeDefined();
-                expect(config.gameConfigId.value).toBeDefined();
-                expect(config.gameConfigId.value.length).toBeGreaterThan(0);
+                expect(config.id).toBeDefined();
+                expect(config.id.value).toBeDefined();
+                expect(config.id.value.length).toBeGreaterThan(0);
             });
 
             it('generates unique IDs for multiple calls', () => {
                 const config1 = factory.createWithId(GameMode.BASE);
                 const config2 = factory.createWithId(GameMode.BASE);
 
-                expect(config1.gameConfigId.value).not.toBe(config2.gameConfigId.value);
+                expect(config1.id.value).not.toBe(config2.id.value);
             });
         });
 

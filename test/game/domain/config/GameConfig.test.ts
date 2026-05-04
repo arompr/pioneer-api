@@ -21,7 +21,7 @@ describe('GameConfig', () => {
                     DEFAULT_MAX_PLAYERS
                 );
 
-                expect(config.gameConfigId).toBe(DEFAULT_CONFIG_ID);
+                expect(config.id).toBe(DEFAULT_CONFIG_ID);
                 expect(config.gameMode).toBe(DEFAULT_MODE);
                 expect(config.minPlayers).toBe(DEFAULT_MIN_PLAYERS);
                 expect(config.maxPlayers).toBe(DEFAULT_MAX_PLAYERS);
@@ -35,7 +35,7 @@ describe('GameConfig', () => {
                     DEFAULT_MAX_PLAYERS
                 );
 
-                expect(config.gameConfigId.equals(DEFAULT_CONFIG_ID)).toBe(true);
+                expect(config.id.equals(DEFAULT_CONFIG_ID)).toBe(true);
             });
         });
 
@@ -48,7 +48,7 @@ describe('GameConfig', () => {
                     DEFAULT_MAX_PLAYERS
                 );
 
-                expect(config.gameConfigId).toBe(DEFAULT_CONFIG_ID);
+                expect(config.id).toBe(DEFAULT_CONFIG_ID);
                 expect(config.gameMode).toBe(DEFAULT_MODE);
                 expect(config.minPlayers).toBe(DEFAULT_MAX_PLAYERS);
                 expect(config.maxPlayers).toBe(DEFAULT_MAX_PLAYERS);
@@ -107,7 +107,7 @@ describe('GameConfig', () => {
 
         describe('gameConfigId', () => {
             it('returns the GameConfigId', () => {
-                expect(config.gameConfigId).toBe(DEFAULT_CONFIG_ID);
+                expect(config.id).toBe(DEFAULT_CONFIG_ID);
             });
         });
 
@@ -144,8 +144,8 @@ describe('GameConfig', () => {
 
         describe('readonly properties are immutable', () => {
             it('gameConfigId cannot be reassigned and remains constant', () => {
-                const firstRead = config.gameConfigId;
-                const secondRead = config.gameConfigId;
+                const firstRead = config.id;
+                const secondRead = config.id;
 
                 expect(firstRead.equals(DEFAULT_CONFIG_ID)).toBe(true);
                 expect(secondRead.equals(DEFAULT_CONFIG_ID)).toBe(true);
@@ -179,7 +179,7 @@ describe('GameConfig', () => {
             it('all properties are readonly and cannot be modified', () => {
                 // TypeScript ensures readonly at compile time.
                 // This test verifies the intended behavior: properties are constants after creation
-                expect(config.gameConfigId.equals(DEFAULT_CONFIG_ID)).toBe(true);
+                expect(config.id.equals(DEFAULT_CONFIG_ID)).toBe(true);
                 expect(config.gameMode).toBe(DEFAULT_MODE);
                 expect(config.minPlayers).toBe(DEFAULT_MIN_PLAYERS);
                 expect(config.maxPlayers).toBe(DEFAULT_MAX_PLAYERS);

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { InMemoryGameConfigRepository } from '#game/infrastructure/db/inMemory/GameConfigRepository';
+import { InMemoryGameConfigRepository } from '#game/infrastructure/db/inMemory/InMemoryGameConfigRepository';
 import { GameConfigMother } from '#test/game/domain/config/GameConfigMother';
 import { GameConfigId } from '#game/domain/config/GameConfigId';
 import { GameMode } from '#game/domain/config/GameMode';
@@ -19,7 +19,7 @@ describe('InMemoryGameConfigRepository', () => {
 
                 repository.save(config);
 
-                const found = repository.findById(config.gameConfigId);
+                const found = repository.findById(config.id);
                 expect(found).toBe(config);
             });
         });
@@ -32,8 +32,8 @@ describe('InMemoryGameConfigRepository', () => {
                 repository.save(config1);
                 repository.save(config2);
 
-                expect(repository.findById(config1.gameConfigId)).toBe(config1);
-                expect(repository.findById(config2.gameConfigId)).toBe(config2);
+                expect(repository.findById(config1.id)).toBe(config1);
+                expect(repository.findById(config2.id)).toBe(config2);
             });
         });
 
@@ -59,7 +59,7 @@ describe('InMemoryGameConfigRepository', () => {
                 const config = GameConfigMother.baseConfig();
                 repository.save(config);
 
-                const found = repository.findById(config.gameConfigId);
+                const found = repository.findById(config.id);
 
                 expect(found).toBe(config);
             });
@@ -70,9 +70,9 @@ describe('InMemoryGameConfigRepository', () => {
                 repository.save(config1);
                 repository.save(config2);
 
-                const found = repository.findById(config2.gameConfigId);
+                const found = repository.findById(config2.id);
 
-                expect(found?.gameConfigId.equals(config2.gameConfigId)).toBe(true);
+                expect(found?.id.equals(config2.id)).toBe(true);
             });
         });
 
@@ -103,9 +103,9 @@ describe('InMemoryGameConfigRepository', () => {
                 const config = GameConfigMother.baseConfig();
                 repository.save(config);
 
-                repository.delete(config.gameConfigId);
+                repository.delete(config.id);
 
-                const found = repository.findById(config.gameConfigId);
+                const found = repository.findById(config.id);
                 expect(found).toBeNull();
             });
         });
@@ -117,10 +117,10 @@ describe('InMemoryGameConfigRepository', () => {
                 repository.save(config1);
                 repository.save(config2);
 
-                repository.delete(config1.gameConfigId);
+                repository.delete(config1.id);
 
-                expect(repository.findById(config1.gameConfigId)).toBeNull();
-                expect(repository.findById(config2.gameConfigId)).toBe(config2);
+                expect(repository.findById(config1.id)).toBeNull();
+                expect(repository.findById(config2.id)).toBe(config2);
             });
         });
 
@@ -148,11 +148,11 @@ describe('InMemoryGameConfigRepository', () => {
 
                 // Create
                 repository.save(config);
-                expect(repository.findById(config.gameConfigId)).toBe(config);
+                expect(repository.findById(config.id)).toBe(config);
 
                 // Delete
-                repository.delete(config.gameConfigId);
-                expect(repository.findById(config.gameConfigId)).toBeNull();
+                repository.delete(config.id);
+                expect(repository.findById(config.id)).toBeNull();
             });
         });
 
@@ -167,8 +167,8 @@ describe('InMemoryGameConfigRepository', () => {
                 configs.forEach((config) => repository.save(config));
 
                 configs.forEach((config) => {
-                    const found = repository.findById(config.gameConfigId);
-                    expect(found?.gameConfigId.equals(config.gameConfigId)).toBe(true);
+                    const found = repository.findById(config.id);
+                    expect(found?.id.equals(config.id)).toBe(true);
                 });
 
                 expect(repository.findById(new GameConfigId('id-d'))).toBeNull();
