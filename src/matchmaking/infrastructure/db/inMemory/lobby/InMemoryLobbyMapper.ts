@@ -7,13 +7,11 @@ import { PlayerId } from '#common/domain/player/playerId/PlayerId';
 import { GameConfigId } from '#matchmaking/domain/gameConfig/GameConfigId';
 import { InMemoryPlayerMapper } from '../player/InMemoryPlayerMapper';
 import { InMemoryLobby } from './InMemoryLobby';
-import { InMemoryLobbyConfigMapper } from './lobbyConfig/InMemoryLobbyConfigMapper';
 
 export class InMemoryLobbyMapper {
     static toInMemory(lobby: LobbyAggregate): InMemoryLobby {
         return new InMemoryLobby(
             lobby.id.value,
-            InMemoryLobbyConfigMapper.toInMemory(lobby.config),
             lobby.hostId.value,
             lobby.allPlayers.map((p) => InMemoryPlayerMapper.toInMemory(p)),
             lobby.stateType,
@@ -22,7 +20,6 @@ export class InMemoryLobbyMapper {
     }
 
     static toDomain(imLobby: InMemoryLobby): Lobby {
-        const config = InMemoryLobbyConfigMapper.toDomain(imLobby.config);
         const players = new LobbyPlayers(
             imLobby.players.map((p) => InMemoryPlayerMapper.toDomain(p))
         );
@@ -33,7 +30,6 @@ export class InMemoryLobbyMapper {
 
         return new Lobby(
             new LobbyId(imLobby.id),
-            config,
             new PlayerId(imLobby.hostId),
             players,
             state,

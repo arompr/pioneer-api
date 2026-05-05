@@ -122,7 +122,6 @@ export class LobbyMother {
 
         const lobby = new Lobby(
             this.DEFAULT_LOBBY_ID,
-            this.DEFAULT_LOBBY_CONFIG,
             players[0].id,
             lobbyPlayers,
             state,

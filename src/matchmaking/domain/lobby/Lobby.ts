@@ -1,6 +1,5 @@
 import type { LobbyId } from './lobbyId/LobbyId';
 import { LobbyPlayers } from './LobbyPlayers';
-import type { LobbyConfig } from './LobbyConfig/LobbyConfig';
 import type { Player } from '../player/Player';
 import { LobbyState } from './states/LobbyState';
 import { ClosedState } from './states/ClosedState';
@@ -25,7 +24,6 @@ import type { GameConfigId } from '../gameConfig/GameConfigId';
 export class Lobby extends AggregateRoot implements ILobby {
     private readonly _id: LobbyId;
     private readonly _players: LobbyPlayers;
-    private readonly _config: LobbyConfig;
     private _hostId: PlayerId;
     private _lobbyState: LobbyState;
     private readonly _gameConfigId?: GameConfigId;
@@ -34,7 +32,6 @@ export class Lobby extends AggregateRoot implements ILobby {
      * Creates a new Lobby instance.
      *
      * @param {LobbyId} id - Unique identifier for the lobby.
-     * @param {LobbyConfig} config - The configuration containing mode and limits.
      * @param {PlayerId} hostId - The unique identifier of the lobby host.
      * @param {LobbyPlayers} players - The collection of players in the lobby.
      * @param {LobbyState} lobbyState - The current state of the lobby.
@@ -42,7 +39,6 @@ export class Lobby extends AggregateRoot implements ILobby {
      */
     constructor(
         id: LobbyId,
-        config: LobbyConfig,
         hostId: PlayerId,
         players: LobbyPlayers,
         lobbyState: LobbyState,
@@ -50,7 +46,6 @@ export class Lobby extends AggregateRoot implements ILobby {
     ) {
         super();
         this._id = id;
-        this._config = config;
         this._hostId = hostId;
         this._players = players;
         this._lobbyState = lobbyState;
@@ -65,15 +60,6 @@ export class Lobby extends AggregateRoot implements ILobby {
      */
     get id(): LobbyId {
         return this._id;
-    }
-
-    /**
-     * Gets the lobby configuration (min/max players, mode).
-     *
-     * @returns {LobbyConfig} The immutable configuration of the lobby.
-     */
-    get config(): LobbyConfig {
-        return this._config;
     }
 
     /**

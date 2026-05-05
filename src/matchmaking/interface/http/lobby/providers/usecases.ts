@@ -14,10 +14,6 @@ import { MarkPendingUseCase } from '#matchmaking/usecase/MarkPendingUseCase';
 
 export const useCaseProviders: Provider[] = [
     {
-        provide: LobbyConfigFactory,
-        useFactory: () => new LobbyConfigFactory(),
-    },
-    {
         provide: GetLobbyUseCase,
         useFactory: (lobbyRepository: LobbyRepository): GetLobbyUseCase => {
             return new GetLobbyUseCase(lobbyRepository);
@@ -29,7 +25,6 @@ export const useCaseProviders: Provider[] = [
         provide: CreateLobbyUseCase,
         useFactory: (
             lobbyRepository: LobbyRepository,
-            lobbyConfigFactory: LobbyConfigFactory,
             lobbyFactory: LobbyFactory,
             playerFactory: PlayerFactory,
             outboxService: OutboxService,
@@ -37,20 +32,12 @@ export const useCaseProviders: Provider[] = [
         ) =>
             new CreateLobbyUseCase(
                 lobbyRepository,
-                lobbyConfigFactory,
                 lobbyFactory,
                 playerFactory,
                 outboxService,
                 jwtTokenService
             ),
-        inject: [
-            LOBBY_REPOSITORY,
-            LobbyConfigFactory,
-            LobbyFactory,
-            PlayerFactory,
-            OutboxService,
-            JWT_TOKEN_SERVICE,
-        ],
+        inject: [LOBBY_REPOSITORY, LobbyFactory, PlayerFactory, OutboxService, JWT_TOKEN_SERVICE],
     },
 
     {

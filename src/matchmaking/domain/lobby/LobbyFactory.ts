@@ -18,23 +18,15 @@ export class LobbyFactory {
     /**
      * Creates a new Lobby with a host player.
      *
-     * @param {LobbyConfig} config - The configuration for the lobby.
      * @param {Player} host - The host player for the lobby.
      * @param {GameConfigId | undefined} gameConfigId - Optional game config ID association.
      * @returns {LobbyAggregate} A new lobby instance.
      */
-    create(config: LobbyConfig, host: Player, gameConfigId?: GameConfigId): LobbyAggregate {
+    create(host: Player, gameConfigId?: GameConfigId): LobbyAggregate {
         const lobbyId: LobbyId = this.lobbyIdFactory.generate();
         const players = new LobbyPlayers();
         players.add(host);
 
-        return new Lobby(
-            lobbyId,
-            config,
-            host.id,
-            players,
-            new WaitingForPlayersState(),
-            gameConfigId
-        );
+        return new Lobby(lobbyId, host.id, players, new WaitingForPlayersState(), gameConfigId);
     }
 }

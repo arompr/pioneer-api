@@ -1,13 +1,11 @@
 import { PlayerId } from '#common/domain/player/playerId/PlayerId';
 import { Player } from '../player/Player';
-import { LobbyConfig } from './LobbyConfig/LobbyConfig';
 import { LobbyId } from './lobbyId/LobbyId';
 import { LobbyStateType } from './states/LobbyStateType';
 import type { GameConfigId } from '../gameConfig/GameConfigId';
 
 export interface ILobby {
     get id(): LobbyId;
-    get config(): LobbyConfig;
     get hostId(): PlayerId;
     get stateType(): LobbyStateType;
     get gameConfigId(): GameConfigId | undefined;

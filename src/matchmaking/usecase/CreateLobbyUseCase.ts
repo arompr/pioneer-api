@@ -1,5 +1,4 @@
 import { LobbyAggregate } from '#matchmaking/domain/lobby/LobbyAggregate.type';
-import { LobbyConfigFactory } from '#matchmaking/domain/lobby/LobbyConfig/LobbyConfigFactory';
 import { LobbyFactory } from '#matchmaking/domain/lobby/LobbyFactory';
 import { LobbyRepository } from '#matchmaking/domain/lobby/LobbyRepository';
 import { Player } from '#matchmaking/domain/player/Player';
@@ -18,7 +17,6 @@ export type CreateLobbyResult = {
 export class CreateLobbyUseCase {
     constructor(
         private readonly lobbyRepository: LobbyRepository,
-        private readonly lobbyConfigFactory: LobbyConfigFactory,
         private readonly lobbyFactory: LobbyFactory,
         private readonly playerFactory: PlayerFactory,
         private readonly outboxService: OutboxService,
@@ -33,13 +31,10 @@ export class CreateLobbyUseCase {
      * @returns {CreateLobbyResult} The created lobby, host player, and JWT token
      */
     execute(dto: CreateLobbyDto): CreateLobbyResult {
-        const gameConfigId = dto.gameConfigId
-            ? new GameConfigId(dto.gameConfigId)
-            : new GameConfigId('default');
-        const lobbyConfig = this.lobbyConfigFactory.createFromGameConfigId(gameConfigId);
+        const gameConfigId = dto.gameConfigId ? new GameConfigId(dto.gameConfigId) : undefined;
         const createdHostPlayer = this.playerFactory.create(dto.hostName);
 
-        const createdLobby = this.lobbyFactory.create(lobbyConfig, createdHostPlayer, gameConfigId);
+        const createdLobby = this.lobbyFactory.create(createdHostPlayer, gameConfigId);
 
         this.lobbyRepository.save(createdLobby);
         this.outboxService.publishEvents(createdLobby);

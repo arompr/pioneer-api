@@ -29,7 +29,7 @@ export class GameConfigId {
      * @param {GameConfigId} other - The other ID to compare.
      * @returns {boolean} True if the IDs are identical.
      */
-    equals(other: GameConfigId): boolean {
-        return this._value === other._value;
+    equals(other: GameConfigId | undefined): boolean {
+        return this._value === other?._value;
     }
 }

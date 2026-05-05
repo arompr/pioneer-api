@@ -1,19 +1,12 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { Player } from '#matchmaking/domain/player/Player';
-import { LobbyConfig } from '#matchmaking/domain/lobby/LobbyConfig/LobbyConfig';
 import { GameConfigId } from '#matchmaking/domain/gameConfig/GameConfigId';
 import { LobbyIdFactory } from '#matchmaking/domain/lobby/lobbyId/LobbyIdFactory';
 import { LobbyFactory } from '#matchmaking/domain/lobby/LobbyFactory';
 import { PlayerMother } from '#test/matchmaking/domain/player/PlayerMother';
 import { LobbyAggregate } from '#matchmaking/domain/lobby/LobbyAggregate.type';
 
-const LOBBY_MIN_CAPACITY = 2;
-const LOBBY_MAX_CAPACITY = 3;
-const LOBBY_CONFIG = new LobbyConfig(
-    new GameConfigId('base'),
-    LOBBY_MIN_CAPACITY,
-    LOBBY_MAX_CAPACITY
-);
+const GAME_CONFIG_ID = new GameConfigId('base');
 const lobbyIdFactory: LobbyIdFactory = new LobbyIdFactory();
 let lobbyFactory: LobbyFactory;
 let hostPlayer: Player;
@@ -23,7 +16,7 @@ describe('LobbyFactory', () => {
     beforeEach(() => {
         lobbyFactory = new LobbyFactory(lobbyIdFactory);
         hostPlayer = PlayerMother.anyPlayer();
-        lobby = lobbyFactory.create(LOBBY_CONFIG, hostPlayer);
+        lobby = lobbyFactory.create(hostPlayer, GAME_CONFIG_ID);
     });
 
     describe('create', () => {
