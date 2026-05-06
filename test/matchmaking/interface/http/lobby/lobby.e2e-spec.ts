@@ -6,6 +6,9 @@ import request from 'supertest';
 import { App } from 'supertest/types';
 import { LobbyModule } from '#matchmaking/interface/http/lobby/lobby.module';
 import { beforeEach, describe, it, expect } from 'vitest';
+import { GameConfig } from '#game/domain/config/GameConfig';
+
+const GAME_CONFIG_ID = 'gameConfigId';
 
 describe('LobbyController e2e', () => {
     let app: INestApplication<App>;
@@ -24,7 +27,7 @@ describe('LobbyController e2e', () => {
         it('creates a lobby and returns lobby and host player', async () => {
             const response = await request(app.getHttpServer())
                 .post('/lobby')
-                .send({ hostName: 'Alice', gameMode: 'BASE' })
+                .send({ hostName: 'Alice', gameConfigId: GAME_CONFIG_ID })
                 .expect(201);
 
             expect(response.body).toMatchObject({
@@ -34,7 +37,7 @@ describe('LobbyController e2e', () => {
                     players: expect.arrayContaining([
                         expect.objectContaining({ name: 'Alice', isHost: true }),
                     ]),
-                    config: { gameMode: 'BASE' },
+                    gameConfigId: GAME_CONFIG_ID,
                 },
                 selfPlayer: {
                     id: expect.any(String),
@@ -50,7 +53,7 @@ describe('LobbyController e2e', () => {
         it('joins an existing lobby and returns updated lobby and joining player', async () => {
             const createResponse = await request(app.getHttpServer())
                 .post('/lobby')
-                .send({ hostName: 'Alice', gameMode: 'BASE' })
+                .send({ hostName: 'Alice', gameConfigId: GAME_CONFIG_ID })
                 .expect(201);
 
             const lobbyId = createResponse.body.lobby.id as string;
@@ -112,7 +115,7 @@ describe('LobbyController e2e', () => {
         it('returns the lobby by its id', async () => {
             const createResponse = await request(app.getHttpServer())
                 .post('/lobby')
-                .send({ hostName: 'Alice', gameMode: 'BASE' })
+                .send({ hostName: 'Alice', gameConfigId: GAME_CONFIG_ID })
                 .expect(201);
 
             const lobbyId = createResponse.body.lobby.id as string;
@@ -126,7 +129,7 @@ describe('LobbyController e2e', () => {
                 players: expect.arrayContaining([
                     expect.objectContaining({ name: 'Alice', isHost: true }),
                 ]),
-                config: expect.objectContaining({ gameMode: 'BASE' }),
+                gameConfigId: expect.stringMatching(GAME_CONFIG_ID),
             });
         });
     });

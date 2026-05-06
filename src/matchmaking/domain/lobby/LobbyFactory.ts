@@ -2,7 +2,6 @@ import type { GameConfigId } from '../gameConfig/GameConfigId';
 import { Player } from '../player/Player';
 import { Lobby } from './Lobby';
 import { LobbyAggregate } from './LobbyAggregate.type';
-import { LobbyConfig } from './LobbyConfig/LobbyConfig';
 import { LobbyId } from './lobbyId/LobbyId';
 import { LobbyIdFactory } from './lobbyId/LobbyIdFactory';
 import { LobbyPlayers } from './LobbyPlayers';

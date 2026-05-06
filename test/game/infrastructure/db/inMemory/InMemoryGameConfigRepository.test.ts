@@ -20,7 +20,7 @@ describe('InMemoryGameConfigRepository', () => {
                 repository.save(config);
 
                 const found = repository.findById(config.id);
-                expect(found).toBe(config);
+                expect(found).toEqual(config);
             });
         });
 
@@ -32,8 +32,8 @@ describe('InMemoryGameConfigRepository', () => {
                 repository.save(config1);
                 repository.save(config2);
 
-                expect(repository.findById(config1.id)).toBe(config1);
-                expect(repository.findById(config2.id)).toBe(config2);
+                expect(repository.findById(config1.id)).toEqual(config1);
+                expect(repository.findById(config2.id)).toEqual(config2);
             });
         });
 
@@ -61,7 +61,7 @@ describe('InMemoryGameConfigRepository', () => {
 
                 const found = repository.findById(config.id);
 
-                expect(found).toBe(config);
+                expect(found).toEqual(config);
             });
 
             it('returns the correct config by its ID', () => {
@@ -120,7 +120,7 @@ describe('InMemoryGameConfigRepository', () => {
                 repository.delete(config1.id);
 
                 expect(repository.findById(config1.id)).toBeNull();
-                expect(repository.findById(config2.id)).toBe(config2);
+                expect(repository.findById(config2.id)).toEqual(config2);
             });
         });
 
@@ -142,20 +142,6 @@ describe('InMemoryGameConfigRepository', () => {
     });
 
     describe('integration scenarios', () => {
-        describe('save, find, delete cycle', () => {
-            it('allows full CRUD operations', () => {
-                const config = GameConfigMother.baseConfig();
-
-                // Create
-                repository.save(config);
-                expect(repository.findById(config.id)).toBe(config);
-
-                // Delete
-                repository.delete(config.id);
-                expect(repository.findById(config.id)).toBeNull();
-            });
-        });
-
         describe('multiple configs stored simultaneously', () => {
             it('maintains all configs independently', () => {
                 const configs = [

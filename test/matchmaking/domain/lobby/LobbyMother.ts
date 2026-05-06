@@ -1,5 +1,4 @@
 import { Lobby } from '#matchmaking/domain/lobby/Lobby';
-import { LobbyConfig } from '#matchmaking/domain/lobby/LobbyConfig/LobbyConfig';
 import { GameConfigId } from '#matchmaking/domain/gameConfig/GameConfigId';
 import { LobbyId } from '#matchmaking/domain/lobby/lobbyId/LobbyId';
 import { LobbyPlayers } from '#matchmaking/domain/lobby/LobbyPlayers';
@@ -17,14 +16,6 @@ import { PlayerMother } from '../player/PlayerMother';
 export class LobbyMother {
     static readonly DEFAULT_LOBBY_ID = new LobbyId('lobby-id');
     static readonly DEFAULT_GAME_CONFIG_ID = new GameConfigId('game-config-id');
-    static readonly DEFAULT_MIN_PLAYERS = 3;
-    static readonly DEFAULT_MAX_PLAYERS = 4;
-
-    private static readonly DEFAULT_LOBBY_CONFIG = new LobbyConfig(
-        LobbyMother.DEFAULT_GAME_CONFIG_ID
-    );
-
-    private _gameConfigId?: GameConfigId;
 
     private constructor() {
         // Private constructor to enforce static factory methods
@@ -37,17 +28,6 @@ export class LobbyMother {
      */
     static builder(): LobbyMother {
         return new LobbyMother();
-    }
-
-    /**
-     * Sets the gameConfigId for the lobby being built.
-     *
-     * @param {GameConfigId | undefined} gameConfigId - The game config ID or undefined.
-     * @returns {LobbyMother} This builder for chaining.
-     */
-    withGameConfigId(gameConfigId: GameConfigId | undefined): LobbyMother {
-        this._gameConfigId = gameConfigId;
-        return this;
     }
 
     /**

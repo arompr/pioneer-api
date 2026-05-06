@@ -9,6 +9,8 @@ import request from 'supertest';
 import { App } from 'supertest/types';
 import { PlayerStatus } from '#matchmaking/domain/player/PlayerStatus';
 
+const GAME_CONFIG_ID = 'gameConfigId';
+
 describe('LobbyGateway (e2e)', () => {
     let app: INestApplication<App>;
     let port: number;
@@ -60,7 +62,7 @@ describe('LobbyGateway (e2e)', () => {
 
             const createLobbyResponse = await request(app.getHttpServer())
                 .post('/lobby')
-                .send({ hostName: 'Alice', gameMode: 'BASE' })
+                .send({ hostName: 'Alice', gameConfigId: GAME_CONFIG_ID })
                 .expect(201);
 
             token = createLobbyResponse.body.selfPlayer.token;
@@ -89,7 +91,7 @@ describe('LobbyGateway (e2e)', () => {
                             isHost: true,
                         }),
                     ]),
-                    config: { gameMode: 'BASE' },
+                    gameConfigId: GAME_CONFIG_ID,
                 });
             });
 
