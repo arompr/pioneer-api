@@ -1,4 +1,4 @@
-import { DomainEvent } from '#common/domain/events/DomainEvent';
+import { DomainEvent, EventPayload } from '#common/domain/events/DomainEvent';
 import { LobbyClosed } from '#matchmaking/domain/lobby/events/LobbyClosed';
 import { LobbyEventType } from '#matchmaking/domain/lobby/events/LobbyEventType';
 import { LobbyHostChanged } from '#matchmaking/domain/lobby/events/LobbyHostChanged';
@@ -9,26 +9,21 @@ import { PlayerMarkedPending } from '#matchmaking/domain/lobby/events/PlayerMark
 import { PlayerMarkedReady } from '#matchmaking/domain/lobby/events/PlayerMarkedReady';
 import { OutboxMessage } from '#matchmaking/domain/outbox/OutboxMessage';
 
-const eventFactories: Readonly<Record<string, (message: OutboxMessage) => DomainEvent>> = {
-    [LobbyEventType.PlayerJoinedLobby.value]: (message) =>
-        PlayerJoinedLobby.fromPayload(message.eventPayload),
-    [LobbyEventType.PlayerLeftLobby.value]: (message) =>
-        PlayerLeftLobby.fromPayload(message.eventPayload),
-    [LobbyEventType.LobbyClosed.value]: (message) => LobbyClosed.fromPayload(message.eventPayload),
-    [LobbyEventType.LobbyHostChanged.value]: (message) =>
-        LobbyHostChanged.fromPayload(message.eventPayload),
-    [LobbyEventType.LobbyStarted.value]: (message) =>
-        LobbyStarted.fromPayload(message.eventPayload),
-    [LobbyEventType.PlayerMarkedPending.value]: (message) =>
-        PlayerMarkedPending.fromPayload(message.eventPayload),
-    [LobbyEventType.PlayerMarkedReady.value]: (message) =>
-        PlayerMarkedReady.fromPayload(message.eventPayload),
+const eventFactories: Readonly<Record<string, (eventPayload: EventPayload) => DomainEvent>> = {
+    [LobbyEventType.PlayerJoinedLobby.value]: (payload) => PlayerJoinedLobby.fromPayload(payload),
+    [LobbyEventType.PlayerLeftLobby.value]: (payload) => PlayerLeftLobby.fromPayload(payload),
+    [LobbyEventType.LobbyClosed.value]: (payload) => LobbyClosed.fromPayload(payload),
+    [LobbyEventType.LobbyHostChanged.value]: (payload) => LobbyHostChanged.fromPayload(payload),
+    [LobbyEventType.LobbyStarted.value]: (payload) => LobbyStarted.fromPayload(payload),
+    [LobbyEventType.PlayerMarkedPending.value]: (payload) =>
+        PlayerMarkedPending.fromPayload(payload),
+    [LobbyEventType.PlayerMarkedReady.value]: (payload) => PlayerMarkedReady.fromPayload(payload),
 };
 
 /**
  * Mapper for reconstructing typed domain events from OutboxMessage instances.
  */
-export class InMemoryOutboxMessageEventMapper {
+export class OutboxMessageDomainEventMapper {
     /**
      * Converts an OutboxMessage into the corresponding typed domain event instance.
      * Falls back to a plain `{ type, payload }` object for unrecognised event types.
@@ -40,7 +35,7 @@ export class InMemoryOutboxMessageEventMapper {
         const eventFactory = eventFactories[message.eventType];
 
         if (eventFactory) {
-            return eventFactory(message);
+            return eventFactory(message.eventPayload);
         }
 
         return { type: message.eventType, payload: message.eventPayload };

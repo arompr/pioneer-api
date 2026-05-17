@@ -1,16 +1,14 @@
 import { InMemoryOutboxMessageEventMapper } from '#matchmaking/infrastructure/db/inMemory/outbox/InMemoryOutboxMessageEventMapper';
+import { LobbyClosed } from '#matchmaking/domain/lobby/events/LobbyClosed';
+import { LobbyHostChanged } from '#matchmaking/domain/lobby/events/LobbyHostChanged';
+import { LobbyStarted } from '#matchmaking/domain/lobby/events/LobbyStarted';
+import { PlayerJoinedLobby } from '#matchmaking/domain/lobby/events/PlayerJoinedLobby';
+import { PlayerLeftLobby } from '#matchmaking/domain/lobby/events/PlayerLeftLobby';
+import { PlayerMarkedPending } from '#matchmaking/domain/lobby/events/PlayerMarkedPending';
+import { PlayerMarkedReady } from '#matchmaking/domain/lobby/events/PlayerMarkedReady';
 import { LobbyEventType } from '#matchmaking/domain/lobby/events/LobbyEventType';
 import { OutboxMessage } from '#matchmaking/domain/outbox/OutboxMessage';
 import { OutboxMessageId } from '#matchmaking/domain/outbox/outboxMessageId/OutboxMessageId';
-import {
-    LobbyClosedUseCaseEvent,
-    LobbyHostChangedUseCaseEvent,
-    LobbyStartedUseCaseEvent,
-    PlayerJoinedLobbyUseCaseEvent,
-    PlayerLeftLobbyUseCaseEvent,
-    PlayerMarkedPendingUseCaseEvent,
-    PlayerMarkedReadyUseCaseEvent,
-} from '#matchmaking/usecase/events';
 import { describe, expect, it } from 'vitest';
 
 const id = new OutboxMessageId('01JH9ABCDEFGHIJK');
@@ -22,100 +20,91 @@ function makeMessage(eventType: string, eventPayload: Record<string, unknown>): 
 }
 
 describe('InMemoryOutboxMessageEventMapper', () => {
-    describe('toUseCaseEvent', () => {
+    describe('toDomainEvent', () => {
         describe('when the event type is PlayerJoinedLobby', () => {
-            it('returns a PlayerJoinedLobbyUseCaseEvent with the correct lobbyId and playerId', () => {
+            it('returns a PlayerJoinedLobby instance with the correct playerId', () => {
                 const message = makeMessage(LobbyEventType.PlayerJoinedLobby.value, {
                     playerId: 'player-1',
                 });
 
-                const event = InMemoryOutboxMessageEventMapper.toUseCaseEvent(message);
+                const event = InMemoryOutboxMessageEventMapper.toDomainEvent(message);
 
-                expect(event).toBeInstanceOf(PlayerJoinedLobbyUseCaseEvent);
-                expect((event as PlayerJoinedLobbyUseCaseEvent).lobbyId.value).toBe(aggregateId);
-                expect((event as PlayerJoinedLobbyUseCaseEvent).payload.playerId).toBe('player-1');
+                expect(event).toBeInstanceOf(PlayerJoinedLobby);
+                expect((event as PlayerJoinedLobby).payload.playerId).toBe('player-1');
             });
         });
 
         describe('when the event type is PlayerLeftLobby', () => {
-            it('returns a PlayerLeftLobbyUseCaseEvent with the correct lobbyId, playerId and wasHost', () => {
+            it('returns a PlayerLeftLobby instance with the correct playerId and wasHost', () => {
                 const message = makeMessage(LobbyEventType.PlayerLeftLobby.value, {
                     playerId: 'player-2',
                     wasHost: true,
                 });
 
-                const event = InMemoryOutboxMessageEventMapper.toUseCaseEvent(message);
+                const event = InMemoryOutboxMessageEventMapper.toDomainEvent(message);
 
-                expect(event).toBeInstanceOf(PlayerLeftLobbyUseCaseEvent);
-                expect((event as PlayerLeftLobbyUseCaseEvent).lobbyId.value).toBe(aggregateId);
-                expect((event as PlayerLeftLobbyUseCaseEvent).payload.playerId).toBe('player-2');
-                expect((event as PlayerLeftLobbyUseCaseEvent).payload.wasHost).toBe(true);
+                expect(event).toBeInstanceOf(PlayerLeftLobby);
+                expect((event as PlayerLeftLobby).payload.playerId).toBe('player-2');
+                expect((event as PlayerLeftLobby).payload.wasHost).toBe(true);
             });
         });
 
         describe('when the event type is LobbyClosed', () => {
-            it('returns a LobbyClosedUseCaseEvent with the correct lobbyId', () => {
+            it('returns a LobbyClosed instance', () => {
                 const message = makeMessage(LobbyEventType.LobbyClosed.value, {});
 
-                const event = InMemoryOutboxMessageEventMapper.toUseCaseEvent(message);
+                const event = InMemoryOutboxMessageEventMapper.toDomainEvent(message);
 
-                expect(event).toBeInstanceOf(LobbyClosedUseCaseEvent);
-                expect((event as LobbyClosedUseCaseEvent).lobbyId.value).toBe(aggregateId);
+                expect(event).toBeInstanceOf(LobbyClosed);
             });
         });
 
         describe('when the event type is LobbyHostChanged', () => {
-            it('returns a LobbyHostChangedUseCaseEvent with the correct lobbyId and newHostId', () => {
+            it('returns a LobbyHostChanged instance with the correct newHostId', () => {
                 const message = makeMessage(LobbyEventType.LobbyHostChanged.value, {
                     newHostId: 'player-3',
                 });
 
-                const event = InMemoryOutboxMessageEventMapper.toUseCaseEvent(message);
+                const event = InMemoryOutboxMessageEventMapper.toDomainEvent(message);
 
-                expect(event).toBeInstanceOf(LobbyHostChangedUseCaseEvent);
-                expect((event as LobbyHostChangedUseCaseEvent).lobbyId.value).toBe(aggregateId);
-                expect((event as LobbyHostChangedUseCaseEvent).payload.newHostId).toBe('player-3');
+                expect(event).toBeInstanceOf(LobbyHostChanged);
+                expect((event as LobbyHostChanged).payload.newHostId).toBe('player-3');
             });
         });
 
         describe('when the event type is LobbyStarted', () => {
-            it('returns a LobbyStartedUseCaseEvent with the correct lobbyId', () => {
+            it('returns a LobbyStarted instance', () => {
                 const message = makeMessage(LobbyEventType.LobbyStarted.value, {});
 
-                const event = InMemoryOutboxMessageEventMapper.toUseCaseEvent(message);
+                const event = InMemoryOutboxMessageEventMapper.toDomainEvent(message);
 
-                expect(event).toBeInstanceOf(LobbyStartedUseCaseEvent);
-                expect((event as LobbyStartedUseCaseEvent).lobbyId.value).toBe(aggregateId);
+                expect(event).toBeInstanceOf(LobbyStarted);
             });
         });
 
         describe('when the event type is PlayerMarkedPending', () => {
-            it('returns a PlayerMarkedPendingUseCaseEvent with the correct lobbyId and playerId', () => {
+            it('returns a PlayerMarkedPending instance with the correct playerId', () => {
                 const message = makeMessage(LobbyEventType.PlayerMarkedPending.value, {
                     playerId: 'player-4',
                 });
 
-                const event = InMemoryOutboxMessageEventMapper.toUseCaseEvent(message);
+                const event = InMemoryOutboxMessageEventMapper.toDomainEvent(message);
 
-                expect(event).toBeInstanceOf(PlayerMarkedPendingUseCaseEvent);
-                expect((event as PlayerMarkedPendingUseCaseEvent).lobbyId.value).toBe(aggregateId);
-                expect((event as PlayerMarkedPendingUseCaseEvent).payload.playerId).toBe(
-                    'player-4'
-                );
+                expect(event).toBeInstanceOf(PlayerMarkedPending);
+                expect((event as PlayerMarkedPending).payload.playerId).toBe('player-4');
             });
         });
 
         describe('when the event type is PlayerMarkedReady', () => {
-            it('returns a PlayerMarkedReadyUseCaseEvent with the correct lobbyId and playerId', () => {
+            it('returns a PlayerMarkedReady instance with the correct playerId', () => {
                 const message = makeMessage(LobbyEventType.PlayerMarkedReady.value, {
                     playerId: 'player-5',
                 });
 
-                const event = InMemoryOutboxMessageEventMapper.toUseCaseEvent(message);
+                const event = InMemoryOutboxMessageEventMapper.toDomainEvent(message);
 
-                expect(event).toBeInstanceOf(PlayerMarkedReadyUseCaseEvent);
-                expect((event as PlayerMarkedReadyUseCaseEvent).lobbyId.value).toBe(aggregateId);
-                expect((event as PlayerMarkedReadyUseCaseEvent).payload.playerId).toBe('player-5');
+                expect(event).toBeInstanceOf(PlayerMarkedReady);
+                expect((event as PlayerMarkedReady).payload.playerId).toBe('player-5');
             });
         });
 
@@ -124,7 +113,7 @@ describe('InMemoryOutboxMessageEventMapper', () => {
                 const payload = { someField: 'someValue' };
                 const message = makeMessage('UnknownEventType', payload);
 
-                const event = InMemoryOutboxMessageEventMapper.toUseCaseEvent(message);
+                const event = InMemoryOutboxMessageEventMapper.toDomainEvent(message);
 
                 expect(event).toEqual({ type: 'UnknownEventType', payload });
             });

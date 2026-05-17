@@ -2,8 +2,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { OutboxProcessor } from '#matchmaking/infrastructure/processors/OutboxProcessor';
 import { OutboxMessageMother } from '#test/matchmaking/domain/outbox/OutboxMessageMother';
 import { InMemoryOutboxRepository } from '#matchmaking/infrastructure/db/inMemory/outbox/InMemoryOutboxRepository';
-import { PlayerJoinedLobbyUseCaseEvent } from '#matchmaking/usecase/events/PlayerJoinedLobbyUseCaseEvent';
-import { PlayerLeftLobbyUseCaseEvent } from '#matchmaking/usecase/events/PlayerLeftLobbyUseCaseEvent';
+import { PlayerJoinedLobby } from '#matchmaking/domain/lobby/events/PlayerJoinedLobby';
+import { PlayerLeftLobby } from '#matchmaking/domain/lobby/events/PlayerLeftLobby';
 import { DomainEvent } from '#common/domain/events/DomainEvent';
 
 const EventBusMock = vi.fn(
@@ -34,9 +34,7 @@ describe('OutboxProcessor', () => {
                 repository.save(message);
 
                 expect(mockEventBus.publish).toHaveBeenCalledOnce();
-                expect(mockEventBus.publish).toHaveBeenCalledWith(
-                    expect.any(PlayerJoinedLobbyUseCaseEvent)
-                );
+                expect(mockEventBus.publish).toHaveBeenCalledWith(expect.any(PlayerJoinedLobby));
             });
         });
 
@@ -51,11 +49,11 @@ describe('OutboxProcessor', () => {
                 expect(mockEventBus.publish).toHaveBeenCalledTimes(2);
                 expect(mockEventBus.publish).toHaveBeenNthCalledWith(
                     1,
-                    expect.any(PlayerJoinedLobbyUseCaseEvent)
+                    expect.any(PlayerJoinedLobby)
                 );
                 expect(mockEventBus.publish).toHaveBeenNthCalledWith(
                     2,
-                    expect.any(PlayerLeftLobbyUseCaseEvent)
+                    expect.any(PlayerLeftLobby)
                 );
             });
         });
@@ -115,7 +113,7 @@ describe('OutboxProcessor', () => {
                 expect(mockEventBus.publish).toHaveBeenCalledTimes(3);
                 expect(mockEventBus.publish).toHaveBeenNthCalledWith(
                     3,
-                    expect.any(PlayerJoinedLobbyUseCaseEvent)
+                    expect.any(PlayerJoinedLobby)
                 );
             });
         });

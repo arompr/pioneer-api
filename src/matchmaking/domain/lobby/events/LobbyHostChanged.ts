@@ -1,4 +1,4 @@
-import { DomainEvent } from '#common/domain/events/DomainEvent';
+import { DomainEvent, EventPayload } from '#common/domain/events/DomainEvent';
 import { PlayerId } from '#common/domain/player/playerId/PlayerId';
 import { LobbyEventType } from './LobbyEventType';
 
@@ -12,5 +12,10 @@ export class LobbyHostChanged implements DomainEvent {
 
     constructor(newHostId: PlayerId) {
         this.payload = { newHostId };
+    }
+
+    static fromPayload(payload: EventPayload): LobbyHostChanged {
+        const { newHostId } = payload as LobbyHostChangedPayload;
+        return new LobbyHostChanged(newHostId);
     }
 }

@@ -118,7 +118,7 @@ export class Lobby extends AggregateRoot implements ILobby {
     leave(playerId: PlayerId): void {
         const wasHost = this.isHost(playerId);
         this._players.remove(playerId);
-        this.record(new PlayerLeftLobby(playerId, wasHost));
+        this.record(new PlayerLeftLobby(this._id, playerId, wasHost));
         if (wasHost) {
             this.reassignHost();
         }
