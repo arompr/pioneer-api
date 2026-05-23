@@ -1,8 +1,8 @@
 import { EventHandler } from '#common/usecase/EventHandler';
-import { PlayerLeftLobby } from '#matchmaking/domain/lobby/events/PlayerLeftLobby';
+import { PlayerLeftLobbyUseCaseEvent } from '#matchmaking/usecase/events/PlayerLeftLobbyUseCaseEvent';
 
-export class WsNotifyPlayerLeftLobbyHandler implements EventHandler<PlayerLeftLobby> {
-    handle(event: PlayerLeftLobby): void {
+export class WsNotifyPlayerLeftLobbyHandler implements EventHandler<PlayerLeftLobbyUseCaseEvent> {
+    handle(event: PlayerLeftLobbyUseCaseEvent): void {
         console.log(`Player ${event.payload.playerId.value} left lobby`);
     }
 }
