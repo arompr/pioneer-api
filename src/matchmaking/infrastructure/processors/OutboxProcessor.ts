@@ -47,8 +47,8 @@ export class OutboxProcessor implements OutboxObserver {
             const message = this.queue.shift()!;
 
             try {
-                const domainEvent = this.toDomainEvent(message);
-                this.eventBus.publish(domainEvent);
+                const useCaseEvent = this.toUseCaseEvent(message);
+                this.eventBus.publish(useCaseEvent);
             } catch (err) {
                 console.error(`Failed to process outbox message ${message.id.value}:`, err);
             }
@@ -57,7 +57,7 @@ export class OutboxProcessor implements OutboxObserver {
         this.isProcessing = false;
     }
 
-    private toDomainEvent(message: OutboxMessage): DomainEvent {
+    private toUseCaseEvent(message: OutboxMessage): DomainEvent {
         return InMemoryOutboxMessageEventMapper.toUseCaseEvent(message);
     }
 }

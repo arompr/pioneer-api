@@ -10,6 +10,7 @@ import { LobbyEventType } from '#matchmaking/domain/lobby/events/LobbyEventType'
 import { OutboxMessage } from '#matchmaking/domain/outbox/OutboxMessage';
 import { OutboxMessageId } from '#matchmaking/domain/outbox/outboxMessageId/OutboxMessageId';
 import { describe, expect, it } from 'vitest';
+import { PlayerId } from '#common/domain/player/playerId/PlayerId';
 
 const id = new OutboxMessageId('01JH9ABCDEFGHIJK');
 const aggregateId = 'lobby-123';
@@ -24,7 +25,7 @@ describe('InMemoryOutboxMessageEventMapper', () => {
         describe('when the event type is PlayerJoinedLobby', () => {
             it('returns a PlayerJoinedLobbyUseCaseEvent with the correct lobbyId and playerId', () => {
                 const message = makeMessage(LobbyEventType.PlayerJoinedLobby.value, {
-                    playerId: 'player-1',
+                    playerId: new PlayerId('player-1'),
                 });
 
                 const event = InMemoryOutboxMessageEventMapper.toUseCaseEvent(message);
@@ -32,7 +33,9 @@ describe('InMemoryOutboxMessageEventMapper', () => {
                 expect(event).toBeInstanceOf(PlayerJoinedLobbyUseCaseEvent);
                 expect((event as PlayerJoinedLobbyUseCaseEvent).aggregateId).toBe(aggregateId);
                 expect((event as PlayerJoinedLobbyUseCaseEvent).lobbyId.value).toBe(aggregateId);
-                expect((event as PlayerJoinedLobbyUseCaseEvent).payload.playerId).toBe('player-1');
+                expect((event as PlayerJoinedLobbyUseCaseEvent).payload.playerId.value).toBe(
+                    'player-1'
+                );
             });
         });
 
