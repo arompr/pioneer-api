@@ -38,6 +38,7 @@ src/
 │   │   ├── lobby/        # Lobby aggregate, states, config, errors, events, factories
 │   │   └── player/       # Player entity, value objects, errors, factories
 │   ├── usecase/          # Use cases (CreateLobby, GetLobby, JoinLobby, LeaveLobby)
+│   │   └── events/       # Use case events (enriched with aggregateId; published on EventBus)
 │   ├── interface/http/lobby/
 │   │   ├── filters/      # Exception filters
 │   │   │   ├── domain/   # Domain error → HTTP response filters
