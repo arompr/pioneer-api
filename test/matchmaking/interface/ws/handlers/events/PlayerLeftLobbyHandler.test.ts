@@ -29,7 +29,7 @@ describe('PlayerLeftLobbyHandler', () => {
     describe('handle', () => {
         it('get the lobby and notify lobby', () => {
             const playerLeftLobbyEvent = new PlayerLeftLobbyUseCaseEvent(
-                lobby.id.value,
+                lobby.id,
                 player.id,
                 false
             );

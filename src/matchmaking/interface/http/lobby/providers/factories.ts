@@ -8,12 +8,14 @@ import { OutboxMessageIdFactory } from '#matchmaking/domain/outbox/outboxMessage
 import { OutboxMessageFactory } from '#matchmaking/domain/outbox/OutboxMessageFactory';
 import { OutboxService } from '#matchmaking/domain/outbox/OutboxService';
 import { OUTBOX_REPOSITORY, OutboxRepository } from '#matchmaking/domain/outbox/OutboxRepository';
+import { LobbyDomainEventSerializer } from '#matchmaking/infrastructure/serializer/LobbyDomainEventSerializer';
 
 export const factoryProviders: Provider[] = [
     LobbyConfigFactory,
     PlayerIdFactory,
     LobbyIdFactory,
     OutboxMessageIdFactory,
+    LobbyDomainEventSerializer,
     {
         provide: PlayerFactory,
         useFactory: (playerIdFactory: PlayerIdFactory) => new PlayerFactory(playerIdFactory),
@@ -34,8 +36,9 @@ export const factoryProviders: Provider[] = [
         provide: OutboxService,
         useFactory: (
             outboxRepository: OutboxRepository,
-            outboxMessageFactory: OutboxMessageFactory
-        ) => new OutboxService(outboxRepository, outboxMessageFactory),
-        inject: [OUTBOX_REPOSITORY, OutboxMessageFactory],
+            outboxMessageFactory: OutboxMessageFactory,
+            serializer: LobbyDomainEventSerializer
+        ) => new OutboxService(outboxRepository, outboxMessageFactory, serializer),
+        inject: [OUTBOX_REPOSITORY, OutboxMessageFactory, LobbyDomainEventSerializer],
     },
 ];

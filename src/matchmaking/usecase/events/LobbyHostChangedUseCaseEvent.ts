@@ -3,19 +3,13 @@ import { PlayerId } from '#common/domain/player/playerId/PlayerId';
 import { LobbyId } from '#matchmaking/domain/lobby/lobbyId/LobbyId';
 import { LobbyEventType } from '#matchmaking/domain/lobby/events/LobbyEventType';
 
-export type LobbyHostChangedUseCasePayload = {
-    newHostId: PlayerId;
-};
-
 export class LobbyHostChangedUseCaseEvent implements UseCaseEvent {
-    public readonly type = LobbyEventType.LobbyHostChanged.value;
-    public readonly aggregateId: string;
+    public readonly type = LobbyEventType.LobbyHostChanged;
     public readonly lobbyId: LobbyId;
-    public readonly payload: LobbyHostChangedUseCasePayload;
+    public readonly newHostId: PlayerId;
 
-    constructor(aggregateId: string, newHostId: PlayerId) {
-        this.aggregateId = aggregateId;
-        this.lobbyId = new LobbyId(aggregateId);
-        this.payload = { newHostId };
+    constructor(lobbyId: LobbyId, newHostId: PlayerId) {
+        this.lobbyId = lobbyId;
+        this.newHostId = newHostId;
     }
 }

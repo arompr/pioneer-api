@@ -25,16 +25,16 @@ export class InMemoryOutboxMessageMapper {
     /**
      * Converts an in-memory storage model to a domain OutboxMessage.
      *
-     * @param {InMemoryOutboxMessage} imMessage - The in-memory message to convert
+     * @param {InMemoryOutboxMessage} inMemoryMessage - The in-memory message to convert
      * @returns {OutboxMessage} The domain entity
      */
-    static toDomain(imMessage: InMemoryOutboxMessage): OutboxMessage {
+    static toDomain(inMemoryMessage: InMemoryOutboxMessage): OutboxMessage {
         return new OutboxMessage(
-            new OutboxMessageId(imMessage.id),
-            imMessage.eventType,
-            imMessage.eventPayload,
-            imMessage.createdAt,
-            imMessage.aggregateId
+            new OutboxMessageId(inMemoryMessage.id),
+            inMemoryMessage.eventType,
+            inMemoryMessage.eventPayload,
+            inMemoryMessage.createdAt,
+            inMemoryMessage.aggregateId
         );
     }
 }

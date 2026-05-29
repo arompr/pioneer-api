@@ -4,6 +4,7 @@ import { OutboxService } from '#matchmaking/domain/outbox/OutboxService';
 import { OutboxMessageFactory } from '#matchmaking/domain/outbox/OutboxMessageFactory';
 import { OutboxRepository } from '#matchmaking/domain/outbox/OutboxRepository';
 import { OutboxMessageIdFactory } from '#matchmaking/domain/outbox/outboxMessageId/OutboxMessageIdFactory';
+import { LobbyDomainEventSerializer } from '#matchmaking/infrastructure/serializer/LobbyDomainEventSerializer';
 import type { Lobby } from '#matchmaking/domain/lobby/Lobby';
 import type { Player } from '#matchmaking/domain/player/Player';
 
@@ -24,7 +25,8 @@ describe('OutboxService', () => {
         const outboxMessageFactory = new OutboxMessageFactory(new OutboxMessageIdFactory());
         outboxService = new OutboxService(
             outboxRepository as OutboxRepository,
-            outboxMessageFactory
+            outboxMessageFactory,
+            new LobbyDomainEventSerializer()
         );
 
         const { lobby: createdLobby, players } = LobbyMother.baseLobby();

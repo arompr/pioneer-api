@@ -3,6 +3,6 @@ import { PlayerLeftLobbyUseCaseEvent } from '#matchmaking/usecase/events/PlayerL
 
 export class WsNotifyPlayerLeftLobbyHandler implements EventHandler<PlayerLeftLobbyUseCaseEvent> {
     handle(event: PlayerLeftLobbyUseCaseEvent): void {
-        console.log(`Player ${event.payload.playerId.value} left lobby`);
+        console.log(`Player ${event.playerId.value} left lobby`);
     }
 }

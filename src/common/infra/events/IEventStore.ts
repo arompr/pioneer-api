@@ -1,4 +1,4 @@
-import { DomainEvent } from '#common/domain/events/DomainEvent';
+import { PayloadDomainEvent, EventPayload } from '#common/domain/events/DomainEvent';
 
 export interface IEventStore {
     /**
@@ -8,12 +8,16 @@ export interface IEventStore {
      * @param expectedVersion Optional expected version for optimistic concurrency.
      * @throws {ConcurrencyError} if version mismatch.
      */
-    append(aggregateId: string, events: DomainEvent[], expectedVersion?: number): void;
+    append(
+        aggregateId: string,
+        events: PayloadDomainEvent<EventPayload>[],
+        expectedVersion?: number
+    ): void;
 
     /**
      * Gets all events for a given aggregate.
      * @param aggregateId The aggregate root identifier.
      * @returns Array of domain events.
      */
-    getEvents(aggregateId: string): DomainEvent[];
+    getEvents(aggregateId: string): PayloadDomainEvent<EventPayload>[];
 }

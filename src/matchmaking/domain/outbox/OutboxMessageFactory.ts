@@ -1,10 +1,10 @@
-import { DomainEvent } from '#common/domain/events/DomainEvent';
+import { EventPayload } from '#common/domain/events/DomainEvent';
 import { OutboxMessage } from './OutboxMessage';
 import { OutboxMessageId } from './outboxMessageId/OutboxMessageId';
 import { OutboxMessageIdFactory } from './outboxMessageId/OutboxMessageIdFactory';
 
 /**
- * Factory responsible for creating OutboxMessage instances from domain events.
+ * Factory responsible for creating OutboxMessage instances.
  */
 export class OutboxMessageFactory {
     private readonly outboxMessageIdFactory: OutboxMessageIdFactory;
@@ -14,16 +14,17 @@ export class OutboxMessageFactory {
     }
 
     /**
-     * Creates an OutboxMessage from a domain event.
+     * Creates an OutboxMessage from a serialized event.
      *
-     * @param {DomainEvent} event - The domain event to convert
+     * @param {string} eventType - The type identifier of the domain event
      * @param {string} aggregateId - The ID of the aggregate that generated the event
+     * @param {EventPayload} payload - The serialized primitive payload
      * @returns {OutboxMessage} A new OutboxMessage instance
      */
-    fromDomainEvent(event: DomainEvent, aggregateId: string): OutboxMessage {
+    create(eventType: string, aggregateId: string, payload: EventPayload): OutboxMessage {
         const id: OutboxMessageId = this.outboxMessageIdFactory.generate();
         const createdAt = new Date();
 
-        return new OutboxMessage(id, event.type, event.payload, createdAt, aggregateId);
+        return new OutboxMessage(id, eventType, payload, createdAt, aggregateId);
     }
 }

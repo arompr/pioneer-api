@@ -1,14 +1,11 @@
-/**
- * Value Object representing the type of a lobby domain event.
- */
-export class LobbyEventType {
-    static readonly PlayerJoinedLobby = new LobbyEventType('PlayerJoinedLobby');
-    static readonly PlayerLeftLobby = new LobbyEventType('PlayerLeftLobby');
-    static readonly LobbyClosed = new LobbyEventType('LobbyClosed');
-    static readonly LobbyHostChanged = new LobbyEventType('LobbyHostChanged');
-    static readonly LobbyStarted = new LobbyEventType('LobbyStarted');
-    static readonly PlayerMarkedPending = new LobbyEventType('PlayerMarkedPending');
-    static readonly PlayerMarkedReady = new LobbyEventType('PlayerMarkedReady');
+export const LobbyEventType = {
+    PlayerJoinedLobby: 'PlayerJoinedLobby',
+    PlayerLeftLobby: 'PlayerLeftLobby',
+    LobbyClosed: 'LobbyClosed',
+    LobbyHostChanged: 'LobbyHostChanged',
+    LobbyStarted: 'LobbyStarted',
+    PlayerMarkedPending: 'PlayerMarkedPending',
+    PlayerMarkedReady: 'PlayerMarkedReady',
+} as const;
 
-    private constructor(public readonly value: string) {}
-}
+export type LobbyEventType = keyof typeof LobbyEventType;

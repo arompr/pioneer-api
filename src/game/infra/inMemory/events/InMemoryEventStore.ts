@@ -1,4 +1,4 @@
-import { DomainEvent, EventPayload } from '#common/domain/events/DomainEvent';
+import { PayloadDomainEvent, EventPayload } from '#common/domain/events/DomainEvent';
 import { IEventStore } from '#common/infra/events/IEventStore';
 import { InMemoryEvent } from './InMemoryEvent';
 import { ConcurrencyError } from './ConcurrencyError';
@@ -13,7 +13,7 @@ export class InMemoryEventStore implements IEventStore {
 
     append(
         aggregateId: string,
-        events: DomainEvent<EventPayload>[],
+        events: PayloadDomainEvent<EventPayload>[],
         expectedVersion?: number
     ): void {
         const entry = this.store.get(aggregateId);
@@ -38,7 +38,7 @@ export class InMemoryEventStore implements IEventStore {
         }
     }
 
-    getEvents(aggregateId: string): DomainEvent<EventPayload>[] {
+    getEvents(aggregateId: string): PayloadDomainEvent<EventPayload>[] {
         const entry = this.store.get(aggregateId);
         return entry ? [...entry.events] : [];
     }

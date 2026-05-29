@@ -10,7 +10,6 @@ import { LobbyEventType } from '#matchmaking/domain/lobby/events/LobbyEventType'
 import { OutboxMessage } from '#matchmaking/domain/outbox/OutboxMessage';
 import { OutboxMessageId } from '#matchmaking/domain/outbox/outboxMessageId/OutboxMessageId';
 import { describe, expect, it } from 'vitest';
-import { PlayerId } from '#common/domain/player/playerId/PlayerId';
 
 const id = new OutboxMessageId('01JH9ABCDEFGHIJK');
 const aggregateId = 'lobby-123';
@@ -24,24 +23,22 @@ describe('InMemoryOutboxMessageEventMapper', () => {
     describe('toUseCaseEvent', () => {
         describe('when the event type is PlayerJoinedLobby', () => {
             it('returns a PlayerJoinedLobbyUseCaseEvent with the correct lobbyId and playerId', () => {
-                const message = makeMessage(LobbyEventType.PlayerJoinedLobby.value, {
-                    playerId: new PlayerId('player-1'),
+                const message = makeMessage(LobbyEventType.PlayerJoinedLobby, {
+                    playerId: 'player-1',
                 });
 
                 const event = InMemoryOutboxMessageEventMapper.toUseCaseEvent(message);
 
                 expect(event).toBeInstanceOf(PlayerJoinedLobbyUseCaseEvent);
-                expect((event as PlayerJoinedLobbyUseCaseEvent).aggregateId).toBe(aggregateId);
-                expect((event as PlayerJoinedLobbyUseCaseEvent).lobbyId.value).toBe(aggregateId);
-                expect((event as PlayerJoinedLobbyUseCaseEvent).payload.playerId.value).toBe(
-                    'player-1'
-                );
+                const joined = event as PlayerJoinedLobbyUseCaseEvent;
+                expect(joined.lobbyId.value).toBe(aggregateId);
+                expect(joined.playerId.value).toBe('player-1');
             });
         });
 
         describe('when the event type is PlayerLeftLobby', () => {
             it('returns a PlayerLeftLobbyUseCaseEvent with the correct lobbyId, playerId and wasHost', () => {
-                const message = makeMessage(LobbyEventType.PlayerLeftLobby.value, {
+                const message = makeMessage(LobbyEventType.PlayerLeftLobby, {
                     playerId: 'player-2',
                     wasHost: true,
                 });
@@ -49,93 +46,89 @@ describe('InMemoryOutboxMessageEventMapper', () => {
                 const event = InMemoryOutboxMessageEventMapper.toUseCaseEvent(message);
 
                 expect(event).toBeInstanceOf(PlayerLeftLobbyUseCaseEvent);
-                expect((event as PlayerLeftLobbyUseCaseEvent).aggregateId).toBe(aggregateId);
-                expect((event as PlayerLeftLobbyUseCaseEvent).lobbyId.value).toBe(aggregateId);
-                expect((event as PlayerLeftLobbyUseCaseEvent).payload.playerId).toBe('player-2');
-                expect((event as PlayerLeftLobbyUseCaseEvent).payload.wasHost).toBe(true);
+                const left = event as PlayerLeftLobbyUseCaseEvent;
+                expect(left.lobbyId.value).toBe(aggregateId);
+                expect(left.playerId.value).toBe('player-2');
+                expect(left.wasHost).toBe(true);
             });
         });
 
         describe('when the event type is LobbyClosed', () => {
             it('returns a LobbyClosedUseCaseEvent with the correct lobbyId', () => {
-                const message = makeMessage(LobbyEventType.LobbyClosed.value, {});
+                const message = makeMessage(LobbyEventType.LobbyClosed, {});
 
                 const event = InMemoryOutboxMessageEventMapper.toUseCaseEvent(message);
 
                 expect(event).toBeInstanceOf(LobbyClosedUseCaseEvent);
-                expect((event as LobbyClosedUseCaseEvent).aggregateId).toBe(aggregateId);
-                expect((event as LobbyClosedUseCaseEvent).lobbyId.value).toBe(aggregateId);
+                const closed = event as LobbyClosedUseCaseEvent;
+                expect(closed.lobbyId.value).toBe(aggregateId);
             });
         });
 
         describe('when the event type is LobbyHostChanged', () => {
             it('returns a LobbyHostChangedUseCaseEvent with the correct lobbyId and newHostId', () => {
-                const message = makeMessage(LobbyEventType.LobbyHostChanged.value, {
+                const message = makeMessage(LobbyEventType.LobbyHostChanged, {
                     newHostId: 'player-3',
                 });
 
                 const event = InMemoryOutboxMessageEventMapper.toUseCaseEvent(message);
 
                 expect(event).toBeInstanceOf(LobbyHostChangedUseCaseEvent);
-                expect((event as LobbyHostChangedUseCaseEvent).aggregateId).toBe(aggregateId);
-                expect((event as LobbyHostChangedUseCaseEvent).payload.newHostId).toBe('player-3');
+                const hostChanged = event as LobbyHostChangedUseCaseEvent;
+                expect(hostChanged.lobbyId.value).toBe(aggregateId);
+                expect(hostChanged.newHostId.value).toBe('player-3');
             });
         });
 
         describe('when the event type is LobbyStarted', () => {
             it('returns a LobbyStartedUseCaseEvent with the correct lobbyId', () => {
-                const message = makeMessage(LobbyEventType.LobbyStarted.value, {});
+                const message = makeMessage(LobbyEventType.LobbyStarted, {});
 
                 const event = InMemoryOutboxMessageEventMapper.toUseCaseEvent(message);
 
                 expect(event).toBeInstanceOf(LobbyStartedUseCaseEvent);
-                expect((event as LobbyStartedUseCaseEvent).aggregateId).toBe(aggregateId);
-                expect((event as LobbyStartedUseCaseEvent).lobbyId.value).toBe(aggregateId);
+                const started = event as LobbyStartedUseCaseEvent;
+                expect(started.lobbyId.value).toBe(aggregateId);
             });
         });
 
         describe('when the event type is PlayerMarkedPending', () => {
             it('returns a PlayerMarkedPendingUseCaseEvent with the correct lobbyId and playerId', () => {
-                const message = makeMessage(LobbyEventType.PlayerMarkedPending.value, {
+                const message = makeMessage(LobbyEventType.PlayerMarkedPending, {
                     playerId: 'player-4',
                 });
 
                 const event = InMemoryOutboxMessageEventMapper.toUseCaseEvent(message);
 
                 expect(event).toBeInstanceOf(PlayerMarkedPendingUseCaseEvent);
-                expect((event as PlayerMarkedPendingUseCaseEvent).aggregateId).toBe(aggregateId);
-                expect((event as PlayerMarkedPendingUseCaseEvent).payload.playerId).toBe(
-                    'player-4'
-                );
+                const pending = event as PlayerMarkedPendingUseCaseEvent;
+                expect(pending.lobbyId.value).toBe(aggregateId);
+                expect(pending.playerId.value).toBe('player-4');
             });
         });
 
         describe('when the event type is PlayerMarkedReady', () => {
             it('returns a PlayerMarkedReadyUseCaseEvent with the correct lobbyId and playerId', () => {
-                const message = makeMessage(LobbyEventType.PlayerMarkedReady.value, {
+                const message = makeMessage(LobbyEventType.PlayerMarkedReady, {
                     playerId: 'player-5',
                 });
 
                 const event = InMemoryOutboxMessageEventMapper.toUseCaseEvent(message);
 
                 expect(event).toBeInstanceOf(PlayerMarkedReadyUseCaseEvent);
-                expect((event as PlayerMarkedReadyUseCaseEvent).aggregateId).toBe(aggregateId);
-                expect((event as PlayerMarkedReadyUseCaseEvent).payload.playerId).toBe('player-5');
+                const ready = event as PlayerMarkedReadyUseCaseEvent;
+                expect(ready.lobbyId.value).toBe(aggregateId);
+                expect(ready.playerId.value).toBe('player-5');
             });
         });
 
         describe('when the event type is unrecognised', () => {
-            it('returns a plain object with type, payload and aggregateId', () => {
-                const payload = { someField: 'someValue' };
-                const message = makeMessage('UnknownEventType', payload);
+            it('throws an error', () => {
+                const message = makeMessage('UnknownEventType', { someField: 'someValue' });
 
-                const event = InMemoryOutboxMessageEventMapper.toUseCaseEvent(message);
-
-                expect(event).toEqual({
-                    type: 'UnknownEventType',
-                    payload,
-                    aggregateId,
-                });
+                expect(() => InMemoryOutboxMessageEventMapper.toUseCaseEvent(message)).toThrow(
+                    'Unknown event type: UnknownEventType'
+                );
             });
         });
     });

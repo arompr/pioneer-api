@@ -1,4 +1,4 @@
-import { DomainEvent, EventPayload } from '#common/domain/events/DomainEvent';
+import { PayloadDomainEvent, EventPayload } from '#common/domain/events/DomainEvent';
 import { InMemoryEvent } from './InMemoryEvent';
 
 /**
@@ -11,14 +11,14 @@ export class InMemoryEventMapper {
     /**
      * Converts a domain event to an InMemoryEvent for persistence.
      *
-     * @param {DomainEvent<EventPayload>} event - The domain event to convert.
+     * @param {PayloadDomainEvent<EventPayload>} event - The domain event to convert.
      * @param {string} aggregateId - The aggregate root identifier.
      * @param {number} sequence - The sequence number of this event in the aggregate's stream.
      * @returns {InMemoryEvent} The persisted event representation.
      */
     static toInMemoryEvent(
         eventId: string,
-        event: DomainEvent<EventPayload>,
+        event: PayloadDomainEvent<EventPayload>,
         aggregateId: string,
         sequence: number
     ): InMemoryEvent {
