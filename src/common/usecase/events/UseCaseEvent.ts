@@ -1,8 +1,10 @@
 import { DomainEvent } from '#common/domain/events/DomainEvent';
 
 /**
- * Marker type for all use case events.
- * Use case events are produced by the outbox-to-eventbus pipeline.
- * Each concrete event carries its own typed aggregate identifier (e.g. lobbyId).
+ * Marker interface for all use case events.
+ * Use case events are produced by the outbox-to-eventbus pipeline
+ * and carry the aggregate identifier they originated from.
  */
-export type UseCaseEvent = DomainEvent;
+export interface UseCaseEvent extends DomainEvent {
+    readonly aggregateId: string;
+}
