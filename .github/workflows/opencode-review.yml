@@ -22,6 +22,7 @@ jobs:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
                   model: qwen/qwen2.5-72b-instruct
+                  use_github_token: true
                   prompt: |
                       Review this pull request:
                       - Check for code quality issues
