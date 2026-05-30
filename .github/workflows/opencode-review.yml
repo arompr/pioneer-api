@@ -16,6 +16,10 @@ jobs:
 
         steps:
             - uses: actions/checkout@v6
+            - name: Debug token
+              run: |
+                  echo "Token length:"
+                  echo ${#GITHUB_TOKEN}
 
             - name: Test if GitHub Actions can comment
               run: |
