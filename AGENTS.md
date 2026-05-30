@@ -73,16 +73,16 @@ Defined in `package.json` — **always use these** instead of relative imports:
 
 ### Slice-Specific Architecture
 
-- **Matchmaking**: See [.claude/skills/matchmaking/SKILL.md](./.claude/skills/matchmaking/SKILL.md) for event-based aggregate pattern with state management
-- **Game**: See [.claude/skills/game/SKILL.md](./.claude/skills/game/SKILL.md) for full event sourcing patterns
+- **Matchmaking**: See [.agents/skills/matchmaking/SKILL.md](./.claude/skills/matchmaking/SKILL.md) for event-based aggregate pattern with state management
+- **Game**: See [.agents/skills/game/SKILL.md](./.claude/skills/game/SKILL.md) for full event sourcing patterns
 
 ## Domain Rules
 
 ### Entities, Value Objects, and Factories
 
 - Entities encapsulate invariants. **Domain business rules and validation are split by concern:**
-    - **Data validation** (in constructors): Technical constraints that ensure values are well-formed (e.g., "a number must be positive", "a string can't be empty"). These enforce the type's inherent properties.
-    - **Domain business rules** (in factories): Rules that enforce domain logic and concepts interacting (e.g., "a lobby can't start without 2+ players", "a player can't join a full lobby"). Factories encapsulate creation logic with business rule validation and throw domain errors on violation.
+  - **Data validation** (in constructors): Technical constraints that ensure values are well-formed (e.g., "a number must be positive", "a string can't be empty"). These enforce the type's inherent properties.
+  - **Domain business rules** (in factories): Rules that enforce domain logic and concepts interacting (e.g., "a lobby can't start without 2+ players", "a player can't join a full lobby"). Factories encapsulate creation logic with business rule validation and throw domain errors on violation.
 - Constructors assume valid input (data validation already passed); factories are responsible for business rule validation
 - Private fields with public accessor methods — no bare setters
 - **Value objects** are immutable with `equals()` for comparison (e.g., `PlayerId`, `LobbyId`, `HexCoordinate`)
