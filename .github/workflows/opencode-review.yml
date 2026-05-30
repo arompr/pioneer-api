@@ -16,8 +16,6 @@ jobs:
 
         steps:
             - uses: actions/checkout@v6
-              with:
-                  persist-credentials: false
 
             - name: Test if GitHub Actions can comment
               run: |
