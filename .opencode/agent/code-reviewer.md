@@ -1,8 +1,7 @@
 ---
 name: code-reviewer
 description: Reviews code for quality and best practices
-model: opencode/minimax-m2.7
-mode: primary
+mode: subagent
 temperature: 0.1
 permission:
     edit: deny

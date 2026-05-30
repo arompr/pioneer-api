@@ -1,0 +1,20 @@
+{
+    "$schema": "https://opencode.ai/config.json",
+    "agent": {
+        "orchestrator": {
+            "model": "opencode/minimax-m2.7",
+        },
+        "code-reviewer": {
+            "model": "opencode/minimax-m2.7",
+        },
+        "coder-nano": {
+            "model": "opencode/gpt-5-nano",
+        },
+        "coder-medium": {
+            "model": "opencode/minimax-m2.7",
+        },
+        "coder-large": {
+            "model": "opencode/qwen3.6-plus",
+        },
+    },
+}
