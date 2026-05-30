@@ -6,6 +6,7 @@
 export abstract class DomainError extends Error {
     protected constructor(message: string) {
         super(message);
+        const test = 'this is a test';
         this.name = this.constructor.name;
     }
 }
