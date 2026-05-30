@@ -8,7 +8,8 @@ jobs:
     review:
         runs-on: ubuntu-latest
         permissions:
-            contents: read
+            id-token: write
+            contents: write
             pull-requests: write
             issues: write
         steps:
@@ -21,7 +22,7 @@ jobs:
                   GITHUB_TOKEN: ${{ github.token }}
               with:
                   model: qwen/qwen2.5-72b-instruct
-                  # use_github_token: true
+                  use_github_token: true
                   prompt: |
                       Review this pull request:
                       - Check for code quality issues
