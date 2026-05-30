@@ -1,5 +1,21 @@
 # AGENTS.md - Pioneer API
 
+## CRITICAL: GitHub PR Comment Workflow
+
+When responding to `/oc` or `/opencode` on **pull requests** (including PR review comments):
+
+1. **NEVER commit directly to the current PR branch** — the infrastructure auto-pushes to it
+2. **ALWAYS create a new sub-branch** first: `git checkout -b opencode/fix-{PR#}-{desc}-{timestamp}`
+3. **Push the new branch**: `git push -u origin HEAD`
+4. **Create a PR targeting the original PR's head branch** using `gh pr create --base {original-head-branch} --head HEAD`
+5. In the PR body, reference the original: `This PR addresses review comment on PR #{original}`
+
+Example branch name: `opencode/fix-42-add-validation-20260530-143022`
+
+When responding on **issues**: use the default behavior (new branch → PR to default branch).
+
+---
+
 ## Overview
 
 Pioneer API is a Node.js 24 + TypeScript + NestJS backend for a multiplayer Catan-like game with matchmaking and hex-based gameplay.
@@ -82,8 +98,8 @@ Defined in `package.json` — **always use these** instead of relative imports:
 ### Entities, Value Objects, and Factories
 
 - Entities encapsulate invariants. **Domain business rules and validation are split by concern:**
-  - **Data validation** (in constructors): Technical constraints that ensure values are well-formed (e.g., "a number must be positive", "a string can't be empty"). These enforce the type's inherent properties.
-  - **Domain business rules** (in factories): Rules that enforce domain logic and concepts interacting (e.g., "a lobby can't start without 2+ players", "a player can't join a full lobby"). Factories encapsulate creation logic with business rule validation and throw domain errors on violation.
+    - **Data validation** (in constructors): Technical constraints that ensure values are well-formed (e.g., "a number must be positive", "a string can't be empty"). These enforce the type's inherent properties.
+    - **Domain business rules** (in factories): Rules that enforce domain logic and concepts interacting (e.g., "a lobby can't start without 2+ players", "a player can't join a full lobby"). Factories encapsulate creation logic with business rule validation and throw domain errors on violation.
 - Constructors assume valid input (data validation already passed); factories are responsible for business rule validation
 - Private fields with public accessor methods — no bare setters
 - **Value objects** are immutable with `equals()` for comparison (e.g., `PlayerId`, `LobbyId`, `HexCoordinate`)
