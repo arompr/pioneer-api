@@ -1,8 +1,8 @@
 import { DomainEvent } from '#common/domain/events/DomainEvent';
 
 /**
- * Use case events share the DomainEvent shape but are conceptually distinct
- * from pure domain events. Defining it as an interface enforces a clearer
- * separation and allows future extensions without conflating with DomainEvent.
+ * Marker type for all use case events.
+ * Use case events are produced by the outbox-to-eventbus pipeline.
+ * Each concrete event carries its own typed aggregate identifier (e.g. lobbyId).
  */
-export interface UseCaseEvent extends DomainEvent {}
+export type UseCaseEvent = DomainEvent;

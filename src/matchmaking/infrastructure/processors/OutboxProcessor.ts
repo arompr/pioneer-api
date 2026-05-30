@@ -2,7 +2,7 @@ import { InMemoryOutboxMessageEventMapper } from '../db/inMemory/outbox/InMemory
 import { OutboxMessage } from '#matchmaking/domain/outbox/OutboxMessage';
 import { OutboxObserver } from '#matchmaking/domain/outbox/OutboxObserver';
 import { OutboxRepository } from '#matchmaking/domain/outbox/OutboxRepository';
-import { UseCaseEvent } from '#common/usecase/events/UseCaseEvent';
+import { DomainEvent } from '#common/domain/events/DomainEvent';
 import { EventBus } from '#common/usecase/EventBus';
 
 /**
@@ -43,27 +43,21 @@ export class OutboxProcessor implements OutboxObserver {
      * and naturally picked up before the loop ends.
      */
     private processQueue(): void {
-        // Process messages from the head of the queue, defer deletion until success
         while (this.queue.length > 0) {
-            const message = this.queue[0]; // peek without removing yet
+            const message = this.queue.shift()!;
 
             try {
                 const useCaseEvent = this.toUseCaseEvent(message);
-                this.eventBus.publish(useCaseEvent as UseCaseEvent);
-                // On success, remove from queue and delete from repository
-                this.queue.shift();
-                this.outboxRepository.delete(message.id);
+                this.eventBus.publish(useCaseEvent);
             } catch (err) {
                 console.error(`Failed to process outbox message ${message.id.value}:`, err);
-                // Stop processing further messages to avoid losing unprocessed items
-                break;
             }
         }
 
         this.isProcessing = false;
     }
 
-    private toUseCaseEvent(message: OutboxMessage): UseCaseEvent {
+    private toUseCaseEvent(message: OutboxMessage): DomainEvent {
         return InMemoryOutboxMessageEventMapper.toUseCaseEvent(message);
     }
 }
