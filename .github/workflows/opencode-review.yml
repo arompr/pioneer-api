@@ -21,9 +21,8 @@ jobs:
                   OPENCODE_LICENSE_KEY: ${{ secrets.OPENCODE_LICENSE_KEY }}
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
-                  provider: opencode
                   model: qwen/qwen2.5-72b-instruct
-                  agent: backend-reviewer
+                  use_github_token: true
                   prompt: |
                       Review this pull request:
                       - Check for code quality issues
