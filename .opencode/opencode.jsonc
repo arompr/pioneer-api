@@ -16,5 +16,8 @@
         "coder-large": {
             "model": "opencode/qwen3.6-plus",
         },
+        "pr-review-fixer": {
+            "model": "opencode/minimax-m2.7",
+        },
     },
 }
