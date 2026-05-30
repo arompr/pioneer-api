@@ -36,11 +36,9 @@ jobs:
             - uses: anomalyco/opencode/github@latest
               env:
                   OPENCODE_LICENSE_KEY: ${{ secrets.OPENCODE_LICENSE_KEY }}
-                  GITHUB_TOKEN: ${{ github.token }}
               with:
                   model: anthropic/claude-sonnet-4-20250514
                   share: false
-                  use_github_token: true
                   prompt: |
                       Review this pull request:
                       - Check for code quality issues
