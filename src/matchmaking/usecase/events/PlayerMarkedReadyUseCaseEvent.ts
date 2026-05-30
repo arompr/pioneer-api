@@ -5,12 +5,10 @@ import { LobbyEventType } from '#matchmaking/domain/lobby/events/LobbyEventType'
 
 export class PlayerMarkedReadyUseCaseEvent implements UseCaseEvent {
     public readonly type = LobbyEventType.PlayerMarkedReady;
-    public readonly aggregateId: string;
     public readonly lobbyId: LobbyId;
     public readonly playerId: PlayerId;
 
-    constructor(aggregateId: string, lobbyId: LobbyId, playerId: PlayerId) {
-        this.aggregateId = aggregateId;
+    constructor(lobbyId: LobbyId, playerId: PlayerId) {
         this.lobbyId = lobbyId;
         this.playerId = playerId;
     }

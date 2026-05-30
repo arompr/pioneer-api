@@ -23,7 +23,6 @@ import {
 const toPlayerJoinedLobbyEvent = (message: OutboxMessage): PlayerJoinedLobbyUseCaseEvent => {
     const { playerId } = message.eventPayload as PlayerJoinedLobbyPayload;
     return new PlayerJoinedLobbyUseCaseEvent(
-        message.aggregateId,
         new LobbyId(message.aggregateId),
         new PlayerId(playerId)
     );
@@ -32,7 +31,6 @@ const toPlayerJoinedLobbyEvent = (message: OutboxMessage): PlayerJoinedLobbyUseC
 const toPlayerLeftLobbyEvent = (message: OutboxMessage): PlayerLeftLobbyUseCaseEvent => {
     const { playerId, wasHost } = message.eventPayload as PlayerLeftLobbyPayload;
     return new PlayerLeftLobbyUseCaseEvent(
-        message.aggregateId,
         new LobbyId(message.aggregateId),
         new PlayerId(playerId),
         wasHost
@@ -40,24 +38,22 @@ const toPlayerLeftLobbyEvent = (message: OutboxMessage): PlayerLeftLobbyUseCaseE
 };
 
 const toLobbyClosedEvent = (message: OutboxMessage): LobbyClosedUseCaseEvent =>
-    new LobbyClosedUseCaseEvent(message.aggregateId, new LobbyId(message.aggregateId));
+    new LobbyClosedUseCaseEvent(new LobbyId(message.aggregateId));
 
 const toLobbyHostChangedEvent = (message: OutboxMessage): LobbyHostChangedUseCaseEvent => {
     const { newHostId } = message.eventPayload as LobbyHostChangedPayload;
     return new LobbyHostChangedUseCaseEvent(
-        message.aggregateId,
         new LobbyId(message.aggregateId),
         new PlayerId(newHostId)
     );
 };
 
 const toLobbyStartedEvent = (message: OutboxMessage): LobbyStartedUseCaseEvent =>
-    new LobbyStartedUseCaseEvent(message.aggregateId, new LobbyId(message.aggregateId));
+    new LobbyStartedUseCaseEvent(new LobbyId(message.aggregateId));
 
 const toPlayerMarkedPendingEvent = (message: OutboxMessage): PlayerMarkedPendingUseCaseEvent => {
     const { playerId } = message.eventPayload as PlayerMarkedPendingPayload;
     return new PlayerMarkedPendingUseCaseEvent(
-        message.aggregateId,
         new LobbyId(message.aggregateId),
         new PlayerId(playerId)
     );
@@ -66,7 +62,6 @@ const toPlayerMarkedPendingEvent = (message: OutboxMessage): PlayerMarkedPending
 const toPlayerMarkedReadyEvent = (message: OutboxMessage): PlayerMarkedReadyUseCaseEvent => {
     const { playerId } = message.eventPayload as PlayerMarkedReadyPayload;
     return new PlayerMarkedReadyUseCaseEvent(
-        message.aggregateId,
         new LobbyId(message.aggregateId),
         new PlayerId(playerId)
     );
