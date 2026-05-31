@@ -97,3 +97,8 @@ Return a concise summary to the user: new branch name, new PR URL, files changed
 - NEVER modify `.opencode/rules/github-pr-workflow.md`.
 - ALWAYS create the new PR with `--base` set to the original PR's **head** branch.
 - ALWAYS include the literal line `This PR addresses a review comment on PR #<original>` in the new PR body.
+
+## Safety Guards
+
+- **When in doubt, ask.** If unsure whether an action deviates from this workflow (e.g., tempted to commit directly to the PR branch, unsure about branch naming, unsure about comment matching), stop and ask the user for input before proceeding.
+- **No silent deviations.** Any departure from the prescribed steps — even if seemingly harmless — requires explicit user confirmation first. If no instruction covers the situation, ask.

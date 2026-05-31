@@ -14,6 +14,7 @@ This skill operationalizes `.opencode/rules/github-pr-workflow.md` for the local
 - NEVER skip git hooks (no `--no-verify`).
 - Abort with a clear message if the working tree is dirty — ask the user to stash or commit first.
 - Abort if no PR is found for the current branch.
+- **When in doubt, ask.** If unsure whether an action deviates from this workflow (e.g., tempted to commit directly to the PR branch, unsure about branch naming, unsure about comment matching), stop and ask the user for input before proceeding. No silent deviations.
 
 ### Confirmation Gates
 
@@ -54,7 +55,7 @@ Use `gh api` and the repo from `gh repo view --json nameWithOwner -q .nameWithOw
 3. **Review summaries** (for context only):
    `gh api repos/{owner}/{repo}/pulls/{number}/reviews --paginate`
 
-For each comment, retain: `id`, `user.login`, `path`, `line` (or `original_line`), `body`, `diff_hunk`, `in_reply_to_id`, `created_at`, and a synthetic `kind` field (`"review"` for line comments, `"issue"` for general comments).
+For each comment, retain: `id`, `user.login`, `path`, `line` (or `original_line`), `body`, `diff_hunk`, `html_url`, `in_reply_to_id`, `created_at`, and a synthetic `kind` field (`"review"` for line comments, `"issue"` for general comments).
 
 ### Step 3 — Match the user prompt to comment(s)
 
@@ -145,7 +146,8 @@ If any check fails, surface the failures and either fix them directly (small) or
 
 ```
 ## Summary
-- <1–3 bullets describing the fix>
+- Fixes @<reviewer>'s review comment on `<file>:<line>` (PR #<original>): <short description of the issue>
+- <any additional bullets>
 
 ## Comment addressed
 > <quoted reviewer comment body>
@@ -155,7 +157,9 @@ If any check fails, surface the failures and either fix them directly (small) or
 This PR addresses a review comment on PR #<original>
 ```
 
-The literal line `This PR addresses a review comment on PR #<original>` is required by `.opencode/rules/github-pr-workflow.md`.
+- The first bullet in the Summary links to the original comment via `{comment.html_url}` (e.g., `[Fixes @<reviewer>'s review]({comment.html_url}) — <short description>`). Use `comment.html_url` retained from Step 2 for the actual link.
+- `<short description>` is a concise summary of the problem the comment identified (e.g., "missing null check before `.map()`", "unhandled error in `connectToServer`", "race condition on lobby leave"). Derive it from the comment body and diff_hunk.
+- The literal line `This PR addresses a review comment on PR #<original>` is required by `.opencode/rules/github-pr-workflow.md`.
 
 ### Step 9 — Reply on the original review comment (always)
 
@@ -182,10 +186,10 @@ If the reply call fails (e.g., cannot reply to this comment type), post a genera
 ```
 gh api repos/{owner}/{repo}/issues/{originalPR.number}/comments \
   -X POST \
-  -f body="Addressed in #<newPR.number> — <newPR.url> (fixes @<reviewer>'s finding: <short description of the issue the comment exposed>)"
+  -f body="Addressed in #<newPR.number> — <newPR.url> (fixes @<reviewer>'s finding: <short description of the issue the comment exposed> — {comment.html_url})"
 ```
 
-`<short description>` should be a concise summary of the problem the comment identified (e.g., "missing null check before `.map()`", "unhandled error in `connectToServer`", "race condition on lobby leave"). Derive it from the comment body and diff_hunk context.
+`<short description>` should be a concise summary of the problem the comment identified (e.g., "missing null check before `.map()`", "unhandled error in `connectToServer`", "race condition on lobby leave"). Derive it from the comment body and diff_hunk. Use `comment.html_url` retained from Step 2 for the link to the original comment.
 
 If this fallback also fails, report the failure but do not roll back the PR — the PR is already created.
 
