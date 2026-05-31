@@ -97,7 +97,7 @@ describe('OutboxProcessor', () => {
                 expect(mockEventBus.publish).toHaveBeenCalledTimes(3);
             });
 
-            it('does not process the same message again after an error', () => {
+            it('continues processing subsequent messages after an error', () => {
                 const message1 = OutboxMessageMother.playerJoined('lobby-1');
                 const message2 = OutboxMessageMother.playerLeft('lobby-2');
                 mockEventBus.publish.mockImplementationOnce(() => {
