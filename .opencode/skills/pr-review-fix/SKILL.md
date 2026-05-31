@@ -14,6 +14,7 @@ This skill operationalizes `.opencode/rules/github-pr-workflow.md` for the local
 - NEVER skip git hooks (no `--no-verify`).
 - Abort with a clear message if the working tree is dirty — ask the user to stash or commit first.
 - Abort if no PR is found for the current branch.
+- **When in doubt, ask.** If unsure whether an action deviates from this workflow (e.g., tempted to commit directly to the PR branch, unsure about branch naming, unsure about comment matching), stop and ask the user for input before proceeding. No silent deviations.
 
 ### Confirmation Gates
 
