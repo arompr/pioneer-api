@@ -4,7 +4,7 @@ import { OutboxMessageMother } from '#test/matchmaking/domain/outbox/OutboxMessa
 import { InMemoryOutboxRepository } from '#matchmaking/infrastructure/db/inMemory/outbox/InMemoryOutboxRepository';
 import { PlayerJoinedLobbyUseCaseEvent } from '#matchmaking/usecase/events/PlayerJoinedLobbyUseCaseEvent';
 import { PlayerLeftLobbyUseCaseEvent } from '#matchmaking/usecase/events/PlayerLeftLobbyUseCaseEvent';
-import { DomainEvent } from '#common/domain/events/DomainEvent';
+import { UseCaseEvent } from '#common/usecase/events/UseCaseEvent';
 
 const EventBusMock = vi.fn(
     class {
@@ -84,7 +84,7 @@ describe('OutboxProcessor', () => {
                 const message1 = OutboxMessageMother.playerJoined('lobby-1');
                 const message2 = OutboxMessageMother.playerLeft('lobby-2');
                 const message3 = OutboxMessageMother.playerJoined('lobby-3');
-                mockEventBus.publish.mockImplementationOnce((event: DomainEvent) => {
+                mockEventBus.publish.mockImplementationOnce((event: UseCaseEvent) => {
                     if (event.type === message2.eventType) {
                         throw new Error('Processing failed for message 2');
                     }
