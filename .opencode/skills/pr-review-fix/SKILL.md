@@ -146,7 +146,7 @@ If any check fails, surface the failures and either fix them directly (small) or
 
 ```
 ## Summary
-- Fixes @<reviewer>'s review comment on `<file>:<line>` (PR #<original>): <short description of the issue>
+- [Fixes @<reviewer>'s review]({comment.html_url}): <short description of the issue>
 - <any additional bullets>
 
 ## Comment addressed
@@ -157,7 +157,7 @@ If any check fails, surface the failures and either fix them directly (small) or
 This PR addresses a review comment on PR #<original>
 ```
 
-- The first bullet in the Summary links to the original comment via `{comment.html_url}` (e.g., `[Fixes @<reviewer>'s review]({comment.html_url}) — <short description>`). Use `comment.html_url` retained from Step 2 for the actual link.
+- **The first Summary bullet MUST be a markdown link** using `comment.html_url` (retained from Step 2) so the original comment is one click away: `[Fixes @<reviewer>'s review]({comment.html_url}): <short description>`.
 - `<short description>` is a concise summary of the problem the comment identified (e.g., "missing null check before `.map()`", "unhandled error in `connectToServer`", "race condition on lobby leave"). Derive it from the comment body and diff_hunk.
 - The literal line `This PR addresses a review comment on PR #<original>` is required by `.opencode/rules/github-pr-workflow.md`.
 
