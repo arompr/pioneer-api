@@ -20,15 +20,15 @@ This skill operationalizes `.opencode/rules/github-pr-workflow.md` for the local
 The procedure has **two mandatory user confirmation gates**:
 
 - **Gate A — Before branch creation and edits.** Show:
-  - The matched reviewer comment(s) (author, file:line, body)
-  - The proposed new branch name
-  - The files expected to be touched
-  - The chosen complexity tier and coder subagent (`coder-nano` / `coder-medium` / `coder-large`)
+    - The matched reviewer comment(s) (author, file:line, body)
+    - The proposed new branch name
+    - The files expected to be touched
+    - The chosen complexity tier and coder subagent (`coder-nano` / `coder-medium` / `coder-large`)
 - **Gate B — Before push, PR creation, and reply.** Show:
-  - The new branch name and the target base (= original PR's head branch)
-  - The proposed PR title
-  - The proposed PR body (preview)
-  - The planned reply text on the original reviewer comment
+    - The new branch name and the target base (= original PR's head branch)
+    - The proposed PR title
+    - The proposed PR body (preview)
+    - The planned reply text on the original reviewer comment
 
 Do not proceed past a gate without explicit user confirmation.
 
@@ -177,7 +177,17 @@ After the new PR is created, post a reply on the original reviewer comment with 
       -f body="Addressed in #<newPR.number> — <newPR.url> (re: @<reviewer>'s comment)"
     ```
 
-If the reply call fails, report the failure but do not roll back the PR — the PR is already created.
+If the reply call fails (e.g., cannot reply to this comment type), post a general comment on the original PR's issue thread as a fallback instead:
+
+```
+gh api repos/{owner}/{repo}/issues/{originalPR.number}/comments \
+  -X POST \
+  -f body="Addressed in #<newPR.number> — <newPR.url> (fixes @<reviewer>'s finding: <short description of the issue the comment exposed>)"
+```
+
+`<short description>` should be a concise summary of the problem the comment identified (e.g., "missing null check before `.map()`", "unhandled error in `connectToServer`", "race condition on lobby leave"). Derive it from the comment body and diff_hunk context.
+
+If this fallback also fails, report the failure but do not roll back the PR — the PR is already created.
 
 ### Step 10 — Report back to the user
 
@@ -187,7 +197,7 @@ Print a concise summary:
 - New PR URL
 - Files changed
 - Validation status
-- Reply status (success / failure)
+- Reply status (success / fallback posted / failure)
 
 ---
 

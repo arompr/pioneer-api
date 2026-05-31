@@ -69,7 +69,7 @@ Load the `validation` skill and run all checks. Do not push or open a PR while a
 
 ### Step 6 — Reply on the original review comment (skill Step 9)
 
-Always post a reply on the original reviewer comment with the new PR URL — this is automatic, not gated.
+Always post a reply on the original reviewer comment with the new PR URL — this is automatic, not gated. If replying is impossible (e.g., non-replyable comment type), the skill falls back to posting a general comment on the original PR's issue thread linking the new PR and the original comment.
 
 ### Step 7 — Final report
 
