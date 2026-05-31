@@ -197,12 +197,6 @@ Print a concise summary:
 - New PR URL
 - Files changed
 - Validation status
-  <<<<<<< HEAD
-
-- # Reply status (success / failure)
-
-- Reply status (success / fallback posted / failure)
-    > > > > > > > develop
 
 ---
 
