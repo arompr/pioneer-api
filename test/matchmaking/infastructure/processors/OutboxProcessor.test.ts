@@ -108,13 +108,14 @@ describe('OutboxProcessor', () => {
                 repository.save(message2);
 
                 expect(mockEventBus.publish).toHaveBeenCalledTimes(2);
+                mockEventBus.publish.mockClear();
 
                 const message3 = OutboxMessageMother.playerJoined('lobby-3');
                 repository.save(message3);
 
-                expect(mockEventBus.publish).toHaveBeenCalledTimes(3);
+                expect(mockEventBus.publish).toHaveBeenCalledTimes(1);
                 expect(mockEventBus.publish).toHaveBeenNthCalledWith(
-                    3,
+                    1,
                     expect.any(PlayerJoinedLobbyUseCaseEvent)
                 );
             });
