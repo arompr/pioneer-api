@@ -177,10 +177,6 @@ After the new PR is created, post a reply on the original reviewer comment with 
       -f body="Addressed in #<newPR.number> — <newPR.url> (re: @<reviewer>'s comment)"
     ```
 
-<<<<<<< HEAD
-If the reply call fails, report the failure but do not roll back the PR — the PR is already created
-=======
-
 If the reply call fails (e.g., cannot reply to this comment type), post a general comment on the original PR's issue thread as a fallback instead:
 
 ```
@@ -192,8 +188,6 @@ gh api repos/{owner}/{repo}/issues/{originalPR.number}/comments \
 `<short description>` should be a concise summary of the problem the comment identified (e.g., "missing null check before `.map()`", "unhandled error in `connectToServer`", "race condition on lobby leave"). Derive it from the comment body and diff_hunk context.
 
 If this fallback also fails, report the failure but do not roll back the PR — the PR is already created.
-
-> > > > > > > develop
 
 ### Step 10 — Report back to the user
 
