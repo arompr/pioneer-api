@@ -45,11 +45,11 @@ describe('OutboxService', () => {
                 expect(outboxRepository.saveAll).toHaveBeenCalledWith([
                     expect.objectContaining({
                         eventType: 'PlayerJoinedLobby',
-                        aggregateId: lobby.id.value,
+                        aggregateId: lobby.id,
                     }),
                     expect.objectContaining({
                         eventType: 'PlayerLeftLobby',
-                        aggregateId: lobby.id.value,
+                        aggregateId: lobby.id,
                     }),
                 ]);
             });

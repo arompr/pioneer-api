@@ -13,15 +13,15 @@ import {
     PlayerMarkedReadyUseCaseEvent,
 } from '#matchmaking/usecase/events';
 import {
-    LobbyHostChangedPayload,
-    PlayerJoinedLobbyPayload,
-    PlayerLeftLobbyPayload,
-    PlayerMarkedPendingPayload,
-    PlayerMarkedReadyPayload,
+    lobbyHostChangedPayloadSchema,
+    playerJoinedLobbyPayloadSchema,
+    playerLeftLobbyPayloadSchema,
+    playerMarkedPendingPayloadSchema,
+    playerMarkedReadyPayloadSchema,
 } from './InMemoryOutboxMessagePayloads';
 
 const toPlayerJoinedLobbyEvent = (message: OutboxMessage): PlayerJoinedLobbyUseCaseEvent => {
-    const { playerId } = message.eventPayload as PlayerJoinedLobbyPayload;
+    const { playerId } = playerJoinedLobbyPayloadSchema.parse(message.eventPayload);
     return new PlayerJoinedLobbyUseCaseEvent(
         new LobbyId(message.aggregateId),
         new PlayerId(playerId)
@@ -29,7 +29,7 @@ const toPlayerJoinedLobbyEvent = (message: OutboxMessage): PlayerJoinedLobbyUseC
 };
 
 const toPlayerLeftLobbyEvent = (message: OutboxMessage): PlayerLeftLobbyUseCaseEvent => {
-    const { playerId, wasHost } = message.eventPayload as PlayerLeftLobbyPayload;
+    const { playerId, wasHost } = playerLeftLobbyPayloadSchema.parse(message.eventPayload);
     return new PlayerLeftLobbyUseCaseEvent(
         new LobbyId(message.aggregateId),
         new PlayerId(playerId),
@@ -41,7 +41,7 @@ const toLobbyClosedEvent = (message: OutboxMessage): LobbyClosedUseCaseEvent =>
     new LobbyClosedUseCaseEvent(new LobbyId(message.aggregateId));
 
 const toLobbyHostChangedEvent = (message: OutboxMessage): LobbyHostChangedUseCaseEvent => {
-    const { newHostId } = message.eventPayload as LobbyHostChangedPayload;
+    const { newHostId } = lobbyHostChangedPayloadSchema.parse(message.eventPayload);
     return new LobbyHostChangedUseCaseEvent(
         new LobbyId(message.aggregateId),
         new PlayerId(newHostId)
@@ -52,7 +52,7 @@ const toLobbyStartedEvent = (message: OutboxMessage): LobbyStartedUseCaseEvent =
     new LobbyStartedUseCaseEvent(new LobbyId(message.aggregateId));
 
 const toPlayerMarkedPendingEvent = (message: OutboxMessage): PlayerMarkedPendingUseCaseEvent => {
-    const { playerId } = message.eventPayload as PlayerMarkedPendingPayload;
+    const { playerId } = playerMarkedPendingPayloadSchema.parse(message.eventPayload);
     return new PlayerMarkedPendingUseCaseEvent(
         new LobbyId(message.aggregateId),
         new PlayerId(playerId)
@@ -60,7 +60,7 @@ const toPlayerMarkedPendingEvent = (message: OutboxMessage): PlayerMarkedPending
 };
 
 const toPlayerMarkedReadyEvent = (message: OutboxMessage): PlayerMarkedReadyUseCaseEvent => {
-    const { playerId } = message.eventPayload as PlayerMarkedReadyPayload;
+    const { playerId } = playerMarkedReadyPayloadSchema.parse(message.eventPayload);
     return new PlayerMarkedReadyUseCaseEvent(
         new LobbyId(message.aggregateId),
         new PlayerId(playerId)
@@ -83,11 +83,12 @@ const eventFactories: Readonly<Record<string, (message: OutboxMessage) => UseCas
 export class InMemoryOutboxMessageEventMapper {
     /**
      * Converts an OutboxMessage into the corresponding typed use case event instance.
-     * Throws if the event type is not registered.
+     * Throws if the event type is not registered or the payload is malformed.
      *
      * @param {OutboxMessage} message - The outbox message to convert.
      * @returns {UseCaseEvent} The reconstructed use case event.
      * @throws {Error} If the event type is unknown.
+     * @throws {import('zod').ZodError} If the payload does not match the expected schema.
      */
     static toUseCaseEvent(message: OutboxMessage): UseCaseEvent {
         const eventFactory = eventFactories[message.eventType];

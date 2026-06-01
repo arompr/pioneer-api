@@ -1,3 +1,4 @@
+import { Identity } from '#common/domain/aggregate/AggregateRoot';
 import { EventPayload } from '#common/domain/events/DomainEvent';
 import { OutboxMessage } from './OutboxMessage';
 import { OutboxMessageId } from './outboxMessageId/OutboxMessageId';
@@ -21,7 +22,7 @@ export class OutboxMessageFactory {
      * @param {EventPayload} payload - The serialized primitive payload
      * @returns {OutboxMessage} A new OutboxMessage instance
      */
-    create(eventType: string, aggregateId: string, payload: EventPayload): OutboxMessage {
+    create(eventType: string, aggregateId: Identity, payload: EventPayload): OutboxMessage {
         const id: OutboxMessageId = this.outboxMessageIdFactory.generate();
         const createdAt = new Date();
 

@@ -9,6 +9,7 @@ import { PlayerMarkedReadyUseCaseEvent } from '#matchmaking/usecase/events/Playe
 import { LobbyEventType } from '#matchmaking/domain/lobby/events/LobbyEventType';
 import { OutboxMessage } from '#matchmaking/domain/outbox/OutboxMessage';
 import { OutboxMessageId } from '#matchmaking/domain/outbox/outboxMessageId/OutboxMessageId';
+import { ZodError } from 'zod';
 import { describe, expect, it } from 'vitest';
 
 const id = new OutboxMessageId('01JH9ABCDEFGHIJK');
@@ -129,6 +130,54 @@ describe('InMemoryOutboxMessageEventMapper', () => {
                 expect(() => InMemoryOutboxMessageEventMapper.toUseCaseEvent(message)).toThrow(
                     'Unknown event type: UnknownEventType'
                 );
+            });
+        });
+
+        describe('when the payload is malformed', () => {
+            describe('when playerId is missing for PlayerJoinedLobby', () => {
+                it('throws a ZodError', () => {
+                    const message = makeMessage(LobbyEventType.PlayerJoinedLobby, {
+                        wrongField: 'value',
+                    });
+
+                    expect(() => InMemoryOutboxMessageEventMapper.toUseCaseEvent(message)).toThrow(
+                        ZodError
+                    );
+                });
+            });
+
+            describe('when playerId is the wrong type for PlayerJoinedLobby', () => {
+                it('throws a ZodError', () => {
+                    const message = makeMessage(LobbyEventType.PlayerJoinedLobby, {
+                        playerId: 42,
+                    });
+
+                    expect(() => InMemoryOutboxMessageEventMapper.toUseCaseEvent(message)).toThrow(
+                        ZodError
+                    );
+                });
+            });
+
+            describe('when wasHost is missing for PlayerLeftLobby', () => {
+                it('throws a ZodError', () => {
+                    const message = makeMessage(LobbyEventType.PlayerLeftLobby, {
+                        playerId: 'player-1',
+                    });
+
+                    expect(() => InMemoryOutboxMessageEventMapper.toUseCaseEvent(message)).toThrow(
+                        ZodError
+                    );
+                });
+            });
+
+            describe('when newHostId is missing for LobbyHostChanged', () => {
+                it('throws a ZodError', () => {
+                    const message = makeMessage(LobbyEventType.LobbyHostChanged, {});
+
+                    expect(() => InMemoryOutboxMessageEventMapper.toUseCaseEvent(message)).toThrow(
+                        ZodError
+                    );
+                });
             });
         });
     });

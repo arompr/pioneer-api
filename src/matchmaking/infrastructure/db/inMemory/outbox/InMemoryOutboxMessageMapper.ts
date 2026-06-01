@@ -18,7 +18,7 @@ export class InMemoryOutboxMessageMapper {
             message.eventType,
             message.eventPayload,
             message.createdAt,
-            message.aggregateId
+            message.aggregateId.value
         );
     }
 
@@ -34,7 +34,7 @@ export class InMemoryOutboxMessageMapper {
             inMemoryMessage.eventType,
             inMemoryMessage.eventPayload,
             inMemoryMessage.createdAt,
-            inMemoryMessage.aggregateId
+            { value: inMemoryMessage.aggregateId }
         );
     }
 }

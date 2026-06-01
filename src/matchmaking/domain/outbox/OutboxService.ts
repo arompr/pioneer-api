@@ -11,7 +11,7 @@ export class OutboxService {
     constructor(
         private readonly outboxRepository: OutboxRepository,
         private readonly outboxMessageFactory: OutboxMessageFactory,
-        private readonly serializer: DomainEventSerializer
+        private readonly domainEventSerializer: DomainEventSerializer
     ) {}
 
     /**
@@ -21,11 +21,10 @@ export class OutboxService {
      */
     publishEvents(aggregate: AggregateRoot): void {
         const events = aggregate.pullDomainEvents();
-        const aggregateId: string = aggregate.id.value;
 
         const messages = events.map((event) => {
-            const payload = this.serializer.serialize(event);
-            return this.outboxMessageFactory.create(event.type, aggregateId, payload);
+            const payload = this.domainEventSerializer.serialize(event);
+            return this.outboxMessageFactory.create(event.type, aggregate.id, payload);
         });
 
         this.outboxRepository.saveAll(messages);

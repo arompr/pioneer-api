@@ -1,7 +1,9 @@
+import { Identity } from '#common/domain/aggregate/AggregateRoot';
+
 /**
  * Value Object representing a unique OutboxMessage identifier.
  */
-export class OutboxMessageId {
+export class OutboxMessageId implements Identity {
     /**
      * The unique identifier string value.
      */
