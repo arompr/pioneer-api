@@ -1,7 +1,8 @@
-import { UseCaseEvent } from '#common/usecase/events/UseCaseEvent';
+import { UseCaseEvent } from './events/UseCaseEvent';
+import { DomainEvent } from '#common/domain/events/DomainEvent';
 import { EventHandler } from './EventHandler';
 
 export interface EventBus {
-    publish<T extends UseCaseEvent>(event: T): void;
-    register<T extends UseCaseEvent>(eventType: string, handler: EventHandler<T>): void;
+    publish<TEvent extends DomainEvent>(event: UseCaseEvent<TEvent>): void;
+    register<TEvent extends DomainEvent>(eventType: string, handler: EventHandler<TEvent>): void;
 }

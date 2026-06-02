@@ -1,6 +1,7 @@
 import { OutboxMessage } from '#matchmaking/domain/outbox/OutboxMessage';
 import { EventPayload } from '#common/domain/events/DomainEvent';
 import { OutboxMessageId } from '#matchmaking/domain/outbox/outboxMessageId/OutboxMessageId';
+import { Identity } from '#common/domain/aggregate/AggregateRoot';
 
 /**
  * Test builder for OutboxMessage domain objects.
@@ -10,7 +11,7 @@ export class TestOutboxMessageBuilder {
     private _eventType: string = 'PlayerJoinedLobby';
     private _eventPayload: EventPayload = { lobbyId: 'lobby-123' };
     private _createdAt: Date = new Date('2024-01-01T00:00:00Z');
-    private _aggregateId: string = 'lobby-123';
+    private _aggregateId: Identity = { value: 'lobby-123' };
 
     /**
      * Override the id of the OutboxMessage.
@@ -48,7 +49,7 @@ export class TestOutboxMessageBuilder {
      * Override the aggregateId.
      */
     public withAggregateId(aggregateId: string): TestOutboxMessageBuilder {
-        this._aggregateId = aggregateId;
+        this._aggregateId = { value: aggregateId };
         return this;
     }
 

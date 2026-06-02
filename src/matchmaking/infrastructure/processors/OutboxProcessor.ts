@@ -1,9 +1,11 @@
-import { InMemoryOutboxMessageEventMapper } from '../db/inMemory/outbox/InMemoryOutboxMessageEventMapper';
+import { DomainEventDeserializer } from '#matchmaking/domain/outbox/DomainEventDeserializer';
 import { OutboxMessage } from '#matchmaking/domain/outbox/OutboxMessage';
 import { OutboxObserver } from '#matchmaking/domain/outbox/OutboxObserver';
 import { OutboxRepository } from '#matchmaking/domain/outbox/OutboxRepository';
 import { EventBus } from '#common/usecase/EventBus';
 import { UseCaseEvent } from '#common/usecase/events/UseCaseEvent';
+import { DomainEvent } from '#common/domain/events/DomainEvent';
+import { Identity } from '#common/domain/aggregate/AggregateRoot';
 
 /**
  * Processor that asynchronously handles outbox messages.
@@ -20,7 +22,8 @@ export class OutboxProcessor implements OutboxObserver {
 
     constructor(
         private readonly outboxRepository: OutboxRepository,
-        private readonly eventBus: EventBus
+        private readonly eventBus: EventBus,
+        private readonly deserializer: DomainEventDeserializer
     ) {}
 
     /**
@@ -57,7 +60,13 @@ export class OutboxProcessor implements OutboxObserver {
         this.isProcessing = false;
     }
 
-    private toUseCaseEvent(message: OutboxMessage): UseCaseEvent {
-        return InMemoryOutboxMessageEventMapper.toUseCaseEvent(message);
+    private toUseCaseEvent(message: OutboxMessage): UseCaseEvent<DomainEvent, Identity> {
+        const domainEvent = this.deserializer.deserialize(
+            message.eventType,
+            message.aggregateId,
+            message.eventPayload
+        );
+
+        return { aggregateId: message.aggregateId, event: domainEvent };
     }
 }

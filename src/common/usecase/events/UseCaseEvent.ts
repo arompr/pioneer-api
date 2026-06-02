@@ -1,9 +1,14 @@
 import { DomainEvent } from '#common/domain/events/DomainEvent';
+import { Identity } from '#common/domain/aggregate/AggregateRoot';
 
 /**
- * Marker interface for all use case events.
- * Use case events are produced by the outbox-to-eventbus pipeline.
- * Each concrete event carries its own typed aggregate identifier (e.g. lobbyId).
+ * Wrapper that enriches a domain event with its aggregate identifier for external publication.
+ * Produced by the outbox-to-eventbus pipeline.
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface UseCaseEvent extends DomainEvent {}
+export interface UseCaseEvent<
+    TEvent extends DomainEvent = DomainEvent,
+    TId extends Identity = Identity,
+> {
+    readonly aggregateId: TId;
+    readonly event: TEvent;
+}

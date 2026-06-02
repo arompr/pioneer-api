@@ -1,9 +1,11 @@
 import { LobbyNotifier } from '#common/usecase/LobbyNotifier';
-import { PlayerLeftLobbyUseCaseEvent } from '#matchmaking/usecase/events/PlayerLeftLobbyUseCaseEvent';
 import { PlayerLeftLobbyHandler } from '#matchmaking/interface/ws/handlers/events/PlayerLeftLobbyHandler';
 import { GetLobbyUseCase } from '#matchmaking/usecase/GetLobbyUseCase';
 import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { LobbyId } from '#matchmaking/domain/lobby/lobbyId/LobbyId';
+import { PlayerLeftLobby } from '#matchmaking/domain/lobby/events/PlayerLeftLobby';
+import { UseCaseEvent } from '#common/usecase/events/UseCaseEvent';
 
 const { lobby } = LobbyMother.baseLobby();
 const player = lobby.allPlayers[0];
@@ -28,15 +30,14 @@ describe('PlayerLeftLobbyHandler', () => {
 
     describe('handle', () => {
         it('get the lobby and notify lobby', () => {
-            const playerLeftLobbyEvent = new PlayerLeftLobbyUseCaseEvent(
-                lobby.id,
-                player.id,
-                false
-            );
+            const event: UseCaseEvent<PlayerLeftLobby, LobbyId> = {
+                aggregateId: lobby.id,
+                event: new PlayerLeftLobby(player.id, false),
+            };
 
-            playerLeftLobbyHandler.handle(playerLeftLobbyEvent);
+            playerLeftLobbyHandler.handle(event);
 
-            expect(execute).toHaveBeenCalledWith({ lobbyId: playerLeftLobbyEvent.lobbyId });
+            expect(execute).toHaveBeenCalledWith({ lobbyId: event.aggregateId });
             expect(notifyLobbyUpdated).toHaveBeenCalledWith(lobby);
         });
     });
