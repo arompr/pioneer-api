@@ -47,14 +47,14 @@ const deserializePlayerMarkedPending: DeserializeFn = (_aggregateId, payload) =>
     return new PlayerMarkedPending(new PlayerId(playerId));
 };
 
-const deserializeEmpty: DeserializeFn = () => new LobbyClosed();
+const deserializeLobbyClosed: DeserializeFn = () => new LobbyClosed();
 const deserializeLobbyStarted: DeserializeFn = () => new LobbyStarted();
 
 const deserializerFactories = {
     [LobbyEventType.PlayerJoinedLobby]: deserializePlayerJoinedLobby,
     [LobbyEventType.PlayerLeftLobby]: deserializePlayerLeftLobby,
     [LobbyEventType.LobbyHostChanged]: deserializeLobbyHostChanged,
-    [LobbyEventType.LobbyClosed]: deserializeEmpty,
+    [LobbyEventType.LobbyClosed]: deserializeLobbyClosed,
     [LobbyEventType.LobbyStarted]: deserializeLobbyStarted,
     [LobbyEventType.PlayerMarkedReady]: deserializePlayerMarkedReady,
     [LobbyEventType.PlayerMarkedPending]: deserializePlayerMarkedPending,
