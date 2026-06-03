@@ -1,5 +1,5 @@
 ---
-name: pr-review-fixer
+name: Code Review Fixer
 description: Apply reviewer comments to the current branch's PR via a stacked branch and stacked PR. Local entry point — not for GitHub-triggered /oc commands.
 mode: primary
 temperature: 0.1
