@@ -2,6 +2,7 @@
     "packageName": "@arompr/pioneer-api-types",
     "outDir": "./generated",
     "bump": "patch",
+    "registry": "https://npm.pkg.github.com",
     "tsConfig": "./tsconfig.json",
     "declarationMapping": "type",
     "outputGrouping": {
