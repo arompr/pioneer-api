@@ -1,5 +1,5 @@
 ---
-name: testMother
+name: test-mother
 description: Guide for creating Object Mother + Builder test data factories. Use this when asked to create a test mother, add an object mother, or create test data factories for domain entities.
 ---
 

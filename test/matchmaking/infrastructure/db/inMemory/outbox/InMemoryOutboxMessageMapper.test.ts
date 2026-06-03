@@ -2,6 +2,7 @@ import { InMemoryOutboxMessageMapper } from '#matchmaking/infrastructure/db/inMe
 import { OutboxMessage } from '#matchmaking/domain/outbox/OutboxMessage';
 import { OutboxMessageId } from '#matchmaking/domain/outbox/outboxMessageId/OutboxMessageId';
 import { describe, expect, it } from 'vitest';
+import { LobbyId } from '#matchmaking/domain/lobby/lobbyId/LobbyId';
 
 describe('InMemoryOutboxMessageMapper', () => {
     describe('toInMemory', () => {
@@ -10,7 +11,7 @@ describe('InMemoryOutboxMessageMapper', () => {
             const eventType = 'PlayerJoinedLobby';
             const eventPayload = { playerId: 'player-456', info: 'something' };
             const createdAt = new Date('2024-01-01T00:00:00Z');
-            const aggregateId = 'lobby-123';
+            const aggregateId = new LobbyId('lobby-123');
             const message = new OutboxMessage(id, eventType, eventPayload, createdAt, aggregateId);
 
             const inMemoryMessage = InMemoryOutboxMessageMapper.toInMemory(message);
@@ -19,7 +20,7 @@ describe('InMemoryOutboxMessageMapper', () => {
             expect(inMemoryMessage.eventType).toBe(eventType);
             expect(inMemoryMessage.eventPayload).toEqual(eventPayload);
             expect(inMemoryMessage.createdAt).toBe(createdAt);
-            expect(inMemoryMessage.aggregateId).toBe(aggregateId);
+            expect(inMemoryMessage.aggregateId).toBe(aggregateId.value);
         });
     });
 
@@ -29,7 +30,7 @@ describe('InMemoryOutboxMessageMapper', () => {
             const eventType = 'PlayerJoinedLobby';
             const eventPayload = { playerId: 'player-456', info: 'something' };
             const createdAt = new Date('2024-01-01T00:00:00Z');
-            const aggregateId = 'lobby-123';
+            const aggregateId = new LobbyId('lobbyId');
             const message = new OutboxMessage(id, eventType, eventPayload, createdAt, aggregateId);
             const imMessage = InMemoryOutboxMessageMapper.toInMemory(message);
 
@@ -39,7 +40,7 @@ describe('InMemoryOutboxMessageMapper', () => {
             expect(reconstructedMessage.eventType).toBe(message.eventType);
             expect(reconstructedMessage.eventPayload).toEqual(message.eventPayload);
             expect(reconstructedMessage.createdAt).toBe(message.createdAt);
-            expect(reconstructedMessage.aggregateId).toBe(message.aggregateId);
+            expect(reconstructedMessage.aggregateId.value).toBe(message.aggregateId.value);
         });
     });
 });

@@ -1,4 +1,4 @@
-import { DomainEvent, EventPayload } from '../events/DomainEvent';
+import { DomainEvent } from '../events/DomainEvent';
 import { IEventSourcedAggregate } from './IEventSourcedAggregate';
 
 /**
@@ -11,19 +11,19 @@ export interface Identity {
 
 export abstract class AggregateRoot implements IEventSourcedAggregate {
     private _version = 0;
-    private _domainEvents: DomainEvent<EventPayload>[] = [];
+    private _domainEvents: DomainEvent[] = [];
 
     /**
      * The unique identifier of the aggregate.
      */
     abstract get id(): Identity;
 
-    protected record(event: DomainEvent<EventPayload>): void {
+    protected record(event: DomainEvent): void {
         this._domainEvents.push(event);
         this._version++;
     }
 
-    public pullDomainEvents(): DomainEvent<EventPayload>[] {
+    public pullDomainEvents(): DomainEvent[] {
         return this._domainEvents.splice(0, this._domainEvents.length);
     }
 

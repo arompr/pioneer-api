@@ -2,9 +2,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { OutboxProcessor } from '#matchmaking/infrastructure/processors/OutboxProcessor';
 import { OutboxMessageMother } from '#test/matchmaking/domain/outbox/OutboxMessageMother';
 import { InMemoryOutboxRepository } from '#matchmaking/infrastructure/db/inMemory/outbox/InMemoryOutboxRepository';
+import { UseCaseEvent } from '#common/usecase/events/UseCaseEvent';
+import { DomainEvent } from '#common/domain/events/DomainEvent';
 import { PlayerJoinedLobby } from '#matchmaking/domain/lobby/events/PlayerJoinedLobby';
 import { PlayerLeftLobby } from '#matchmaking/domain/lobby/events/PlayerLeftLobby';
-import { DomainEvent } from '#common/domain/events/DomainEvent';
+import { LobbyDomainEventDeserializer } from '#matchmaking/infrastructure/serializer/LobbyDomainEventDeserializer';
 
 const EventBusMock = vi.fn(
     class {
@@ -18,11 +20,13 @@ const mockEventBus = new EventBusMock();
 describe('OutboxProcessor', () => {
     let repository: InMemoryOutboxRepository;
     let processor: OutboxProcessor;
+    const deserializer = new LobbyDomainEventDeserializer();
 
     beforeEach(() => {
         vi.resetAllMocks();
         repository = new InMemoryOutboxRepository();
-        processor = new OutboxProcessor(repository, mockEventBus);
+
+        processor = new OutboxProcessor(repository, mockEventBus, deserializer);
         repository.registerObserver(processor);
     });
 
@@ -33,8 +37,9 @@ describe('OutboxProcessor', () => {
 
                 repository.save(message);
 
-                expect(mockEventBus.publish).toHaveBeenCalledOnce();
-                expect(mockEventBus.publish).toHaveBeenCalledWith(expect.any(PlayerJoinedLobby));
+                const published = mockEventBus.publish.mock
+                    .calls[0][0] as UseCaseEvent<DomainEvent>;
+                expect(published.event).toBeInstanceOf(PlayerJoinedLobby);
             });
         });
 
@@ -47,14 +52,10 @@ describe('OutboxProcessor', () => {
                 repository.save(message2);
 
                 expect(mockEventBus.publish).toHaveBeenCalledTimes(2);
-                expect(mockEventBus.publish).toHaveBeenNthCalledWith(
-                    1,
-                    expect.any(PlayerJoinedLobby)
-                );
-                expect(mockEventBus.publish).toHaveBeenNthCalledWith(
-                    2,
-                    expect.any(PlayerLeftLobby)
-                );
+                const first = mockEventBus.publish.mock.calls[0][0] as UseCaseEvent<DomainEvent>;
+                const second = mockEventBus.publish.mock.calls[1][0] as UseCaseEvent<DomainEvent>;
+                expect(first.event).toBeInstanceOf(PlayerJoinedLobby);
+                expect(second.event).toBeInstanceOf(PlayerLeftLobby);
             });
         });
 
@@ -82,8 +83,9 @@ describe('OutboxProcessor', () => {
                 const message1 = OutboxMessageMother.playerJoined('lobby-1');
                 const message2 = OutboxMessageMother.playerLeft('lobby-2');
                 const message3 = OutboxMessageMother.playerJoined('lobby-3');
-                mockEventBus.publish.mockImplementationOnce((event: DomainEvent) => {
-                    if (event.type === message2.eventType) {
+
+                mockEventBus.publish.mockImplementationOnce((event: UseCaseEvent<DomainEvent>) => {
+                    if (event.event.type === message2.eventType) {
                         throw new Error('Processing failed for message 2');
                     }
                 });
@@ -95,9 +97,10 @@ describe('OutboxProcessor', () => {
                 expect(mockEventBus.publish).toHaveBeenCalledTimes(3);
             });
 
-            it('does not process the same message again after an error', () => {
+            it('continues processing subsequent messages after an error', () => {
                 const message1 = OutboxMessageMother.playerJoined('lobby-1');
                 const message2 = OutboxMessageMother.playerLeft('lobby-2');
+
                 mockEventBus.publish.mockImplementationOnce(() => {
                     throw new Error('Processing failed');
                 });
@@ -106,15 +109,15 @@ describe('OutboxProcessor', () => {
                 repository.save(message2);
 
                 expect(mockEventBus.publish).toHaveBeenCalledTimes(2);
+                mockEventBus.publish.mockClear();
 
                 const message3 = OutboxMessageMother.playerJoined('lobby-3');
                 repository.save(message3);
 
-                expect(mockEventBus.publish).toHaveBeenCalledTimes(3);
-                expect(mockEventBus.publish).toHaveBeenNthCalledWith(
-                    3,
-                    expect.any(PlayerJoinedLobby)
-                );
+                expect(mockEventBus.publish).toHaveBeenCalledTimes(1);
+                const published = mockEventBus.publish.mock
+                    .calls[0][0] as UseCaseEvent<DomainEvent>;
+                expect(published.event).toBeInstanceOf(PlayerJoinedLobby);
             });
         });
     });

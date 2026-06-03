@@ -1,6 +1,6 @@
-import { DomainEvent } from '#common/domain/events/DomainEvent';
+import { PayloadDomainEvent } from '#common/domain/events/DomainEvent';
 
-export type LobbyClosedPayload = {
+export type GameCreatedPayload = {
     gameId: string;
     playerIds: string[];
     boardSeed: number;
@@ -9,7 +9,7 @@ export type LobbyClosedPayload = {
 /**
  * Event emitted when a new game is created.
  */
-export class GameCreated implements DomainEvent<LobbyClosedPayload> {
+export class GameCreated implements PayloadDomainEvent<GameCreatedPayload> {
     public readonly type = 'GameCreated';
 
     /**
@@ -22,7 +22,7 @@ export class GameCreated implements DomainEvent<LobbyClosedPayload> {
      */
     public readonly playerIds: string[];
 
-    payload: LobbyClosedPayload;
+    public readonly payload: GameCreatedPayload;
 
     /**
      * The initial board configuration seed or identifier.
@@ -30,6 +30,9 @@ export class GameCreated implements DomainEvent<LobbyClosedPayload> {
     public readonly boardSeed: number;
 
     constructor(gameId: string, playerIds: string[], boardSeed: number) {
+        this.gameId = gameId;
+        this.playerIds = playerIds;
+        this.boardSeed = boardSeed;
         this.payload = { gameId, playerIds, boardSeed };
     }
 }

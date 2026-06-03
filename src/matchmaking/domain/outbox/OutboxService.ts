@@ -1,6 +1,7 @@
 import { AggregateRoot } from '#common/domain/aggregate/AggregateRoot';
 import { OutboxMessageFactory } from './OutboxMessageFactory';
 import { OutboxRepository } from './OutboxRepository';
+import { DomainEventSerializer } from './DomainEventSerializer';
 
 /**
  * Domain service that handles the process of pulling domain events from
@@ -9,7 +10,8 @@ import { OutboxRepository } from './OutboxRepository';
 export class OutboxService {
     constructor(
         private readonly outboxRepository: OutboxRepository,
-        private readonly outboxMessageFactory: OutboxMessageFactory
+        private readonly outboxMessageFactory: OutboxMessageFactory,
+        private readonly domainEventSerializer: DomainEventSerializer
     ) {}
 
     /**
@@ -19,11 +21,11 @@ export class OutboxService {
      */
     publishEvents(aggregate: AggregateRoot): void {
         const events = aggregate.pullDomainEvents();
-        const aggregateId: string = aggregate.id.value;
 
-        const messages = events.map((event) =>
-            this.outboxMessageFactory.fromDomainEvent(event, aggregateId)
-        );
+        const messages = events.map((event) => {
+            const payload = this.domainEventSerializer.serialize(event);
+            return this.outboxMessageFactory.create(event.type, aggregate.id, payload);
+        });
 
         this.outboxRepository.saveAll(messages);
     }

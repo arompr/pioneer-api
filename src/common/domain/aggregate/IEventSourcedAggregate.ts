@@ -1,5 +1,5 @@
-import { DomainEvent, EventPayload } from '../events/DomainEvent';
+import { DomainEvent } from '../events/DomainEvent';
 
 export interface IEventSourcedAggregate {
-    pullDomainEvents(): DomainEvent<EventPayload>[];
+    pullDomainEvents(): DomainEvent[];
 }

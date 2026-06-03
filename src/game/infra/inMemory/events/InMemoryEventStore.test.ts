@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { InMemoryEventStore } from './InMemoryEventStore';
-import { DomainEvent } from '#common/domain/events/DomainEvent';
+import { PayloadDomainEvent } from '#common/domain/events/DomainEvent';
 import { ConcurrencyError } from './ConcurrencyError';
 
 // Test event implementation
-class TestEvent implements DomainEvent<{ data: string }> {
+class TestEvent implements PayloadDomainEvent<{ data: string }> {
     public readonly type = 'TestEvent';
     payload: { data: string };
 

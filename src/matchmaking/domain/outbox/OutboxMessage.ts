@@ -1,3 +1,4 @@
+import { Identity } from '#common/domain/aggregate/AggregateRoot';
 import { EventPayload } from '#common/domain/events/DomainEvent';
 import { OutboxMessageId } from './outboxMessageId/OutboxMessageId';
 
@@ -29,7 +30,7 @@ export class OutboxMessage {
     /**
      * Identifier of the aggregate that generated the event.
      */
-    private readonly _aggregateId: string;
+    private readonly _aggregateId: Identity;
 
     /**
      * Creates a new OutboxMessage.
@@ -45,7 +46,7 @@ export class OutboxMessage {
         eventType: string,
         eventPayload: EventPayload,
         createdAt: Date,
-        aggregateId: string
+        aggregateId: Identity
     ) {
         this._id = id;
         this._eventType = eventType;
@@ -85,7 +86,7 @@ export class OutboxMessage {
     /**
      * Returns the aggregate identifier.
      */
-    get aggregateId(): string {
+    get aggregateId(): Identity {
         return this._aggregateId;
     }
 
