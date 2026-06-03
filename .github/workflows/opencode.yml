@@ -33,7 +33,7 @@ jobs:
                   model: 'opencode/minimax-m2.7'
                   agent: |
                       ---
-                      name: orchestratorrrrrrr
+                      name: orchestrator
                       description: Routes GitHub-triggered /oc and /opencode commands on issues and pull requests to specialized subagents. GitHub-only entry point — not for local CLI invocation.
                       mode: primary
                       temperature: 0.1
