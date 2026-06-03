@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { InMemoryEventMapper } from './InMemoryEventMapper';
-import { DomainEvent } from '#common/domain/events/DomainEvent';
+import { PayloadDomainEvent } from '#common/domain/events/DomainEvent';
 
-class SimpleEvent implements DomainEvent<{ value: string }> {
+class SimpleEvent implements PayloadDomainEvent<{ value: string }> {
     public readonly type = 'SimpleEvent';
     public readonly payload: { value: string };
 
@@ -11,7 +11,7 @@ class SimpleEvent implements DomainEvent<{ value: string }> {
     }
 }
 
-class EmptyPayloadEvent implements DomainEvent<Record<string, never>> {
+class EmptyPayloadEvent implements PayloadDomainEvent<Record<string, never>> {
     public readonly type = 'EmptyPayloadEvent';
     public readonly payload: Record<string, never> = {};
 }

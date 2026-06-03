@@ -1,9 +1,11 @@
-import { InMemoryOutboxMessageEventMapper } from '../db/inMemory/outbox/InMemoryOutboxMessageEventMapper';
+import { DomainEventDeserializer } from '#matchmaking/domain/outbox/DomainEventDeserializer';
 import { OutboxMessage } from '#matchmaking/domain/outbox/OutboxMessage';
 import { OutboxObserver } from '#matchmaking/domain/outbox/OutboxObserver';
 import { OutboxRepository } from '#matchmaking/domain/outbox/OutboxRepository';
-import { DomainEvent } from '#common/domain/events/DomainEvent';
 import { EventBus } from '#common/usecase/EventBus';
+import { UseCaseEvent } from '#common/usecase/events/UseCaseEvent';
+import { DomainEvent } from '#common/domain/events/DomainEvent';
+import { Identity } from '#common/domain/aggregate/AggregateRoot';
 
 /**
  * Processor that asynchronously handles outbox messages.
@@ -20,7 +22,8 @@ export class OutboxProcessor implements OutboxObserver {
 
     constructor(
         private readonly outboxRepository: OutboxRepository,
-        private readonly eventBus: EventBus
+        private readonly eventBus: EventBus,
+        private readonly deserializer: DomainEventDeserializer
     ) {}
 
     /**
@@ -47,8 +50,8 @@ export class OutboxProcessor implements OutboxObserver {
             const message = this.queue.shift()!;
 
             try {
-                const domainEvent = this.toDomainEvent(message);
-                this.eventBus.publish(domainEvent);
+                const useCaseEvent = this.toUseCaseEvent(message);
+                this.eventBus.publish(useCaseEvent);
             } catch (err) {
                 console.error(`Failed to process outbox message ${message.id.value}:`, err);
             }
@@ -57,7 +60,13 @@ export class OutboxProcessor implements OutboxObserver {
         this.isProcessing = false;
     }
 
-    private toDomainEvent(message: OutboxMessage): DomainEvent {
-        return InMemoryOutboxMessageEventMapper.toDomainEvent(message);
+    private toUseCaseEvent(message: OutboxMessage): UseCaseEvent<DomainEvent, Identity> {
+        const domainEvent = this.deserializer.deserialize(
+            message.eventType,
+            message.aggregateId,
+            message.eventPayload
+        );
+
+        return { aggregateId: message.aggregateId, event: domainEvent };
     }
 }

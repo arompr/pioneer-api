@@ -21,15 +21,15 @@ This skill operationalizes `.opencode/rules/github-pr-workflow.md` for the local
 The procedure has **two mandatory user confirmation gates**:
 
 - **Gate A — Before branch creation and edits.** Show:
-    - The matched reviewer comment(s) (author, file:line, body)
-    - The proposed new branch name
-    - The files expected to be touched
-    - The chosen complexity tier and coder subagent (`coder-nano` / `coder-medium` / `coder-large`)
+  - The matched reviewer comment(s) (author, file:line, body)
+  - The proposed new branch name
+  - The files expected to be touched
+  - The chosen complexity tier and coder subagent (`coder-nano` / `coder-medium` / `coder-large`)
 - **Gate B — Before push, PR creation, and reply.** Show:
-    - The new branch name and the target base (= original PR's head branch)
-    - The proposed PR title
-    - The proposed PR body (preview)
-    - The planned reply text on the original reviewer comment
+  - The new branch name and the target base (= original PR's head branch)
+  - The proposed PR title
+  - The proposed PR body (preview)
+  - The planned reply text on the original reviewer comment
 
 Do not proceed past a gate without explicit user confirmation.
 
@@ -201,7 +201,6 @@ Print a concise summary:
 - New PR URL
 - Files changed
 - Validation status
-- Reply status (success / fallback posted / failure)
 
 ---
 

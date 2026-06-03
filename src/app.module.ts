@@ -11,6 +11,7 @@ import { JWT_TOKEN_SERVICE, type JwtTokenService } from '#matchmaking/domain/aut
 import { MarkPendingUseCase } from '#matchmaking/usecase/MarkPendingUseCase';
 import { processorProviders } from '#matchmaking/interface/http/lobby/providers/processors';
 import { eventBusProviders } from '#matchmaking/interface/http/lobby/providers/eventBus';
+import { deserializerProviders } from '#matchmaking/interface/http/lobby/providers/deserializer';
 
 @Module({
     imports: [LobbyModule],
@@ -41,6 +42,7 @@ import { eventBusProviders } from '#matchmaking/interface/http/lobby/providers/e
         },
         ...processorProviders,
         ...eventBusProviders,
+        ...deserializerProviders,
     ],
 })
 export class AppModule {}
