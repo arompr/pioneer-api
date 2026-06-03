@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { LobbyModule } from '#matchmaking/interface/http/lobby/lobby.module';
+import { GameConfigModule } from '#game/interface/http/gameconfig/gameconfig.module';
 import { LobbyGateway } from '#matchmaking/interface/ws/LobbyGatewayWs';
 import { WsCommandDispatcher } from '#matchmaking/interface/ws/command/WsCommandDispatcher';
 import { registerWsHandlers } from '#bootstrap/wsCommandhandlers';
@@ -14,7 +15,7 @@ import { eventBusProviders } from '#matchmaking/interface/http/lobby/providers/e
 import { deserializerProviders } from '#matchmaking/interface/http/lobby/providers/deserializer';
 
 @Module({
-    imports: [LobbyModule],
+    imports: [LobbyModule, GameConfigModule],
     controllers: [AppController],
     providers: [
         AppService,

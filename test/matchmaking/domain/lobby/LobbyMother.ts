@@ -31,12 +31,26 @@ export class LobbyMother {
     }
 
     /**
-     * Builds a basic lobby with 1 player and no gameConfigId (backward compatibility).
+     * Builds a basic lobby with 1 player and no gameConfigId.
      *
      * @returns {{lobby: Lobby; players: Player[]}} The created lobby and its players.
      */
     static baseLobby(): { lobby: Lobby; players: Player[] } {
         return this.buildLobbyWithState(new WaitingForPlayersState(), 1, 0, undefined);
+    }
+
+    /**
+     * Builds a basic lobby with 1 player and a default gameConfigId.
+     *
+     * @returns {{lobby: Lobby; players: Player[]}} The created lobby and its players.
+     */
+    static baseLobbyWithDefaultConfig(): { lobby: Lobby; players: Player[] } {
+        return this.buildLobbyWithState(
+            new WaitingForPlayersState(),
+            1,
+            0,
+            this.DEFAULT_GAME_CONFIG_ID
+        );
     }
 
     /**

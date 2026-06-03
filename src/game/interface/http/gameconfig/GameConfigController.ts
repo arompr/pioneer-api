@@ -38,6 +38,28 @@ export class GameConfigController {
     }
 
     /**
+     * Creates a default game configuration for the given game mode.
+     *
+     * @param {CreateDefaultGameConfigRequest} request - The request body containing the game mode.
+     * @returns {GameConfigResponse} The created game configuration.
+     *
+     * @example
+     * POST /gameconfigs/default
+     * {
+     *   "gameMode": "BASE"
+     * }
+     */
+    @Post('default')
+    @HttpCode(HttpStatus.CREATED)
+    createDefault(@Body() request: CreateDefaultGameConfigRequest): GameConfigResponse {
+        const { createdConfig } = this.createDefaultGameConfig.execute({
+            gameMode: request.gameMode,
+        });
+
+        return GameConfigMapper.toGameConfigResponse(createdConfig);
+    }
+
+    /**
      * Retrieves a game configuration by its unique identifier.
      *
      * @param {string} id - The game config ID provided in the URL path.

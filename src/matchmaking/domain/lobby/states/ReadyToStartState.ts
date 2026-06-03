@@ -27,8 +27,6 @@ export class ReadyToStartState extends LobbyState {
      * Joining is allowed in this state, but may cause the lobby to lose
      * its "ready to start" status if the new player is not ready.
      *
-     * Note: Capacity validation is handled at the use case level via GameGateway.
-     *
      * @param {Player} player - The player attempting to join.
      */
     join(player: Player): void {

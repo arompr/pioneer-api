@@ -7,10 +7,11 @@ import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
 import { LobbyNotFoundError } from '#matchmaking/usecase/errors/LobbyNotFoundError';
 import { OutboxService } from '#matchmaking/domain/outbox/OutboxService';
 import type { JwtTokenService } from '#matchmaking/domain/auth/JwtTokenService';
+import type { GameGateway } from '#matchmaking/domain/gateway/GameGateway';
 
 const PLAYER_NAME = 'newPlayer';
 const TOKEN = 'mock-jwt-token';
-const { lobby, players } = LobbyMother.baseLobby();
+const { lobby, players } = LobbyMother.baseLobbyWithDefaultConfig();
 const playerToJoin = players[1];
 
 const mockLobbyRepository: Partial<LobbyRepository> = {
@@ -26,6 +27,9 @@ const mockOutboxService: Partial<OutboxService> = {
 const mockJwtTokenService: Partial<JwtTokenService> = {
     encode: vi.fn().mockReturnValue(TOKEN),
 };
+const mockGameGateway: Partial<GameGateway> = {
+    validatePlayerCount: vi.fn().mockResolvedValue(true),
+};
 
 let useCase: JoinLobbyUseCase;
 
@@ -35,19 +39,24 @@ describe('JoinLobbyUseCase', () => {
             mockLobbyRepository as LobbyRepository,
             mockPlayerFactory as PlayerFactory,
             mockOutboxService as OutboxService,
-            mockJwtTokenService as JwtTokenService
+            mockJwtTokenService as JwtTokenService,
+            mockGameGateway as GameGateway
         );
         vi.clearAllMocks();
     });
 
     describe('execute', () => {
         describe('when lobby exists', () => {
-            it('should add player to lobby, save it, and return a token', () => {
+            it('should validate capacity, add player to lobby, save it, and return a token', async () => {
                 const dto = new JoinLobbyDto(lobby.id, PLAYER_NAME);
 
-                const result = useCase.execute(dto);
+                const result = await useCase.execute(dto);
 
                 expect(mockLobbyRepository.findById).toHaveBeenCalledWith(lobby.id);
+                expect(mockGameGateway.validatePlayerCount).toHaveBeenCalledWith(
+                    lobby.gameConfigId!.value,
+                    2
+                );
                 expect(mockPlayerFactory.create).toHaveBeenCalledWith(PLAYER_NAME);
                 expect(mockLobbyRepository.save).toHaveBeenCalledWith(lobby);
                 expect(mockJwtTokenService.encode).toHaveBeenCalledWith(playerToJoin.id, lobby.id);
@@ -58,11 +67,23 @@ describe('JoinLobbyUseCase', () => {
         });
 
         describe('when lobby does not exist', () => {
-            it('should throw LobbyNotFoundError', () => {
+            it('should throw LobbyNotFoundError', async () => {
                 mockLobbyRepository.findById = vi.fn().mockReturnValue(null);
                 const dto = new JoinLobbyDto(lobby.id, PLAYER_NAME);
 
-                expect(() => useCase.execute(dto)).toThrow(LobbyNotFoundError);
+                await expect(useCase.execute(dto)).rejects.toThrow(LobbyNotFoundError);
+            });
+        });
+
+        describe('when lobby has no gameConfigId', () => {
+            it('should throw Error', async () => {
+                const { lobby: lobbyWithoutConfig } = LobbyMother.baseLobby();
+                mockLobbyRepository.findById = vi.fn().mockReturnValue(lobbyWithoutConfig);
+                const dto = new JoinLobbyDto(lobbyWithoutConfig.id, PLAYER_NAME);
+
+                await expect(useCase.execute(dto)).rejects.toThrow(
+                    'Lobby has no associated game configuration'
+                );
             });
         });
     });

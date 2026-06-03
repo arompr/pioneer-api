@@ -16,18 +16,28 @@ export class GameGatewayImpl implements GameGateway {
     constructor(private readonly httpService: HttpService) {}
 
     public async createDefaultConfig(gameModeString: string): Promise<{ configId: string }> {
-        const url = `${this.gameServiceBaseUrl}/api/gameconfig/default`;
+        const url = `${this.gameServiceBaseUrl}/gameconfigs/default`;
         const response = await firstValueFrom(
-            this.httpService.post<{ configId: string }>(url, { gameMode: gameModeString })
+            this.httpService.post<{ id: string }>(url, { gameMode: gameModeString })
         );
-        return (response as AxiosResponse<{ configId: string }>).data;
+        return { configId: (response as AxiosResponse<{ id: string }>).data.id };
     }
 
     public async validatePlayerCount(configId: string, currentPlayers: number): Promise<boolean> {
-        const url = `${this.gameServiceBaseUrl}/api/gameconfig/${configId}/validate-player-count`;
+        const url = `${this.gameServiceBaseUrl}/gameconfigs/${configId}`;
         const response = await firstValueFrom(
-            this.httpService.post<{ valid: boolean }>(url, { playerCount: currentPlayers })
+            this.httpService.get<{ minPlayers: number; maxPlayers: number }>(url)
         );
-        return (response as AxiosResponse<{ valid: boolean }>).data.valid;
+        const { minPlayers, maxPlayers } = (
+            response as AxiosResponse<{ minPlayers: number; maxPlayers: number }>
+        ).data;
+
+        if (currentPlayers < minPlayers) {
+            throw new Error(`Player count ${currentPlayers} is below minimum ${minPlayers}`);
+        }
+        if (currentPlayers > maxPlayers) {
+            throw new Error(`Player count ${currentPlayers} exceeds maximum ${maxPlayers}`);
+        }
+        return true;
     }
 }

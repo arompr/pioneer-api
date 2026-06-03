@@ -6,6 +6,7 @@ import { PlayerFactory } from '#matchmaking/domain/player/PlayerFactory';
 import { OutboxService } from '#matchmaking/domain/outbox/OutboxService';
 import { JwtTokenService } from '#matchmaking/domain/auth/JwtTokenService';
 import { GameConfigId } from '#matchmaking/domain/gameConfig/GameConfigId';
+import type { GameGateway } from '#matchmaking/domain/gateway/GameGateway';
 import { CreateLobbyDto } from './dto/CreateLobbyDto';
 
 export type CreateLobbyResult = {
@@ -20,20 +21,31 @@ export class CreateLobbyUseCase {
         private readonly lobbyFactory: LobbyFactory,
         private readonly playerFactory: PlayerFactory,
         private readonly outboxService: OutboxService,
-        private readonly jwtTokenService: JwtTokenService
+        private readonly jwtTokenService: JwtTokenService,
+        private readonly gameGateway: GameGateway
     ) {}
 
     /**
      * Creates a new lobby.
      * If gameConfigId is provided, it associates the lobby with that configuration.
+     * Otherwise, a default configuration is created via GameGateway.
      *
      * @param {CreateLobbyDto} dto - The DTO containing hostName and optional gameConfigId
-     * @returns {CreateLobbyResult} The created lobby, host player, and JWT token
+     * @returns {Promise<CreateLobbyResult>} The created lobby, host player, and JWT token
      */
-    execute(dto: CreateLobbyDto): CreateLobbyResult {
-        const gameConfigId = dto.gameConfigId ? new GameConfigId(dto.gameConfigId) : undefined;
-        const createdHostPlayer = this.playerFactory.create(dto.hostName);
+    async execute(dto: CreateLobbyDto): Promise<CreateLobbyResult> {
+        let gameConfigId: GameConfigId;
 
+        if (dto.gameConfigId) {
+            gameConfigId = new GameConfigId(dto.gameConfigId);
+        } else {
+            const result = await this.gameGateway.createDefaultConfig('BASE');
+            gameConfigId = new GameConfigId(result.configId);
+        }
+
+        await this.gameGateway.validatePlayerCount(gameConfigId.value, 1);
+
+        const createdHostPlayer = this.playerFactory.create(dto.hostName);
         const createdLobby = this.lobbyFactory.create(createdHostPlayer, gameConfigId);
 
         this.lobbyRepository.save(createdLobby);

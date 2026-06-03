@@ -21,8 +21,6 @@ export class WaitingForPlayersState extends LobbyState {
     /**
      * Adds a player to the lobby.
      *
-     * Note: Capacity validation is handled at the use case level via GameGateway.
-     *
      * @param {Player} player - The player attempting to join.
      */
     join(player: Player): void {

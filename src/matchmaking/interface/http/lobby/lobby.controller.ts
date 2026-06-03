@@ -55,14 +55,14 @@ export class LobbyController {
      * }
      */
     @Post()
-    create(@Body() createLobbyRequest: CreateLobbyRequest): CreateLobbyResponse {
+    async create(@Body() createLobbyRequest: CreateLobbyRequest): Promise<CreateLobbyResponse> {
         const createdLobbyDto: CreateLobbyDto = {
             hostName: createLobbyRequest.hostName,
             gameConfigId: createLobbyRequest.gameConfigId,
         };
 
         const { createdLobby, createdHostPlayer, token } =
-            this.createLobby.execute(createdLobbyDto);
+            await this.createLobby.execute(createdLobbyDto);
 
         return {
             lobby: LobbyMapper.toLobbyResponse(createdLobby),
@@ -84,10 +84,13 @@ export class LobbyController {
      * }
      */
     @Post(':id/join')
-    join(@Param('id') id: string, @Body() joinRequest: JoinLobbyRequest): JoinLobbyResponse {
+    async join(
+        @Param('id') id: string,
+        @Body() joinRequest: JoinLobbyRequest
+    ): Promise<JoinLobbyResponse> {
         const dto: JoinLobbyDto = { lobbyId: new LobbyId(id), playerName: joinRequest.playerName };
 
-        const { lobby, joinedPlayer, token } = this.joinLobby.execute(dto);
+        const { lobby, joinedPlayer, token } = await this.joinLobby.execute(dto);
 
         return {
             lobby: LobbyMapper.toLobbyResponse(lobby),

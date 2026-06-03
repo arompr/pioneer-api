@@ -10,6 +10,7 @@ import { OutboxService } from '#matchmaking/domain/outbox/OutboxService';
 import { MarkReadyUseCase } from '#matchmaking/usecase/MarkReadyUseCase';
 import { JWT_TOKEN_SERVICE, JwtTokenService } from '#matchmaking/domain/auth/JwtTokenService';
 import { MarkPendingUseCase } from '#matchmaking/usecase/MarkPendingUseCase';
+import { GAME_GATEWAY, GameGateway } from '#matchmaking/domain/gateway/GameGateway';
 
 export const useCaseProviders: Provider[] = [
     {
@@ -27,16 +28,25 @@ export const useCaseProviders: Provider[] = [
             lobbyFactory: LobbyFactory,
             playerFactory: PlayerFactory,
             outboxService: OutboxService,
-            jwtTokenService: JwtTokenService
+            jwtTokenService: JwtTokenService,
+            gameGateway: GameGateway
         ) =>
             new CreateLobbyUseCase(
                 lobbyRepository,
                 lobbyFactory,
                 playerFactory,
                 outboxService,
-                jwtTokenService
+                jwtTokenService,
+                gameGateway
             ),
-        inject: [LOBBY_REPOSITORY, LobbyFactory, PlayerFactory, OutboxService, JWT_TOKEN_SERVICE],
+        inject: [
+            LOBBY_REPOSITORY,
+            LobbyFactory,
+            PlayerFactory,
+            OutboxService,
+            JWT_TOKEN_SERVICE,
+            GAME_GATEWAY,
+        ],
     },
 
     {
@@ -45,9 +55,17 @@ export const useCaseProviders: Provider[] = [
             lobbyRepository: LobbyRepository,
             playerFactory: PlayerFactory,
             outboxService: OutboxService,
-            jwtTokenService: JwtTokenService
-        ) => new JoinLobbyUseCase(lobbyRepository, playerFactory, outboxService, jwtTokenService),
-        inject: [LOBBY_REPOSITORY, PlayerFactory, OutboxService, JWT_TOKEN_SERVICE],
+            jwtTokenService: JwtTokenService,
+            gameGateway: GameGateway
+        ) =>
+            new JoinLobbyUseCase(
+                lobbyRepository,
+                playerFactory,
+                outboxService,
+                jwtTokenService,
+                gameGateway
+            ),
+        inject: [LOBBY_REPOSITORY, PlayerFactory, OutboxService, JWT_TOKEN_SERVICE, GAME_GATEWAY],
     },
     {
         provide: LeaveLobbyUseCase,

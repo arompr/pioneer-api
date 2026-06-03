@@ -100,10 +100,9 @@ export class Lobby extends AggregateRoot implements ILobby {
     }
 
     /**
-     * Adds a player to the lobby if there is still room.
+     * Adds a player to the lobby.
      *
      * @param {Player} player - The player to add to the lobby.
-     * @throws {LobbyFullError} If the lobby has already reached its maximum capacity.
      * @throws {PlayerAlreadyInLobbyError} If the player is already present in the lobby.
      */
     join(player: Player): void {
