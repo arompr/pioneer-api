@@ -7,7 +7,7 @@ import { CreateLobbyDto } from '#matchmaking/usecase/dto/CreateLobbyDto';
 import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
 import { OutboxService } from '#matchmaking/domain/outbox/OutboxService';
 import type { JwtTokenService } from '#matchmaking/domain/auth/JwtTokenService';
-import type { GameGateway } from '#matchmaking/domain/gateway/GameGateway';
+import type { IGameGateway } from '#matchmaking/domain/gateway/GameGateway';
 
 const PLAYER_NAME = 'hostName';
 const { lobby, players } = LobbyMother.baseLobby();
@@ -24,8 +24,8 @@ const mockOutboxService: Partial<OutboxService> = { publishEvents: vi.fn() };
 const mockJwtTokenService: Partial<JwtTokenService> = {
     encode: vi.fn().mockReturnValue(TOKEN),
 };
-const mockGameGateway: Partial<GameGateway> = {
-    createDefaultConfig: vi.fn().mockResolvedValue({ configId: 'default-config-id' }),
+const mockGameGateway: Partial<IGameGateway> = {
+    createConfig: vi.fn().mockResolvedValue({ configId: 'default-config-id' }),
     validatePlayerCount: vi.fn().mockResolvedValue(true),
 };
 
@@ -40,7 +40,7 @@ describe('CreateLobbyUseCase', () => {
             mockPlayerFactory as PlayerFactory,
             mockOutboxService as OutboxService,
             mockJwtTokenService as JwtTokenService,
-            mockGameGateway as GameGateway
+            mockGameGateway as IGameGateway
         );
     });
 
@@ -48,7 +48,7 @@ describe('CreateLobbyUseCase', () => {
         it('creates and saves the new lobby with default config, and returns a token', async () => {
             const result = await useCase.execute(new CreateLobbyDto(PLAYER_NAME));
 
-            expect(mockGameGateway.createDefaultConfig).toHaveBeenCalledWith('BASE');
+            expect(mockGameGateway.createConfig).toHaveBeenCalledWith('BASE');
             expect(mockGameGateway.validatePlayerCount).toHaveBeenCalledWith(
                 'default-config-id',
                 1
@@ -70,7 +70,7 @@ describe('CreateLobbyUseCase', () => {
                 new CreateLobbyDto(PLAYER_NAME, 'provided-config-id')
             );
 
-            expect(mockGameGateway.createDefaultConfig).not.toHaveBeenCalled();
+            expect(mockGameGateway.createConfig).not.toHaveBeenCalled();
             expect(mockGameGateway.validatePlayerCount).toHaveBeenCalledWith(
                 'provided-config-id',
                 1

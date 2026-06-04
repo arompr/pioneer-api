@@ -3,16 +3,16 @@ export const GAME_GATEWAY = Symbol('GameGateway');
 /**
  * Gateway interface for matchmaking to interact with game domain.
  */
-export interface GameGateway {
+export interface IGameGateway {
     /**
-     * Creates a default game configuration for the given game mode.
+     * Creates a game configuration for the given game mode.
      * Delegates config creation to the game domain.
      *
      * @param {string} gameModeString - The game mode as a string (e.g., 'BASE')
      * @returns {Promise<{ configId: string }>} The created config ID
      * @throws If the game mode is not supported
      */
-    createDefaultConfig(gameModeString: string): Promise<{ configId: string }>;
+    createConfig(gameModeString: string): Promise<{ configId: string }>;
 
     /**
      * Validates if the current player count is valid for the given game config.

@@ -7,7 +7,7 @@ import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
 import { LobbyNotFoundError } from '#matchmaking/usecase/errors/LobbyNotFoundError';
 import { OutboxService } from '#matchmaking/domain/outbox/OutboxService';
 import type { JwtTokenService } from '#matchmaking/domain/auth/JwtTokenService';
-import type { GameGateway } from '#matchmaking/domain/gateway/GameGateway';
+import type { IGameGateway } from '#matchmaking/domain/gateway/GameGateway';
 
 const PLAYER_NAME = 'newPlayer';
 const TOKEN = 'mock-jwt-token';
@@ -27,7 +27,7 @@ const mockOutboxService: Partial<OutboxService> = {
 const mockJwtTokenService: Partial<JwtTokenService> = {
     encode: vi.fn().mockReturnValue(TOKEN),
 };
-const mockGameGateway: Partial<GameGateway> = {
+const mockGameGateway: Partial<IGameGateway> = {
     validatePlayerCount: vi.fn().mockResolvedValue(true),
 };
 
@@ -40,7 +40,7 @@ describe('JoinLobbyUseCase', () => {
             mockPlayerFactory as PlayerFactory,
             mockOutboxService as OutboxService,
             mockJwtTokenService as JwtTokenService,
-            mockGameGateway as GameGateway
+            mockGameGateway as IGameGateway
         );
         vi.clearAllMocks();
     });

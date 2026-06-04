@@ -4,7 +4,7 @@ import { HttpModule } from '@nestjs/axios';
 import { LobbyController } from './lobby.controller';
 import { lobbyProviders } from './providers';
 import { GAME_GATEWAY } from '#matchmaking/domain/gateway/GameGateway';
-import { GameGatewayImpl } from '#matchmaking/infrastructure/gateway/GameGatewayImpl';
+import { MatchmakingGameGateway } from '#matchmaking/infrastructure/gateway/MatchmakingGameGateway';
 
 @Module({
     imports: [
@@ -18,7 +18,7 @@ import { GameGatewayImpl } from '#matchmaking/infrastructure/gateway/GameGateway
         ...lobbyProviders,
         {
             provide: GAME_GATEWAY,
-            useClass: GameGatewayImpl,
+            useClass: MatchmakingGameGateway,
         },
     ],
     exports: [...lobbyProviders],

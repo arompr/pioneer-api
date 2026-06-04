@@ -1,22 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import type { GameGateway } from '#matchmaking/domain/gateway/GameGateway';
+import type { IGameGateway } from '#matchmaking/domain/gateway/GameGateway';
 import { firstValueFrom } from 'rxjs';
 import type { AxiosResponse } from 'axios';
 
 /**
- * HTTP-based implementation of GameGateway.
+ * HTTP-based implementation of IGameGateway.
  * Calls game slice REST endpoints for configuration operations.
  * Enables clean separation and prepares for future microservices evolution.
  */
 @Injectable()
-export class GameGatewayImpl implements GameGateway {
+export class MatchmakingGameGateway implements IGameGateway {
     private readonly gameServiceBaseUrl = process.env.GAME_SERVICE_URL || 'http://localhost:3000';
 
     constructor(private readonly httpService: HttpService) {}
 
-    public async createDefaultConfig(gameModeString: string): Promise<{ configId: string }> {
-        const url = `${this.gameServiceBaseUrl}/gameconfigs/default`;
+    public async createConfig(gameModeString: string): Promise<{ configId: string }> {
+        const url = `${this.gameServiceBaseUrl}/gameconfigs`;
         const response = await firstValueFrom(
             this.httpService.post<{ id: string }>(url, { gameMode: gameModeString })
         );

@@ -6,7 +6,7 @@ import { OutboxService } from '#matchmaking/domain/outbox/OutboxService';
 import { JwtTokenService } from '#matchmaking/domain/auth/JwtTokenService';
 import { JoinLobbyDto } from './dto/JoinLobbyDto';
 import { LobbyNotFoundError } from './errors/LobbyNotFoundError';
-import type { GameGateway } from '#matchmaking/domain/gateway/GameGateway';
+import type { IGameGateway } from '#matchmaking/domain/gateway/GameGateway';
 
 export type JoinLobbyResult = {
     lobby: LobbyAggregate;
@@ -20,7 +20,7 @@ export class JoinLobbyUseCase {
         private readonly playerFactory: PlayerFactory,
         private readonly outboxService: OutboxService,
         private readonly jwtTokenService: JwtTokenService,
-        private readonly gameGateway: GameGateway
+        private readonly gameGateway: IGameGateway
     ) {}
 
     async execute(dto: JoinLobbyDto): Promise<JoinLobbyResult> {

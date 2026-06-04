@@ -10,7 +10,7 @@ import { OutboxService } from '#matchmaking/domain/outbox/OutboxService';
 import { MarkReadyUseCase } from '#matchmaking/usecase/MarkReadyUseCase';
 import { JWT_TOKEN_SERVICE, JwtTokenService } from '#matchmaking/domain/auth/JwtTokenService';
 import { MarkPendingUseCase } from '#matchmaking/usecase/MarkPendingUseCase';
-import { GAME_GATEWAY, GameGateway } from '#matchmaking/domain/gateway/GameGateway';
+import { GAME_GATEWAY, IGameGateway } from '#matchmaking/domain/gateway/GameGateway';
 
 export const useCaseProviders: Provider[] = [
     {
@@ -29,7 +29,7 @@ export const useCaseProviders: Provider[] = [
             playerFactory: PlayerFactory,
             outboxService: OutboxService,
             jwtTokenService: JwtTokenService,
-            gameGateway: GameGateway
+            gameGateway: IGameGateway
         ) =>
             new CreateLobbyUseCase(
                 lobbyRepository,
@@ -56,7 +56,7 @@ export const useCaseProviders: Provider[] = [
             playerFactory: PlayerFactory,
             outboxService: OutboxService,
             jwtTokenService: JwtTokenService,
-            gameGateway: GameGateway
+            gameGateway: IGameGateway
         ) =>
             new JoinLobbyUseCase(
                 lobbyRepository,

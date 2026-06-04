@@ -6,7 +6,7 @@ import { PlayerFactory } from '#matchmaking/domain/player/PlayerFactory';
 import { OutboxService } from '#matchmaking/domain/outbox/OutboxService';
 import { JwtTokenService } from '#matchmaking/domain/auth/JwtTokenService';
 import { GameConfigId } from '#matchmaking/domain/gameConfig/GameConfigId';
-import type { GameGateway } from '#matchmaking/domain/gateway/GameGateway';
+import type { IGameGateway } from '#matchmaking/domain/gateway/GameGateway';
 import { CreateLobbyDto } from './dto/CreateLobbyDto';
 
 export type CreateLobbyResult = {
@@ -22,7 +22,7 @@ export class CreateLobbyUseCase {
         private readonly playerFactory: PlayerFactory,
         private readonly outboxService: OutboxService,
         private readonly jwtTokenService: JwtTokenService,
-        private readonly gameGateway: GameGateway
+        private readonly gameGateway: IGameGateway
     ) {}
 
     /**
@@ -39,7 +39,7 @@ export class CreateLobbyUseCase {
         if (dto.gameConfigId) {
             gameConfigId = new GameConfigId(dto.gameConfigId);
         } else {
-            const result = await this.gameGateway.createDefaultConfig('BASE');
+            const result = await this.gameGateway.createConfig('BASE');
             gameConfigId = new GameConfigId(result.configId);
         }
 
