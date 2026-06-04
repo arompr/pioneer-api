@@ -6,7 +6,7 @@ describe('InMemoryLobbyMapper', () => {
     describe('toInMemory', () => {
         it.each([
             ['a base lobby', () => LobbyMother.baseLobby()],
-            ['a base lobby with gameConfigId', () => LobbyMother.baseLobbyWithGameConfigId()],
+            ['a base lobby with gameConfigId', () => LobbyMother.baseLobby()],
             ['a full in-game lobby', () => LobbyMother.inGameLobby()],
             ['an empty closed lobby', () => LobbyMother.inClosedLobby()],
             ['a ready-to-start lobby', () => LobbyMother.readyToStartLobby()],
@@ -19,7 +19,7 @@ describe('InMemoryLobbyMapper', () => {
             expect(imLobby.hostId).toBe(lobby.hostId.value);
             expect(imLobby.state).toBe(lobby.stateType);
             expect(imLobby.players.length).toBe(lobby.playerCount);
-            expect(imLobby.gameConfigId).toBe(lobby.gameConfigId?.value);
+            expect(imLobby.gameConfigId).toBe(lobby.gameConfigId.value);
             lobby.allPlayers.forEach((original, index) => {
                 const imPlayer = imLobby.players[index];
                 expect(imPlayer.id).toBe(original.id.value);
@@ -32,7 +32,7 @@ describe('InMemoryLobbyMapper', () => {
     describe('toDomain', () => {
         it.each([
             ['a base lobby', () => LobbyMother.baseLobby()],
-            ['a base lobby with gameConfigId', () => LobbyMother.baseLobbyWithGameConfigId()],
+            ['a base lobby with gameConfigId', () => LobbyMother.baseLobby()],
             ['a full in-game lobby', () => LobbyMother.inGameLobby()],
             ['an empty closed lobby', () => LobbyMother.inClosedLobby()],
             ['a ready-to-start lobby', () => LobbyMother.readyToStartLobby()],

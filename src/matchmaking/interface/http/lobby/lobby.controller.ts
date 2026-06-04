@@ -58,7 +58,6 @@ export class LobbyController {
     async create(@Body() createLobbyRequest: CreateLobbyRequest): Promise<CreateLobbyResponse> {
         const createdLobbyDto: CreateLobbyDto = {
             hostName: createLobbyRequest.hostName,
-            gameConfigId: createLobbyRequest.gameConfigId,
         };
 
         const { createdLobby, createdHostPlayer, token } =

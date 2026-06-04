@@ -15,7 +15,7 @@ export class InMemoryLobbyMapper {
             lobby.hostId.value,
             lobby.allPlayers.map((p) => InMemoryPlayerMapper.toInMemory(p)),
             lobby.stateType,
-            lobby.gameConfigId ? lobby.gameConfigId.value : undefined
+            lobby.gameConfigId.value
         );
     }
 
@@ -24,9 +24,7 @@ export class InMemoryLobbyMapper {
             imLobby.players.map((p) => InMemoryPlayerMapper.toDomain(p))
         );
         const state = LobbyStateRegistry.fromString(imLobby.state);
-        const gameConfigId = imLobby.gameConfigId
-            ? new GameConfigId(imLobby.gameConfigId)
-            : undefined;
+        const gameConfigId = new GameConfigId(imLobby.gameConfigId);
 
         return new Lobby(
             new LobbyId(imLobby.id),

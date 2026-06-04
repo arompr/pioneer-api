@@ -11,7 +11,7 @@ import type { IGameGateway } from '#matchmaking/domain/gateway/GameGateway';
 
 const PLAYER_NAME = 'newPlayer';
 const TOKEN = 'mock-jwt-token';
-const { lobby, players } = LobbyMother.baseLobbyWithDefaultConfig();
+const { lobby, players } = LobbyMother.baseLobby();
 const playerToJoin = players[1];
 
 const mockLobbyRepository: Partial<LobbyRepository> = {
@@ -54,7 +54,7 @@ describe('JoinLobbyUseCase', () => {
 
                 expect(mockLobbyRepository.findById).toHaveBeenCalledWith(lobby.id);
                 expect(mockGameGateway.validatePlayerCount).toHaveBeenCalledWith(
-                    lobby.gameConfigId!.value,
+                    lobby.gameConfigId.value,
                     2
                 );
                 expect(mockPlayerFactory.create).toHaveBeenCalledWith(PLAYER_NAME);
@@ -72,18 +72,6 @@ describe('JoinLobbyUseCase', () => {
                 const dto = new JoinLobbyDto(lobby.id, PLAYER_NAME);
 
                 await expect(useCase.execute(dto)).rejects.toThrow(LobbyNotFoundError);
-            });
-        });
-
-        describe('when lobby has no gameConfigId', () => {
-            it('should throw Error', async () => {
-                const { lobby: lobbyWithoutConfig } = LobbyMother.baseLobby();
-                mockLobbyRepository.findById = vi.fn().mockReturnValue(lobbyWithoutConfig);
-                const dto = new JoinLobbyDto(lobbyWithoutConfig.id, PLAYER_NAME);
-
-                await expect(useCase.execute(dto)).rejects.toThrow(
-                    'Lobby has no associated game configuration'
-                );
             });
         });
     });

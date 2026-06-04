@@ -4,6 +4,6 @@ import { PlayerWsResponse } from './PlayerWsResponse';
 export type LobbyWsResponse = {
     id: string;
     players: PlayerWsResponse[];
-    gameConfigId: string | undefined;
+    gameConfigId: string;
     status: string;
 };

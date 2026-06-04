@@ -8,7 +8,7 @@ export interface ILobby {
     get id(): LobbyId;
     get hostId(): PlayerId;
     get stateType(): LobbyStateType;
-    get gameConfigId(): GameConfigId | undefined;
+    get gameConfigId(): GameConfigId;
     join(player: Player): void;
     leave(id: PlayerId): void;
     start(playerId: PlayerId): void;

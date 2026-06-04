@@ -26,7 +26,7 @@ export class Lobby extends AggregateRoot implements ILobby {
     private readonly _players: LobbyPlayers;
     private _hostId: PlayerId;
     private _lobbyState: LobbyState;
-    private readonly _gameConfigId?: GameConfigId;
+    private readonly _gameConfigId: GameConfigId;
 
     /**
      * Creates a new Lobby instance.
@@ -42,7 +42,7 @@ export class Lobby extends AggregateRoot implements ILobby {
         hostId: PlayerId,
         players: LobbyPlayers,
         lobbyState: LobbyState,
-        gameConfigId?: GameConfigId
+        gameConfigId: GameConfigId
     ) {
         super();
         this._id = id;
@@ -63,11 +63,11 @@ export class Lobby extends AggregateRoot implements ILobby {
     }
 
     /**
-     * Gets the game configuration identifier if set.
+     * Gets the game configuration identifier.
      *
-     * @returns {GameConfigId | undefined} The game configuration ID, or undefined if not set.
+     * @returns {GameConfigId} The game configuration ID.
      */
-    get gameConfigId(): GameConfigId | undefined {
+    get gameConfigId(): GameConfigId {
         return this._gameConfigId;
     }
 

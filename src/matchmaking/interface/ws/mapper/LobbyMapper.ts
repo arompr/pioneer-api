@@ -12,7 +12,7 @@ export class LobbyMapper {
                 status: player.status,
                 isHost: lobby.isHost(player.id),
             })),
-            gameConfigId: lobby.gameConfigId?.value,
+            gameConfigId: lobby.gameConfigId.value,
         };
     }
 }

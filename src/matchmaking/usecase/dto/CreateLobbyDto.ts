@@ -1,9 +1,7 @@
 export class CreateLobbyDto {
     public readonly hostName: string;
-    public readonly gameConfigId: string | undefined;
 
-    constructor(hostName: string, gameConfigId: string | undefined = undefined) {
+    constructor(hostName: string) {
         this.hostName = hostName;
-        this.gameConfigId = gameConfigId;
     }
 }

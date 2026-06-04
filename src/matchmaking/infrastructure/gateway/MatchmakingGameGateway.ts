@@ -3,34 +3,34 @@ import { HttpService } from '@nestjs/axios';
 import type { IGameGateway } from '#matchmaking/domain/gateway/GameGateway';
 import { firstValueFrom } from 'rxjs';
 import type { AxiosResponse } from 'axios';
+import { CreateGameConfigUseCase } from '#game/usecase/CreateGameConfigUseCase';
+import { GetGameConfigUseCase } from '#game/usecase/GetGameConfigUseCase';
+import { GameConfigId } from '#game/domain/config/GameConfigId';
 
 /**
- * HTTP-based implementation of IGameGateway.
- * Calls game slice REST endpoints for configuration operations.
+ * InProcess based implementation of IGameGateway.
+ * Calls game slice usecases for configuration operations.
  * Enables clean separation and prepares for future microservices evolution.
  */
-@Injectable()
 export class MatchmakingGameGateway implements IGameGateway {
-    private readonly gameServiceBaseUrl = process.env.GAME_SERVICE_URL || 'http://localhost:3000';
-
-    constructor(private readonly httpService: HttpService) {}
+    constructor(
+        private readonly createGameConfigUseCase: CreateGameConfigUseCase,
+        private readonly getGameConfigUseCase: GetGameConfigUseCase
+    ) {}
 
     public async createConfig(gameModeString: string): Promise<{ configId: string }> {
-        const url = `${this.gameServiceBaseUrl}/gameconfigs`;
-        const response = await firstValueFrom(
-            this.httpService.post<{ id: string }>(url, { gameMode: gameModeString })
+        const result = await Promise.resolve(
+            this.createGameConfigUseCase.execute({ gameMode: gameModeString })
         );
-        return { configId: (response as AxiosResponse<{ id: string }>).data.id };
+        return { configId: result.createdConfig.id.value };
     }
 
     public async validatePlayerCount(configId: string, currentPlayers: number): Promise<boolean> {
-        const url = `${this.gameServiceBaseUrl}/gameconfigs/${configId}`;
-        const response = await firstValueFrom(
-            this.httpService.get<{ minPlayers: number; maxPlayers: number }>(url)
+        const result = await Promise.resolve(
+            this.getGameConfigUseCase.execute(new GameConfigId(configId))
         );
-        const { minPlayers, maxPlayers } = (
-            response as AxiosResponse<{ minPlayers: number; maxPlayers: number }>
-        ).data;
+
+        const { minPlayers, maxPlayers } = result.config;
 
         if (currentPlayers < minPlayers) {
             throw new Error(`Player count ${currentPlayers} is below minimum ${minPlayers}`);

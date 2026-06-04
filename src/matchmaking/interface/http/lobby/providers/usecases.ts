@@ -28,16 +28,14 @@ export const useCaseProviders: Provider[] = [
             lobbyFactory: LobbyFactory,
             playerFactory: PlayerFactory,
             outboxService: OutboxService,
-            jwtTokenService: JwtTokenService,
-            gameGateway: IGameGateway
+            jwtTokenService: JwtTokenService
         ) =>
             new CreateLobbyUseCase(
                 lobbyRepository,
                 lobbyFactory,
                 playerFactory,
                 outboxService,
-                jwtTokenService,
-                gameGateway
+                jwtTokenService
             ),
         inject: [
             LOBBY_REPOSITORY,

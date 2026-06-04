@@ -22,6 +22,7 @@ describe('LobbyMapper', () => {
             expect(lobbyWsResponse.id).toBe(lobby.id.value);
             expect(lobbyWsResponse.status).toBe(lobby.stateType);
             expect(lobbyWsResponse.players).toHaveLength(lobby.allPlayers.length);
+            expect(lobbyWsResponse.gameConfigId).toBe(lobby.gameConfigId.value);
             expect(playerResponse.id).toBe(player1.id.value);
             expect(playerResponse.name).toBe(player1.name);
             expect(playerResponse.isHost).toBe(lobby.isHost(player1.id));

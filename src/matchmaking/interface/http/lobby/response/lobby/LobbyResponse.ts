@@ -4,6 +4,6 @@ import { PlayerResponse } from '../player/PlayerResponse';
 export type LobbyResponse = {
     id: string;
     players: PlayerResponse[];
-    gameConfigId: string | undefined;
+    gameConfigId: string;
     status: string;
 };

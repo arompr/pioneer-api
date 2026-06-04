@@ -29,10 +29,6 @@ export class JoinLobbyUseCase {
             throw new LobbyNotFoundError(dto.lobbyId);
         }
 
-        if (!lobby.gameConfigId) {
-            throw new Error('Lobby has no associated game configuration');
-        }
-
         const projectedPlayerCount = lobby.playerCount + 1;
         await this.gameGateway.validatePlayerCount(lobby.gameConfigId.value, projectedPlayerCount);
 
