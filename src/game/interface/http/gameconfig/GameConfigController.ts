@@ -1,6 +1,6 @@
 import { Controller, Post, Get, Body, Param, HttpStatus, HttpCode } from '@nestjs/common';
-import { CreateDefaultGameConfigRequest } from './request/CreateDefaultGameConfigRequest';
-import { CreateDefaultGameConfigUseCase } from '#game/usecase/CreateDefaultGameConfigUseCase';
+import { CreateGameConfigRequest } from './request/CreateDefaultGameConfigRequest';
+import { CreateGameConfigUseCase } from '#game/usecase/CreateGameConfigUseCase';
 import { GetGameConfigUseCase } from '#game/usecase/GetGameConfigUseCase';
 import { GameConfigId } from '#game/domain/config/GameConfigId';
 import { GameConfigMapper } from './mapper/GameConfigMapper';
@@ -11,14 +11,14 @@ import { UseGameConfigExceptionFilters } from './filters/UseGameConfigExceptionF
 @Controller('gameconfigs')
 export class GameConfigController {
     constructor(
-        private readonly createDefaultGameConfig: CreateDefaultGameConfigUseCase,
+        private readonly createGameConfig: CreateGameConfigUseCase,
         private readonly getGameConfig: GetGameConfigUseCase
     ) {}
 
     /**
      * Creates a new default game configuration for the specified game mode.
      *
-     * @param {CreateDefaultGameConfigRequest} request - The request body containing the game mode.
+     * @param {CreateGameConfigRequest} request - The request body containing the game mode.
      * @returns {GameConfigResponse} The created game configuration.
      *
      * @example
@@ -29,30 +29,8 @@ export class GameConfigController {
      */
     @Post()
     @HttpCode(HttpStatus.CREATED)
-    create(@Body() request: CreateDefaultGameConfigRequest): GameConfigResponse {
-        const { createdConfig } = this.createDefaultGameConfig.execute({
-            gameMode: request.gameMode,
-        });
-
-        return GameConfigMapper.toGameConfigResponse(createdConfig);
-    }
-
-    /**
-     * Creates a default game configuration for the given game mode.
-     *
-     * @param {CreateDefaultGameConfigRequest} request - The request body containing the game mode.
-     * @returns {GameConfigResponse} The created game configuration.
-     *
-     * @example
-     * POST /gameconfigs/default
-     * {
-     *   "gameMode": "BASE"
-     * }
-     */
-    @Post('default')
-    @HttpCode(HttpStatus.CREATED)
-    createDefault(@Body() request: CreateDefaultGameConfigRequest): GameConfigResponse {
-        const { createdConfig } = this.createDefaultGameConfig.execute({
+    create(@Body() request: CreateGameConfigRequest): GameConfigResponse {
+        const { createdConfig } = this.createGameConfig.execute({
             gameMode: request.gameMode,
         });
 
@@ -71,7 +49,7 @@ export class GameConfigController {
     @Get(':id')
     getById(@Param('id') id: string): GameConfigResponse {
         const gameConfigId = new GameConfigId(id);
-        const { foundConfig } = this.getGameConfig.execute(gameConfigId);
+        const { config: foundConfig } = this.getGameConfig.execute(gameConfigId);
 
         return GameConfigMapper.toGameConfigResponse(foundConfig);
     }

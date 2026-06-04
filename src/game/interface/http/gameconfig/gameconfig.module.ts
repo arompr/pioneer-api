@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { GameConfigController } from './GameConfigController';
-import { CreateDefaultGameConfigUseCase } from '#game/usecase/CreateDefaultGameConfigUseCase';
+import { CreateGameConfigUseCase } from '#game/usecase/CreateGameConfigUseCase';
 import { GetGameConfigUseCase } from '#game/usecase/GetGameConfigUseCase';
 import { GameConfigFactory } from '#game/domain/config/GameConfigFactory';
 import { GAME_CONFIG_REPOSITORY } from '#game/domain/config/GameConfigRepository';
@@ -10,13 +10,13 @@ import { InMemoryGameConfigRepository } from '#game/infrastructure/db/inMemory/I
     controllers: [GameConfigController],
     providers: [
         GameConfigFactory,
-        CreateDefaultGameConfigUseCase,
+        CreateGameConfigUseCase,
         GetGameConfigUseCase,
         {
             provide: GAME_CONFIG_REPOSITORY,
             useClass: InMemoryGameConfigRepository,
         },
     ],
-    exports: [CreateDefaultGameConfigUseCase, GetGameConfigUseCase, GameConfigFactory],
+    exports: [CreateGameConfigUseCase, GetGameConfigUseCase, GameConfigFactory],
 })
 export class GameConfigModule {}

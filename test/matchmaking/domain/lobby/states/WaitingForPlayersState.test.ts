@@ -9,14 +9,12 @@ import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
 let lobby: Lobby;
 let player1: Player;
 let player2: Player;
-let _player3: Player;
-let _player4: Player;
 
 describe('WaitingForPlayersState', () => {
     beforeEach(() => {
         const { lobby: l, players } = LobbyMother.baseLobby();
         lobby = l;
-        [player1, player2, _player3, _player4] = players;
+        [player1, player2] = players;
     });
 
     describe('join', () => {

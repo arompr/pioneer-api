@@ -6,7 +6,6 @@ import request from 'supertest';
 import { App } from 'supertest/types';
 import { LobbyModule } from '#matchmaking/interface/http/lobby/lobby.module';
 import { beforeEach, describe, it, expect } from 'vitest';
-import { GameConfig } from '#game/domain/config/GameConfig';
 
 const GAME_CONFIG_ID = 'gameConfigId';
 

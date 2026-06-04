@@ -1,6 +1,7 @@
+export const GAME_GATEWAY = Symbol('GameGateway');
+
 /**
  * Gateway interface for matchmaking to interact with game domain.
- * Enables loose coupling: matchmaking doesn't depend on GameMode or GameConfig types.
  */
 export interface GameGateway {
     /**
@@ -23,5 +24,3 @@ export interface GameGateway {
      */
     validatePlayerCount(configId: string, currentPlayers: number): Promise<boolean>;
 }
-
-export const GAME_GATEWAY = Symbol('GameGateway');

@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
 /** @publish */
-export class CreateDefaultGameConfigRequest {
+export class CreateGameConfigRequest {
     @IsNotEmpty()
     @IsString()
     gameMode!: string;

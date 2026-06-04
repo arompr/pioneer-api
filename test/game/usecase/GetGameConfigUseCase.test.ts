@@ -28,7 +28,7 @@ describe('GetGameConfigUseCase', () => {
 
                 const result = useCase.execute(config.id);
 
-                expect(result.foundConfig).toBe(config);
+                expect(result.config).toBe(config);
             });
 
             it('calls the repository with the correct ID', () => {
@@ -51,10 +51,10 @@ describe('GetGameConfigUseCase', () => {
 
                 const result = useCase.execute(config.id);
 
-                expect(result.foundConfig.id).toBe(config.id);
-                expect(result.foundConfig.gameMode).toBe(config.gameMode);
-                expect(result.foundConfig.minPlayers).toBe(config.minPlayers);
-                expect(result.foundConfig.maxPlayers).toBe(config.maxPlayers);
+                expect(result.config.id).toBe(config.id);
+                expect(result.config.gameMode).toBe(config.gameMode);
+                expect(result.config.minPlayers).toBe(config.minPlayers);
+                expect(result.config.maxPlayers).toBe(config.maxPlayers);
             });
 
             it('can retrieve different configs by their IDs', () => {
@@ -72,8 +72,8 @@ describe('GetGameConfigUseCase', () => {
                 const result1 = useCase.execute(config1.id);
                 const result2 = useCase.execute(config2.id);
 
-                expect(result1.foundConfig.id.equals(config1.id)).toBe(true);
-                expect(result2.foundConfig.id.equals(config2.id)).toBe(true);
+                expect(result1.config.id.equals(config1.id)).toBe(true);
+                expect(result2.config.id.equals(config2.id)).toBe(true);
             });
         });
 
@@ -128,7 +128,7 @@ describe('GetGameConfigUseCase', () => {
 
                 const result = useCase.execute(uuidId);
 
-                expect(result.foundConfig.id.equals(uuidId)).toBe(true);
+                expect(result.config.id.equals(uuidId)).toBe(true);
             });
 
             it('handles simple string IDs', () => {
@@ -140,7 +140,7 @@ describe('GetGameConfigUseCase', () => {
 
                 const result = useCase.execute(simpleId);
 
-                expect(result.foundConfig.id.equals(simpleId)).toBe(true);
+                expect(result.config.id.equals(simpleId)).toBe(true);
             });
 
             it('handles numeric string IDs', () => {
@@ -152,7 +152,7 @@ describe('GetGameConfigUseCase', () => {
 
                 const result = useCase.execute(numericId);
 
-                expect(result.foundConfig.id.equals(numericId)).toBe(true);
+                expect(result.config.id.equals(numericId)).toBe(true);
             });
         });
 

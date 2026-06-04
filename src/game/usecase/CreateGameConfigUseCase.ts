@@ -2,19 +2,19 @@ import { GameConfig } from '#game/domain/config/GameConfig';
 import { GameConfigFactory } from '#game/domain/config/GameConfigFactory';
 import { GameConfigRepository } from '#game/domain/config/GameConfigRepository';
 import { gameModeFromString } from '#game/domain/config/GameMode';
-import { CreateDefaultGameConfigDto } from './dto/CreateDefaultGameConfigDto';
+import { CreateGameConfigDto as CreateGameConfigDto } from './dto/CreateGameConfigDto';
 
-export type CreateDefaultGameConfigResult = {
+export type CreateGameConfigResult = {
     createdConfig: GameConfig;
 };
 
-export class CreateDefaultGameConfigUseCase {
+export class CreateGameConfigUseCase {
     constructor(
         private readonly gameConfigFactory: GameConfigFactory,
         private readonly gameConfigRepository: GameConfigRepository
     ) {}
 
-    execute(dto: CreateDefaultGameConfigDto): CreateDefaultGameConfigResult {
+    execute(dto: CreateGameConfigDto): CreateGameConfigResult {
         const gameMode = gameModeFromString(dto.gameMode);
         const createdConfig = this.gameConfigFactory.createFromGameMode(gameMode);
         this.gameConfigRepository.save(createdConfig);

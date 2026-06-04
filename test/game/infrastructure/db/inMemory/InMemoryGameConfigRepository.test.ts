@@ -55,15 +55,6 @@ describe('InMemoryGameConfigRepository', () => {
 
     describe('findById', () => {
         describe('when a config exists', () => {
-            it('returns the config', () => {
-                const config = GameConfigMother.baseConfig();
-                repository.save(config);
-
-                const found = repository.findById(config.id);
-
-                expect(found).toEqual(config);
-            });
-
             it('returns the correct config by its ID', () => {
                 const config1 = GameConfigMother.withId(new GameConfigId('id-1'));
                 const config2 = GameConfigMother.withId(new GameConfigId('id-2'));
@@ -137,27 +128,6 @@ describe('InMemoryGameConfigRepository', () => {
                 const id = new GameConfigId('any-id');
 
                 expect(() => repository.delete(id)).not.toThrow();
-            });
-        });
-    });
-
-    describe('integration scenarios', () => {
-        describe('multiple configs stored simultaneously', () => {
-            it('maintains all configs independently', () => {
-                const configs = [
-                    GameConfigMother.withId(new GameConfigId('id-a')),
-                    GameConfigMother.withId(new GameConfigId('id-b')),
-                    GameConfigMother.withId(new GameConfigId('id-c')),
-                ];
-
-                configs.forEach((config) => repository.save(config));
-
-                configs.forEach((config) => {
-                    const found = repository.findById(config.id);
-                    expect(found?.id.equals(config.id)).toBe(true);
-                });
-
-                expect(repository.findById(new GameConfigId('id-d'))).toBeNull();
             });
         });
     });

@@ -10,13 +10,12 @@ let lobby: Lobby;
 let player1: Player;
 let player2: Player;
 let player3: Player;
-let _player4: Player;
 
 describe('ReadyToStartState', () => {
     beforeEach(() => {
         const { lobby: l, players } = LobbyMother.readyToStartLobby();
         lobby = l;
-        [player1, player2, player3, _player4] = players;
+        [player1, player2, player3] = players;
     });
 
     describe('join', () => {

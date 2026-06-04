@@ -15,13 +15,12 @@ import { PlayerMarkedPending } from '#matchmaking/domain/lobby/events/PlayerMark
 let lobby: Lobby;
 let player1: Player;
 let player2: Player;
-let _player3: Player;
 
 describe('Lobby', () => {
     beforeEach(() => {
         const { lobby: l, players } = LobbyMother.baseLobby();
         lobby = l;
-        [player1, player2, _player3] = players;
+        [player1, player2] = players;
     });
 
     describe('creation', () => {
@@ -43,7 +42,7 @@ describe('Lobby', () => {
             beforeEach(() => {
                 const { lobby: l, players } = LobbyMother.baseLobbyWithGameConfigId();
                 lobby = l;
-                [player1, player2, _player3] = players;
+                [player1, player2] = players;
             });
 
             it('the lobby players are set', () => {

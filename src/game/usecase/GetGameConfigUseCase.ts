@@ -4,19 +4,19 @@ import { GameConfigRepository } from '#game/domain/config/GameConfigRepository';
 import { GameConfigNotFoundError } from '#game/domain/config/errors/GameConfigNotFoundError';
 
 export type GetGameConfigResult = {
-    foundConfig: GameConfig;
+    config: GameConfig;
 };
 
 export class GetGameConfigUseCase {
     constructor(private readonly gameConfigRepository: GameConfigRepository) {}
 
     execute(gameConfigId: GameConfigId): GetGameConfigResult {
-        const foundConfig = this.gameConfigRepository.findById(gameConfigId);
+        const config = this.gameConfigRepository.findById(gameConfigId);
 
-        if (!foundConfig) {
+        if (!config) {
             throw new GameConfigNotFoundError(gameConfigId);
         }
 
-        return { foundConfig };
+        return { config };
     }
 }
