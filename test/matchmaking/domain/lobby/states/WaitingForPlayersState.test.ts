@@ -5,10 +5,9 @@ import { LobbyNotReadyToStartError } from '#matchmaking/domain/lobby/errors/Lobb
 import { PlayerIsNotHostError } from '#matchmaking/domain/lobby/errors/PlayerIsNotHostError';
 import { PlayerNotFoundInLobbyError } from '#matchmaking/domain/lobby/errors/PlayerNotFoundInLobbyError';
 import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
-import { LobbyJoinRules, LobbyStartRules } from '#matchmaking/domain/lobby/LobbyRules';
+import { LobbyGameConfig } from '#matchmaking/domain/lobby/LobbyGameConfig';
 
-const joinRules = new LobbyJoinRules(2, 4);
-const startRules = new LobbyStartRules(2);
+const config = new LobbyGameConfig(2, 4);
 
 let lobby: Lobby;
 let player1: Player;
@@ -24,7 +23,7 @@ describe('WaitingForPlayersState', () => {
     describe('join', () => {
         describe('when the lobby is not full', () => {
             it('adds the player in the lobby', () => {
-                lobby.join(player2, joinRules);
+                lobby.join(player2, config);
 
                 expect(lobby.playerCount).toBe(2);
             });
@@ -35,7 +34,7 @@ describe('WaitingForPlayersState', () => {
         describe('when the player attempting to start is the host', () => {
             it('throws LobbyNotReadyToStartError', () => {
                 expect(() => {
-                    lobby.start(player1.id, startRules);
+                    lobby.start(player1.id, config);
                 }).toThrow(LobbyNotReadyToStartError);
             });
         });
@@ -43,7 +42,7 @@ describe('WaitingForPlayersState', () => {
         describe('when the player attempting to start is not the host', () => {
             it('throws PlayerIsNotHostError', () => {
                 expect(() => {
-                    lobby.start(player2.id, startRules);
+                    lobby.start(player2.id, config);
                 }).toThrow(PlayerIsNotHostError);
             });
         });
@@ -52,10 +51,10 @@ describe('WaitingForPlayersState', () => {
     describe('markAsReady', () => {
         describe('when the player is in the lobby', () => {
             it('contributes to the lobby becoming ready to start', () => {
-                lobby.join(player2, joinRules);
+                lobby.join(player2, config);
 
-                lobby.markAsReady(player1.id, startRules);
-                lobby.markAsReady(player2.id, startRules);
+                lobby.markAsReady(player1.id, config);
+                lobby.markAsReady(player2.id, config);
 
                 expect(lobby.canStart()).toBe(true);
             });
@@ -64,7 +63,7 @@ describe('WaitingForPlayersState', () => {
         describe('when the player is not in the lobby', () => {
             it('throws PlayerNotFoundInLobbyError', () => {
                 expect(() => {
-                    lobby.markAsReady(player2.id, startRules);
+                    lobby.markAsReady(player2.id, config);
                 }).toThrow(PlayerNotFoundInLobbyError);
             });
         });
@@ -73,20 +72,20 @@ describe('WaitingForPlayersState', () => {
     describe('markAsPending', () => {
         describe('when a player who was ready becomes pending again', () => {
             it('is no longer ready to start', () => {
-                lobby.join(player2, joinRules);
-                lobby.markAsReady(player1.id, startRules);
-                lobby.markAsReady(player2.id, startRules);
+                lobby.join(player2, config);
+                lobby.markAsReady(player1.id, config);
+                lobby.markAsReady(player2.id, config);
 
-                lobby.markAsPending(player1.id, startRules);
+                lobby.markAsPending(player1.id, config);
 
-                expect(lobby.meetsRequirementsToStart(startRules)).toBe(false);
+                expect(lobby.meetsRequirementsToStart(config)).toBe(false);
             });
         });
 
         describe('when the player is not in the lobby', () => {
             it('throws PlayerNotFoundInLobbyError', () => {
                 expect(() => {
-                    lobby.markAsPending(player2.id, startRules);
+                    lobby.markAsPending(player2.id, config);
                 }).toThrow(PlayerNotFoundInLobbyError);
             });
         });

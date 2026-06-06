@@ -5,7 +5,6 @@ import { LobbyNotFoundError } from './errors/LobbyNotFoundError';
 import { MarkReadyDto } from './dto/MarkReadyDto';
 import type { IGameGateway } from '#matchmaking/domain/gateway/GameGateway';
 import { GameConfigId } from '#matchmaking/domain/gameConfig/GameConfigId';
-import { LobbyJoinRules } from '#matchmaking/domain/lobby/LobbyRules';
 
 export class MarkReadyUseCase {
     constructor(
@@ -20,16 +19,11 @@ export class MarkReadyUseCase {
             throw new LobbyNotFoundError(dto.lobbyId);
         }
 
-        const matchmakingGameConfig = await this.gameGateway.getMatchmakingGameConfig(
+        const config = await this.gameGateway.getMatchmakingGameConfig(
             new GameConfigId(lobby.gameConfigId.value)
         );
 
-        const startRules = new LobbyJoinRules(
-            matchmakingGameConfig.minPlayers,
-            matchmakingGameConfig.maxPlayers
-        );
-
-        lobby.markAsReady(dto.playerId, startRules);
+        lobby.markAsReady(dto.playerId, config);
 
         this.lobbyRepository.save(lobby);
         this.outboxService.publishEvents(lobby);

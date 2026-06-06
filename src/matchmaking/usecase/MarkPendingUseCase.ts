@@ -5,7 +5,6 @@ import { LobbyNotFoundError } from './errors/LobbyNotFoundError';
 import { MarkPendingDto } from './dto/MarkPendingDto';
 import type { IGameGateway } from '#matchmaking/domain/gateway/GameGateway';
 import { GameConfigId } from '#matchmaking/domain/gameConfig/GameConfigId';
-import { LobbyJoinRules } from '#matchmaking/domain/lobby/LobbyRules';
 
 export class MarkPendingUseCase {
     constructor(
@@ -20,16 +19,11 @@ export class MarkPendingUseCase {
             throw new LobbyNotFoundError(dto.lobbyId);
         }
 
-        const matchmakingGameConfig = await this.gameGateway.getMatchmakingGameConfig(
+        const config = await this.gameGateway.getMatchmakingGameConfig(
             new GameConfigId(lobby.gameConfigId.value)
         );
 
-        const startRules = new LobbyJoinRules(
-            matchmakingGameConfig.minPlayers,
-            matchmakingGameConfig.maxPlayers
-        );
-
-        lobby.markAsPending(dto.playerId, startRules);
+        lobby.markAsPending(dto.playerId, config);
 
         this.lobbyRepository.save(lobby);
         this.outboxService.publishEvents(lobby);

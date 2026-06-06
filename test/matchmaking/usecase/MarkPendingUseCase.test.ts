@@ -8,10 +8,11 @@ import { Player } from '#matchmaking/domain/player/Player';
 import { PlayerStatus } from '#matchmaking/domain/player/PlayerStatus';
 import { MarkPendingUseCase } from '#matchmaking/usecase/MarkPendingUseCase';
 import { MarkPendingDto } from '#matchmaking/usecase/dto/MarkPendingDto';
-import type { IGameGateway, MatchmakingGameConfig } from '#matchmaking/domain/gateway/GameGateway';
+import type { IGameGateway } from '#matchmaking/domain/gateway/GameGateway';
 import { GameConfigId } from '#matchmaking/domain/gameConfig/GameConfigId';
+import { LobbyGameConfig } from '#matchmaking/domain/lobby/LobbyGameConfig';
 
-const MATCHMAKING_GAME_CONFIG: MatchmakingGameConfig = { minPlayers: 2, maxPlayers: 4 };
+const MATCHMAKING_GAME_CONFIG = new LobbyGameConfig(2, 4);
 
 const mockLobbyRepository: Partial<LobbyRepository> = {
     findById: vi.fn(),

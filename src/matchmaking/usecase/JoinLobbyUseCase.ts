@@ -8,7 +8,6 @@ import { JoinLobbyDto } from './dto/JoinLobbyDto';
 import { LobbyNotFoundError } from './errors/LobbyNotFoundError';
 import type { IGameGateway } from '#matchmaking/domain/gateway/GameGateway';
 import { GameConfigId } from '#matchmaking/domain/gameConfig/GameConfigId';
-import { LobbyJoinRules } from '#matchmaking/domain/lobby/LobbyRules';
 
 export type JoinLobbyResult = {
     lobby: LobbyAggregate;
@@ -31,17 +30,12 @@ export class JoinLobbyUseCase {
             throw new LobbyNotFoundError(dto.lobbyId);
         }
 
-        const matchmakingGameConfig = await this.gameGateway.getMatchmakingGameConfig(
+        const config = await this.gameGateway.getMatchmakingGameConfig(
             new GameConfigId(lobby.gameConfigId.value)
         );
 
-        const joinRules = new LobbyJoinRules(
-            matchmakingGameConfig.minPlayers,
-            matchmakingGameConfig.maxPlayers
-        );
-
         const joinedPlayer = this.playerFactory.create(dto.playerName);
-        lobby.join(joinedPlayer, joinRules);
+        lobby.join(joinedPlayer, config);
 
         this.lobbyRepository.save(lobby);
         this.outboxService.publishEvents(lobby);

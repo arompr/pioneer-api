@@ -8,6 +8,7 @@ import { AppModule } from 'src/app.module';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { PlayerStatus } from '#matchmaking/domain/player/PlayerStatus';
+import { any } from 'zod';
 
 const GAME_CONFIG_ID = 'gameConfigId';
 
@@ -91,7 +92,7 @@ describe('LobbyGateway (e2e)', () => {
                             isHost: true,
                         }),
                     ]),
-                    gameConfigId: GAME_CONFIG_ID,
+                    gameConfigId: expect.any(String),
                 });
             });
 

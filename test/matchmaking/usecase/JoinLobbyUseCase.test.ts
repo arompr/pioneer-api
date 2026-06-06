@@ -7,13 +7,14 @@ import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
 import { LobbyNotFoundError } from '#matchmaking/usecase/errors/LobbyNotFoundError';
 import { OutboxService } from '#matchmaking/domain/outbox/OutboxService';
 import type { JwtTokenService } from '#matchmaking/domain/auth/JwtTokenService';
-import type { IGameGateway, MatchmakingGameConfig } from '#matchmaking/domain/gateway/GameGateway';
+import type { IGameGateway } from '#matchmaking/domain/gateway/GameGateway';
 import { GameConfigId } from '#matchmaking/domain/gameConfig/GameConfigId';
 import { LobbyFullError } from '#matchmaking/domain/lobby/errors/LobbyFullError';
+import { LobbyGameConfig } from '#matchmaking/domain/lobby/LobbyGameConfig';
 
 const PLAYER_NAME = 'newPlayer';
 const TOKEN = 'mock-jwt-token';
-const MATCHMAKING_GAME_CONFIG: MatchmakingGameConfig = { minPlayers: 2, maxPlayers: 4 };
+const MATCHMAKING_GAME_CONFIG = new LobbyGameConfig(2, 4);
 const { lobby, players } = LobbyMother.baseLobby();
 const playerToJoin = players[1];
 
@@ -82,7 +83,7 @@ describe('JoinLobbyUseCase', () => {
                 mockLobbyRepository.findById = vi.fn().mockReturnValue(fullLobby);
                 mockGameGateway.getMatchmakingGameConfig = vi
                     .fn()
-                    .mockResolvedValue({ minPlayers: 2, maxPlayers: 2 });
+                    .mockResolvedValue(new LobbyGameConfig(2, 2));
                 const dto = new JoinLobbyDto(fullLobby.id, PLAYER_NAME);
 
                 await expect(useCase.execute(dto)).rejects.toThrow(LobbyFullError);

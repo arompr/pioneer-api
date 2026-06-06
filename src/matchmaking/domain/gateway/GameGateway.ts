@@ -1,11 +1,7 @@
+import { LobbyGameConfig } from '#matchmaking/domain/lobby/LobbyGameConfig';
 import { GameConfigId } from '../gameConfig/GameConfigId';
 
 export const GAME_GATEWAY = Symbol('GameGateway');
-
-export type MatchmakingGameConfig = {
-    minPlayers: number;
-    maxPlayers: number;
-};
 
 /**
  * Gateway interface for matchmaking to interact with game domain.
@@ -25,8 +21,8 @@ export interface IGameGateway {
      * Gets a matchmaking game configuration for the given config id.
      *
      * @param {GameConfigId} configId - The game configuration id
-     * @returns {Promise<MatchmakingGameConfig>} The matchmaking game configuration
+     * @returns {Promise<LobbyGameConfig>} The matchmaking game configuration
      * @throws if config not found
      */
-    getMatchmakingGameConfig(configId: GameConfigId): Promise<MatchmakingGameConfig>;
+    getMatchmakingGameConfig(configId: GameConfigId): Promise<LobbyGameConfig>;
 }
