@@ -32,6 +32,7 @@ export class CreateLobbyUseCase {
         const createdHostPlayer = this.playerFactory.create(dto.hostName);
         const createdLobby = await this.lobbyFactory.create(createdHostPlayer);
 
+        console.warn('CreateLobbyUseCase');
         this.lobbyRepository.save(createdLobby);
         this.outboxService.publishEvents(createdLobby);
 

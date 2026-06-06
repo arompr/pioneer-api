@@ -1,4 +1,11 @@
+import { GameConfigId } from '../gameConfig/GameConfigId';
+
 export const GAME_GATEWAY = Symbol('GameGateway');
+
+export type MatchmakingGameConfig = {
+    minPlayers: number;
+    maxPlayers: number;
+};
 
 /**
  * Gateway interface for matchmaking to interact with game domain.
@@ -15,12 +22,11 @@ export interface IGameGateway {
     createConfig(gameModeString: string): Promise<{ configId: string }>;
 
     /**
-     * Validates if the current player count is valid for the given game config.
+     * Gets a matchmaking game configuration for the given config id.
      *
-     * @param {string} configId - The game config ID
-     * @param {number} currentPlayers - Current number of players in the lobby
-     * @returns {Promise<boolean>} True if valid, throws otherwise
-     * @throws If config not found or validation fails
+     * @param {GameConfigId} configId - The game configuration id
+     * @returns {Promise<MatchmakingGameConfig>} The matchmaking game configuration
+     * @throws if config not found
      */
-    validatePlayerCount(configId: string, currentPlayers: number): Promise<boolean>;
+    getMatchmakingGameConfig(configId: GameConfigId): Promise<MatchmakingGameConfig>;
 }

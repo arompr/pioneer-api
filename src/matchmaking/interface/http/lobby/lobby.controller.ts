@@ -60,6 +60,7 @@ export class LobbyController {
             hostName: createLobbyRequest.hostName,
         };
 
+        console.warn('controller');
         const { createdLobby, createdHostPlayer, token } =
             await this.createLobby.execute(createdLobbyDto);
 

@@ -11,7 +11,6 @@ const GAME_CONFIG_ID = new GameConfigId('base');
 
 const mockGameGateway: Partial<IGameGateway> = {
     createConfig: vi.fn().mockResolvedValue({ configId: GAME_CONFIG_ID }),
-    validatePlayerCount: vi.fn().mockResolvedValue(true),
 };
 
 const lobbyIdFactory: LobbyIdFactory = new LobbyIdFactory();
