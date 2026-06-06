@@ -10,6 +10,10 @@ import { LobbyHostChanged } from '#matchmaking/domain/lobby/events/LobbyHostChan
 import { LobbyStarted } from '#matchmaking/domain/lobby/events/LobbyStarted';
 import { PlayerMarkedReady } from '#matchmaking/domain/lobby/events/PlayerMarkedReady';
 import { PlayerMarkedPending } from '#matchmaking/domain/lobby/events/PlayerMarkedPending';
+import { LobbyJoinRules, LobbyStartRules } from '#matchmaking/domain/lobby/LobbyRules';
+
+const joinRules = new LobbyJoinRules(2, 4);
+const startRules = new LobbyStartRules(2);
 
 let lobby: Lobby;
 let player1: Player;
@@ -48,7 +52,7 @@ describe('Lobby', () => {
     describe('join', () => {
         describe('when a player joins', () => {
             it('emits PlayerJoinedLobby', () => {
-                lobby.join(player2);
+                lobby.join(player2, joinRules);
 
                 expect(lobby.pullDomainEvents().some((e) => e instanceof PlayerJoinedLobby)).toBe(
                     true
@@ -85,7 +89,7 @@ describe('Lobby', () => {
 
         describe('when the host leaves', () => {
             beforeEach(() => {
-                lobby.join(player2);
+                lobby.join(player2, joinRules);
                 lobby.leave(player1.id);
             });
 
@@ -102,7 +106,7 @@ describe('Lobby', () => {
 
         describe('when a non-host player leaves', () => {
             it('does not change the host', () => {
-                lobby.join(player2);
+                lobby.join(player2, joinRules);
 
                 lobby.leave(player2.id);
 
@@ -130,7 +134,7 @@ describe('Lobby', () => {
             it('emits LobbyStarted', () => {
                 lobby = LobbyMother.readyToStartLobby().lobby;
 
-                lobby.start(player1.id);
+                lobby.start(player1.id, startRules);
 
                 expect(lobby.pullDomainEvents().some((e) => e instanceof LobbyStarted)).toBe(true);
             });
@@ -140,7 +144,7 @@ describe('Lobby', () => {
     describe('markAsReady', () => {
         describe('when a player in the lobby is marked ready', () => {
             it('emits PlayerMarkedReady', () => {
-                lobby.markAsReady(player1.id);
+                lobby.markAsReady(player1.id, startRules);
 
                 expect(lobby.pullDomainEvents().some((e) => e instanceof PlayerMarkedReady)).toBe(
                     true
@@ -152,7 +156,7 @@ describe('Lobby', () => {
     describe('markAsPending', () => {
         describe('when a player in the lobby is marked pending', () => {
             it('emits PlayerMarkedPending', () => {
-                lobby.markAsPending(player1.id);
+                lobby.markAsPending(player1.id, startRules);
 
                 expect(lobby.pullDomainEvents().some((e) => e instanceof PlayerMarkedPending)).toBe(
                     true
@@ -178,7 +182,7 @@ describe('Lobby', () => {
 
         describe('when the player is not the first to join', () => {
             it('returns false', () => {
-                lobby.join(player2);
+                lobby.join(player2, joinRules);
 
                 expect(lobby.isHost(player2.id));
             });
@@ -218,7 +222,7 @@ describe('Lobby', () => {
     describe('allPlayers', () => {
         describe('when there are players in the lobby', () => {
             it('returns a list of all the players', () => {
-                lobby.join(player2);
+                lobby.join(player2, joinRules);
 
                 const players = lobby.allPlayers;
 
@@ -241,7 +245,7 @@ describe('Lobby', () => {
     describe('playerCount', () => {
         describe('when there are players in the lobby', () => {
             it('returns the number of player', () => {
-                lobby.join(player2);
+                lobby.join(player2, joinRules);
 
                 expect(lobby.playerCount).toBe(2);
             });
@@ -249,7 +253,7 @@ describe('Lobby', () => {
 
         describe('when a player leaves', () => {
             it('decreases the count', () => {
-                lobby.join(player2);
+                lobby.join(player2, joinRules);
 
                 lobby.leave(player1.id);
 

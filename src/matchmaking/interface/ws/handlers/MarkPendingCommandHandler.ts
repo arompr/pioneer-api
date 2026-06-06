@@ -11,11 +11,11 @@ export class MarkPendingCommandHandler implements WsCommandHandler<MarkPendingCo
     constructor(private readonly useCase: MarkPendingUseCase) {}
 
     @RequiresAuth()
-    handle(_command: MarkPendingCommand, server: Server, client: LobbySocket): void {
+    async handle(_command: MarkPendingCommand, server: Server, client: LobbySocket): Promise<void> {
         const lobbyId = client.data.lobbyId;
         const playerId = client.data.playerId;
 
-        const lobby = this.useCase.execute({ lobbyId, playerId });
+        const lobby = await this.useCase.execute({ lobbyId, playerId });
 
         server
             .to(`lobby-${lobby.id.value}`)

@@ -3,6 +3,10 @@ import { Lobby } from '#matchmaking/domain/lobby/Lobby';
 import { Player } from '#matchmaking/domain/player/Player';
 import { LobbyAlreadyInGameError } from '#matchmaking/domain/lobby/errors/LobbyAlreadyInGameError';
 import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
+import { LobbyJoinRules, LobbyStartRules } from '#matchmaking/domain/lobby/LobbyRules';
+
+const joinRules = new LobbyJoinRules(2, 4);
+const startRules = new LobbyStartRules(2);
 
 let lobby: Lobby;
 let player1: Player;
@@ -17,7 +21,7 @@ describe('InGameState', () => {
     describe('join', () => {
         it('throws LobbyAlreadyInGameError', () => {
             expect(() => {
-                lobby.join(player1);
+                lobby.join(player1, joinRules);
             }).toThrow(LobbyAlreadyInGameError);
         });
     });
@@ -25,7 +29,7 @@ describe('InGameState', () => {
     describe('start', () => {
         it('throws LobbyAlreadyInGameError', () => {
             expect(() => {
-                lobby.start(player1.id);
+                lobby.start(player1.id, startRules);
             }).toThrow(LobbyAlreadyInGameError);
         });
     });
@@ -33,7 +37,7 @@ describe('InGameState', () => {
     describe('markAsReady', () => {
         it('throws LobbyAlreadyInGameError', () => {
             expect(() => {
-                lobby.markAsReady(player1.id);
+                lobby.markAsReady(player1.id, startRules);
             }).toThrow(LobbyAlreadyInGameError);
         });
     });
@@ -41,7 +45,7 @@ describe('InGameState', () => {
     describe('markAsPending', () => {
         it('throws LobbyAlreadyInGameError', () => {
             expect(() => {
-                lobby.markAsPending(player1.id);
+                lobby.markAsPending(player1.id, startRules);
             }).toThrow(LobbyAlreadyInGameError);
         });
     });

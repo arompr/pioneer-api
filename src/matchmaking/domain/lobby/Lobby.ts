@@ -17,6 +17,8 @@ import {
 import { LobbyStateType } from './states/LobbyStateType';
 import { PlayerId } from '#common/domain/player/playerId/PlayerId';
 import type { GameConfigId } from '../gameConfig/GameConfigId';
+import { LobbyFullError } from './errors/LobbyFullError';
+import type { LobbyJoinRules, LobbyStartRules } from './LobbyRules';
 
 /**
  * Represents a matchmaking lobby.
@@ -103,10 +105,14 @@ export class Lobby extends AggregateRoot implements ILobby {
      * Adds a player to the lobby.
      *
      * @param {Player} player - The player to add to the lobby.
+     * @param {LobbyJoinRules} joinRules - Rules governing who can join and capacity.
+     * @throws {LobbyFullError} If the lobby has reached its maximum player capacity.
      * @throws {PlayerAlreadyInLobbyError} If the player is already present in the lobby.
+     * @throws {LobbyClosedError} If the lobby is closed.
+     * @throws {LobbyAlreadyInGameError} If the lobby is in-game.
      */
-    join(player: Player): void {
-        this._lobbyState.join(player);
+    join(player: Player, joinRules: LobbyJoinRules): void {
+        this._lobbyState.join(player, joinRules);
         this.record(new PlayerJoinedLobby(player.id));
     }
 
@@ -132,11 +138,12 @@ export class Lobby extends AggregateRoot implements ILobby {
      * (minimum players and readiness) must be met.
      *
      * @param {PlayerId} playerId - The identifier of the player attempting to start the match.
+     * @param {LobbyStartRules} startRules - Rules governing start requirements (min players).
      * @throws {PlayerIsNotHostError} If the provided playerId does not belong to the lobby host.
      * @throws {LobbyNotReadyToStartError} If the lobby status is not READY_TO_START.
      */
-    start(playerId: PlayerId): void {
-        this._lobbyState.start(playerId);
+    start(playerId: PlayerId, startRules: LobbyStartRules): void {
+        this._lobbyState.start(playerId, startRules);
         this.record(new LobbyStarted());
     }
 
@@ -144,10 +151,11 @@ export class Lobby extends AggregateRoot implements ILobby {
      * Mark a player as ready.
      *
      * @param {PlayerId} playerId - The player to mark as ready.
+     * @param {LobbyStartRules} startRules - Rules governing start requirements (min players).
      * @throws {PlayerNotFoundInLobbyError} If the player is not in the lobby.
      */
-    markAsReady(playerId: PlayerId): void {
-        this._lobbyState.markAsReady(playerId);
+    markAsReady(playerId: PlayerId, startRules: LobbyStartRules): void {
+        this._lobbyState.markAsReady(playerId, startRules);
         this.record(new PlayerMarkedReady(playerId));
     }
 
@@ -155,10 +163,11 @@ export class Lobby extends AggregateRoot implements ILobby {
      * Mark a player as pending.
      *
      * @param {PlayerId} playerId - The player to mark as pending.
+     * @param {LobbyStartRules} startRules - Rules governing start requirements (min players).
      * @throws {PlayerNotFoundInLobbyError} If the player is not in the lobby.
      */
-    markAsPending(playerId: PlayerId): void {
-        this._lobbyState.markAsPending(playerId);
+    markAsPending(playerId: PlayerId, startRules: LobbyStartRules): void {
+        this._lobbyState.markAsPending(playerId, startRules);
         this.record(new PlayerMarkedPending(playerId));
     }
 
@@ -230,15 +239,27 @@ export class Lobby extends AggregateRoot implements ILobby {
 
     /**
      * Evaluates if the essential technical conditions are met to allow a match.
-     * 1. The player count must meet the minimum defined in the config.
+     * 1. The player count must meet the minimum defined in the start rules.
      * 2. Every player currently in the lobby must have marked themselves as ready.
      *
-     * @returns {boolean} True if all players are ready.
+     * @param {LobbyStartRules} startRules - Rules governing start requirements (min players).
+     * @returns {boolean} True if all conditions are met.
      */
-    meetsRequirementsToStart(): boolean {
-        // TODO: Minimum player validation should be done at use case level via GameGateway
-        // This method now only checks if all players are ready
-        return this._players.areAllReady();
+    meetsRequirementsToStart(startRules: LobbyStartRules): boolean {
+        return this._players.areAllReady() && this._players.count >= startRules.minPlayers;
+    }
+
+    /**
+     * Asserts that a new player can join the lobby.
+     *
+     * @param {LobbyJoinRules} joinRules - Rules governing join (max players).
+     * @throws {LobbyFullError} If the lobby has reached its maximum player capacity.
+     * @internal
+     */
+    assertCanJoin(joinRules: LobbyJoinRules): void {
+        if (this._players.count >= joinRules.maxPlayers) {
+            throw new LobbyFullError(this._id);
+        }
     }
 
     /**

@@ -3,6 +3,7 @@ import { PlayerId } from '#common/domain/player/playerId/PlayerId';
 import { LobbyClosedError } from '../errors/LobbyClosedError';
 import { LobbyState } from './LobbyState';
 import { LobbyStateType } from './LobbyStateType';
+import type { LobbyJoinRules, LobbyStartRules } from '../LobbyRules';
 
 /**
  * Represents a lobby that has been permanently closed.
@@ -23,7 +24,7 @@ export class ClosedState extends LobbyState {
      *
      * @throws {LobbyClosedError} Always thrown because the lobby is closed.
      */
-    join(_player: Player): void {
+    join(_player: Player, _joinRules: LobbyJoinRules): void {
         this.notAllowed();
     }
 
@@ -32,7 +33,7 @@ export class ClosedState extends LobbyState {
      *
      * @throws {LobbyClosedError} Always thrown because the lobby is closed.
      */
-    start(_playerId: PlayerId): void {
+    start(_playerId: PlayerId, _startRules: LobbyStartRules): void {
         this.notAllowed();
     }
 
@@ -41,7 +42,7 @@ export class ClosedState extends LobbyState {
      *
      * @throws {LobbyClosedError} Always thrown because the lobby is closed.
      */
-    markAsReady(_playerId: PlayerId): void {
+    markAsReady(_playerId: PlayerId, _startRules: LobbyStartRules): void {
         this.notAllowed();
     }
 
@@ -50,7 +51,7 @@ export class ClosedState extends LobbyState {
      *
      * @throws {LobbyClosedError} Always thrown because the lobby is closed.
      */
-    markAsPending(_playerId: PlayerId): void {
+    markAsPending(_playerId: PlayerId, _startRules: LobbyStartRules): void {
         this.notAllowed();
     }
 

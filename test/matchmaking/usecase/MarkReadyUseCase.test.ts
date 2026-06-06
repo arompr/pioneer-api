@@ -8,6 +8,10 @@ import { MarkReadyUseCase } from '#matchmaking/usecase/MarkReadyUseCase';
 import { Player } from '#matchmaking/domain/player/Player';
 import { MarkReadyDto } from '#matchmaking/usecase/dto/MarkReadyDto';
 import { PlayerStatus } from '#matchmaking/domain/player/PlayerStatus';
+import type { IGameGateway, MatchmakingGameConfig } from '#matchmaking/domain/gateway/GameGateway';
+import { GameConfigId } from '#matchmaking/domain/gameConfig/GameConfigId';
+
+const MATCHMAKING_GAME_CONFIG: MatchmakingGameConfig = { minPlayers: 2, maxPlayers: 4 };
 
 const mockLobbyRepository: Partial<LobbyRepository> = {
     findById: vi.fn(),
@@ -17,6 +21,10 @@ const mockLobbyRepository: Partial<LobbyRepository> = {
 
 const mockOutboxService: Partial<OutboxService> = {
     publishEvents: vi.fn(),
+};
+
+const mockGameGateway: Partial<IGameGateway> = {
+    getMatchmakingGameConfig: vi.fn().mockResolvedValue(MATCHMAKING_GAME_CONFIG),
 };
 
 let useCase: MarkReadyUseCase;
@@ -33,19 +41,23 @@ describe('MarkReadyUseCase', () => {
 
         useCase = new MarkReadyUseCase(
             mockLobbyRepository as LobbyRepository,
-            mockOutboxService as OutboxService
+            mockOutboxService as OutboxService,
+            mockGameGateway as IGameGateway
         );
         vi.clearAllMocks();
     });
 
     describe('execute', () => {
         describe('when lobby exists', () => {
-            it('should mark the player as ready', () => {
+            it('should fetch config, mark the player as ready, and publish events', async () => {
                 const dto = new MarkReadyDto(lobby.id, playerToMarkReady.id);
 
-                useCase.execute(dto);
+                await useCase.execute(dto);
 
                 expect(mockLobbyRepository.findById).toHaveBeenCalledWith(lobby.id);
+                expect(mockGameGateway.getMatchmakingGameConfig).toHaveBeenCalledWith(
+                    new GameConfigId(lobby.gameConfigId.value)
+                );
                 expect(mockLobbyRepository.save).toHaveBeenCalledWith(lobby);
                 expect(mockOutboxService.publishEvents).toHaveBeenCalledWith(lobby);
                 expect(lobby.allPlayers.at(0)?.status).toBe(PlayerStatus.Ready);
@@ -53,11 +65,11 @@ describe('MarkReadyUseCase', () => {
         });
 
         describe('when lobby does not exist', () => {
-            it('should throw LobbyNotFoundError', () => {
+            it('should throw LobbyNotFoundError', async () => {
                 mockLobbyRepository.findById = vi.fn().mockReturnValue(null);
                 const dto = new MarkReadyDto(lobby.id, playerToMarkReady.id);
 
-                expect(() => useCase.execute(dto)).toThrow(LobbyNotFoundError);
+                await expect(useCase.execute(dto)).rejects.toThrow(LobbyNotFoundError);
             });
         });
     });

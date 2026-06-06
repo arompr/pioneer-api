@@ -5,6 +5,10 @@ import { PlayerIsNotHostError } from '#matchmaking/domain/lobby/errors/PlayerIsN
 import { PlayerNotFoundInLobbyError } from '#matchmaking/domain/lobby/errors/PlayerNotFoundInLobbyError';
 import { LobbyAlreadyInGameError } from '#matchmaking/domain/lobby/errors/LobbyAlreadyInGameError';
 import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
+import { LobbyJoinRules, LobbyStartRules } from '#matchmaking/domain/lobby/LobbyRules';
+
+const joinRules = new LobbyJoinRules(2, 4);
+const startRules = new LobbyStartRules(2);
 
 let lobby: Lobby;
 let player1: Player;
@@ -21,13 +25,13 @@ describe('ReadyToStartState', () => {
     describe('join', () => {
         describe('when the lobby is not full', () => {
             it('adds the player in the lobby', () => {
-                lobby.join(player3);
+                lobby.join(player3, joinRules);
 
                 expect(lobby.playerCount).toBe(3);
             });
 
             it('transitions to WaitingForPlayers', () => {
-                lobby.join(player3);
+                lobby.join(player3, joinRules);
 
                 expect(lobby.canStart()).toBe(false);
             });
@@ -37,10 +41,10 @@ describe('ReadyToStartState', () => {
     describe('start', () => {
         describe('when the player attempting to start is the host', () => {
             it('transitions to InGameState', () => {
-                lobby.start(player1.id);
+                lobby.start(player1.id, startRules);
 
                 expect(() => {
-                    lobby.start(player1.id);
+                    lobby.start(player1.id, startRules);
                 }).toThrow(LobbyAlreadyInGameError);
             });
         });
@@ -48,7 +52,7 @@ describe('ReadyToStartState', () => {
         describe('when the player attempting to start is not the host', () => {
             it('throws PlayerIsNotHostError', () => {
                 expect(() => {
-                    lobby.start(player2.id);
+                    lobby.start(player2.id, startRules);
                 }).toThrow(PlayerIsNotHostError);
             });
         });
@@ -57,9 +61,9 @@ describe('ReadyToStartState', () => {
     describe('markAsReady', () => {
         describe('when the player is in the lobby', () => {
             it('mark the player as ready', () => {
-                lobby.join(player3);
+                lobby.join(player3, joinRules);
 
-                lobby.markAsReady(player3.id);
+                lobby.markAsReady(player3.id, startRules);
 
                 expect(lobby.readyPlayerCount).toBe(3);
             });
@@ -68,7 +72,7 @@ describe('ReadyToStartState', () => {
         describe('when the player is not in the lobby', () => {
             it('throws PlayerNotFoundInLobbyError', () => {
                 expect(() => {
-                    lobby.markAsReady(player3.id);
+                    lobby.markAsReady(player3.id, startRules);
                 }).toThrow(PlayerNotFoundInLobbyError);
             });
         });
@@ -77,7 +81,7 @@ describe('ReadyToStartState', () => {
     describe('markAsPending', () => {
         describe('when a player who was ready becomes pending again', () => {
             it('is no longer ready to start', () => {
-                lobby.markAsPending(player1.id);
+                lobby.markAsPending(player1.id, startRules);
 
                 expect(lobby.canStart()).toBe(false);
             });
@@ -86,7 +90,7 @@ describe('ReadyToStartState', () => {
         describe('when the player is not in the lobby', () => {
             it('throws PlayerNotFoundInLobbyError', () => {
                 expect(() => {
-                    lobby.markAsPending(player3.id);
+                    lobby.markAsPending(player3.id, startRules);
                 }).toThrow(PlayerNotFoundInLobbyError);
             });
         });

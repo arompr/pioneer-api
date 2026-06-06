@@ -11,11 +11,11 @@ export class MarkReadyCommandHandler implements WsCommandHandler<MarkReadyComman
     constructor(private readonly useCase: MarkReadyUseCase) {}
 
     @RequiresAuth()
-    handle(_command: MarkReadyCommand, server: Server, client: LobbySocket): void {
+    async handle(_command: MarkReadyCommand, server: Server, client: LobbySocket): Promise<void> {
         const lobbyId = client.data.lobbyId;
         const playerId = client.data.playerId;
 
-        const lobby = this.useCase.execute({ lobbyId, playerId });
+        const lobby = await this.useCase.execute({ lobbyId, playerId });
 
         server
             .to(`lobby-${lobby.id.value}`)

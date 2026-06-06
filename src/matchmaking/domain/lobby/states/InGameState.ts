@@ -3,6 +3,7 @@ import { PlayerId } from '#common/domain/player/playerId/PlayerId';
 import { LobbyAlreadyInGameError } from '../errors/LobbyAlreadyInGameError';
 import { LobbyState } from './LobbyState';
 import { LobbyStateType } from './LobbyStateType';
+import type { LobbyJoinRules, LobbyStartRules } from '../LobbyRules';
 
 /**
  * Represents a lobby that is currently in an active match.
@@ -24,7 +25,7 @@ export class InGameState extends LobbyState {
      *
      * @throws {LobbyAlreadyInGameError} Always thrown because the lobby is in-game.
      */
-    join(_player: Player): void {
+    join(_player: Player, _joinRules: LobbyJoinRules): void {
         this.notAllowed();
     }
 
@@ -33,7 +34,7 @@ export class InGameState extends LobbyState {
      *
      * @throws {LobbyAlreadyInGameError} Always thrown because the lobby is in-game.
      */
-    start(_playerId: PlayerId): void {
+    start(_playerId: PlayerId, _startRules: LobbyStartRules): void {
         this.notAllowed();
     }
 
@@ -42,7 +43,7 @@ export class InGameState extends LobbyState {
      *
      * @throws {LobbyAlreadyInGameError} Always thrown because the lobby is in-game.
      */
-    markAsReady(_playerId: PlayerId): void {
+    markAsReady(_playerId: PlayerId, _startRules: LobbyStartRules): void {
         this.notAllowed();
     }
 
@@ -51,7 +52,7 @@ export class InGameState extends LobbyState {
      *
      * @throws {LobbyAlreadyInGameError} Always thrown because the lobby is in-game.
      */
-    markAsPending(_playerId: PlayerId): void {
+    markAsPending(_playerId: PlayerId, _startRules: LobbyStartRules): void {
         this.notAllowed();
     }
 

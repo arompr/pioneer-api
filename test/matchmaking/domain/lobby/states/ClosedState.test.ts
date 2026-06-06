@@ -3,6 +3,10 @@ import { Lobby } from '#matchmaking/domain/lobby/Lobby';
 import { Player } from '#matchmaking/domain/player/Player';
 import { LobbyClosedError } from '#matchmaking/domain/lobby/errors/LobbyClosedError';
 import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
+import { LobbyJoinRules, LobbyStartRules } from '#matchmaking/domain/lobby/LobbyRules';
+
+const joinRules = new LobbyJoinRules(2, 4);
+const startRules = new LobbyStartRules(2);
 
 let lobby: Lobby;
 let player1: Player;
@@ -17,7 +21,7 @@ describe('ClosedState', () => {
     describe('join', () => {
         it('throws LobbyClosedError', () => {
             expect(() => {
-                lobby.join(player1);
+                lobby.join(player1, joinRules);
             }).toThrow(LobbyClosedError);
         });
     });
@@ -25,7 +29,7 @@ describe('ClosedState', () => {
     describe('start', () => {
         it('throws LobbyClosedError', () => {
             expect(() => {
-                lobby.start(player1.id);
+                lobby.start(player1.id, startRules);
             }).toThrow(LobbyClosedError);
         });
     });
@@ -33,7 +37,7 @@ describe('ClosedState', () => {
     describe('markAsReady', () => {
         it('throws LobbyClosedError', () => {
             expect(() => {
-                lobby.markAsReady(player1.id);
+                lobby.markAsReady(player1.id, startRules);
             }).toThrow(LobbyClosedError);
         });
     });
@@ -41,7 +45,7 @@ describe('ClosedState', () => {
     describe('markAsPending', () => {
         it('throws LobbyClosedError', () => {
             expect(() => {
-                lobby.markAsPending(player1.id);
+                lobby.markAsPending(player1.id, startRules);
             }).toThrow(LobbyClosedError);
         });
     });
