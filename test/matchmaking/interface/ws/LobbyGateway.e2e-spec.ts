@@ -8,7 +8,6 @@ import { AppModule } from 'src/app.module';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { PlayerStatus } from '#matchmaking/domain/player/PlayerStatus';
-import { any } from 'zod';
 
 const GAME_CONFIG_ID = 'gameConfigId';
 
