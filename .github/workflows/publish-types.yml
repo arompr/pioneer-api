@@ -18,7 +18,6 @@ jobs:
               with:
                   node-version: '24'
                   registry-url: 'https://npm.pkg.github.com'
-                  # For npmjs.org use: registry-url: 'https://registry.npmjs.org'
                   always-auth: true
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.TOKEN }}
@@ -26,18 +25,22 @@ jobs:
             - name: Install dependencies
               run: npm ci
 
+            - name: Get current version from registry
+              id: version
+              run: |
+                  VERSION=$(npm view @arompr/pioneer-api-types version --registry https://npm.pkg.github.com || echo "0.0.0")
+                  echo "current=$VERSION" >> "$GITHUB_OUTPUT"
+
+            - name: Prepare generated directory
+              run: |
+                  mkdir -p ./generated
+                  echo '{"name":"@arompr/pioneer-api-types","version":"${{ steps.version.outputs.current }}"}' > ./generated/package.json
+
             - name: Generate publishable types
               run: npx typeship generate --bump patch
-              # Options:
-              #   --bump patch|minor|major   Auto-bump version
-              #   --out-dir ./generated      Output directory
-              #   --package-name @org/types  Override package name
-              #   --dry-run                  Preview without publishing
 
             - name: Publish to GitHub Packages
               working-directory: ./generated
-              run: |
-                  npm install
-                  npm publish
+              run: npm publish
               env:
-                  NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  NODE_AUTH_TOKEN: ${{ secrets.TOKEN }}

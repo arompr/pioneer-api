@@ -60,3 +60,6 @@ opencode.json
 .npmrc
 review**.md
 .zed/**
+
+# Generated types package
+/generated
