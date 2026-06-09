@@ -1,4 +1,4 @@
-import { UnsupportedGameModeError } from '#matchmaking/domain/lobby/errors/UnsupportedGameModeError';
+import { UnsupportedGameModeError } from '#game/domain/config/errors/UnsupportedGameModeError';
 import { Catch, ExceptionFilter, ArgumentsHost } from '@nestjs/common';
 import { Request, Response } from 'express';
 
@@ -15,7 +15,7 @@ export class UnsupportedGameModeErrorFilter implements ExceptionFilter<Unsupport
         response.status(this.statusCode).json({
             statusCode: this.statusCode,
             code: this.code,
-            message: `The following game mode is not supported: ${exception.mode}`,
+            message: `Game mode '${exception.mode}' is not supported`,
             timestamp: new Date().toISOString(),
             method: request.method,
             path: request.url,

@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
+import { HttpModule } from '@nestjs/axios';
 import { LobbyController } from './lobby.controller';
 import { lobbyProviders } from './providers';
 
@@ -8,9 +9,10 @@ import { lobbyProviders } from './providers';
         JwtModule.register({
             secret: 'pioneer-secret',
         }),
+        HttpModule,
     ],
     controllers: [LobbyController],
-    providers: lobbyProviders,
+    providers: [...lobbyProviders],
     exports: [...lobbyProviders],
 })
 export class LobbyModule {}

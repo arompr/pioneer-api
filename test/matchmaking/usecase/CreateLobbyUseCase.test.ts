@@ -1,26 +1,19 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { CreateLobbyUseCase } from '#matchmaking/usecase/CreateLobbyUseCase';
-import { LobbyConfigFactory } from '#matchmaking/domain/lobby/LobbyConfig/LobbyConfigFactory';
 import { LobbyRepository } from '#matchmaking/domain/lobby/LobbyRepository';
 import { LobbyFactory } from '#matchmaking/domain/lobby/LobbyFactory';
 import { PlayerFactory } from '#matchmaking/domain/player/PlayerFactory';
 import { CreateLobbyDto } from '#matchmaking/usecase/dto/CreateLobbyDto';
-import { LobbyGameMode } from '#matchmaking/domain/lobby/LobbyConfig/LobbyGameMode';
 import { LobbyMother } from '#test/matchmaking/domain/lobby/LobbyMother';
 import { OutboxService } from '#matchmaking/domain/outbox/OutboxService';
 import type { JwtTokenService } from '#matchmaking/domain/auth/JwtTokenService';
 
 const PLAYER_NAME = 'hostName';
-const GAME_MODE = LobbyGameMode.BASE;
 const { lobby, players } = LobbyMother.baseLobby();
 const TOKEN = 'mock-jwt-token';
 
 const createdLobby = lobby;
 const createdPlayer = players[0];
-const createdLobbyConfig = { gameMode: GAME_MODE };
-const mockLobbyConfigFactory: Partial<LobbyConfigFactory> = {
-    createFromGameMode: vi.fn().mockReturnValue(createdLobbyConfig),
-};
 const mockPlayerFactory: Partial<PlayerFactory> = {
     create: vi.fn().mockReturnValue(createdPlayer),
 };
@@ -35,23 +28,22 @@ let useCase: CreateLobbyUseCase;
 
 describe('CreateLobbyUseCase', () => {
     beforeEach(() => {
+        vi.clearAllMocks();
         useCase = new CreateLobbyUseCase(
             mockLobbyRepository as LobbyRepository,
             mockLobbyFactory as LobbyFactory,
             mockPlayerFactory as PlayerFactory,
-            mockLobbyConfigFactory as LobbyConfigFactory,
             mockOutboxService as OutboxService,
             mockJwtTokenService as JwtTokenService
         );
     });
 
     describe('execute', () => {
-        it('creates and saves the new lobby, and returns a token', () => {
-            const result = useCase.execute(new CreateLobbyDto(PLAYER_NAME, GAME_MODE));
+        it('creates and saves the new lobby with default config, and returns a token', async () => {
+            const result = await useCase.execute(new CreateLobbyDto(PLAYER_NAME));
 
-            expect(mockLobbyConfigFactory.createFromGameMode).toHaveBeenCalledWith(GAME_MODE);
             expect(mockPlayerFactory.create).toHaveBeenCalledWith(PLAYER_NAME);
-            expect(mockLobbyFactory.create).toHaveBeenCalledWith(createdLobbyConfig, createdPlayer);
+            expect(mockLobbyFactory.create).toHaveBeenCalledWith(createdPlayer);
             expect(mockLobbyRepository.save).toHaveBeenCalledWith(createdLobby);
             expect(mockJwtTokenService.encode).toHaveBeenCalledWith(
                 createdPlayer.id,

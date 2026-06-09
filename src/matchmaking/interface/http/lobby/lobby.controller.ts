@@ -44,25 +44,25 @@ export class LobbyController {
      * - the public lobby view (visible to all players)
      * - the private view of the player who created the lobby (selfPlayer)
      *
-     * @param {CreateLobbyRequest} createLobbyRequest - The request body containing host name and game mode.
+     * @param {CreateLobbyRequest} createLobbyRequest - The request body containing host name and optional game config ID.
      * @returns {CreateLobbyResponse} The created lobby and the private representation of the host player.
      *
      * @example
      * POST /lobby
      * {
      *   "hostName": "Panadis",
-     *   "gameMode": "BASE"
+     *   "gameConfigId": "cfg-123" (optional)
      * }
      */
     @Post()
-    create(@Body() createLobbyRequest: CreateLobbyRequest): CreateLobbyResponse {
+    async create(@Body() createLobbyRequest: CreateLobbyRequest): Promise<CreateLobbyResponse> {
         const createdLobbyDto: CreateLobbyDto = {
             hostName: createLobbyRequest.hostName,
-            gameMode: createLobbyRequest.gameMode,
         };
 
+        console.warn('controller');
         const { createdLobby, createdHostPlayer, token } =
-            this.createLobby.execute(createdLobbyDto);
+            await this.createLobby.execute(createdLobbyDto);
 
         return {
             lobby: LobbyMapper.toLobbyResponse(createdLobby),
@@ -84,10 +84,13 @@ export class LobbyController {
      * }
      */
     @Post(':id/join')
-    join(@Param('id') id: string, @Body() joinRequest: JoinLobbyRequest): JoinLobbyResponse {
+    async join(
+        @Param('id') id: string,
+        @Body() joinRequest: JoinLobbyRequest
+    ): Promise<JoinLobbyResponse> {
         const dto: JoinLobbyDto = { lobbyId: new LobbyId(id), playerName: joinRequest.playerName };
 
-        const { lobby, joinedPlayer, token } = this.joinLobby.execute(dto);
+        const { lobby, joinedPlayer, token } = await this.joinLobby.execute(dto);
 
         return {
             lobby: LobbyMapper.toLobbyResponse(lobby),

@@ -4,13 +4,20 @@ import { GetLobbyUseCase } from '#matchmaking/usecase/GetLobbyUseCase';
 import { JoinLobbyUseCase } from '#matchmaking/usecase/JoinLobbyUseCase';
 import { LeaveLobbyUseCase } from '#matchmaking/usecase/LeaveLobbyUseCase';
 import { LOBBY_REPOSITORY, LobbyRepository } from '#matchmaking/domain/lobby/LobbyRepository';
-import { LobbyConfigFactory } from '#matchmaking/domain/lobby/LobbyConfig/LobbyConfigFactory';
 import { LobbyFactory } from '#matchmaking/domain/lobby/LobbyFactory';
 import { PlayerFactory } from '#matchmaking/domain/player/PlayerFactory';
 import { OutboxService } from '#matchmaking/domain/outbox/OutboxService';
 import { MarkReadyUseCase } from '#matchmaking/usecase/MarkReadyUseCase';
 import { JWT_TOKEN_SERVICE, JwtTokenService } from '#matchmaking/domain/auth/JwtTokenService';
 import { MarkPendingUseCase } from '#matchmaking/usecase/MarkPendingUseCase';
+import { GAME_GATEWAY, IGameGateway } from '#matchmaking/domain/gateway/GameGateway';
+import { CreateGameConfigUseCase } from '#game/usecase/CreateGameConfigUseCase';
+import { GameConfigFactory } from '#game/domain/config/GameConfigFactory';
+import {
+    GAME_CONFIG_REPOSITORY,
+    GameConfigRepository,
+} from '#game/domain/config/GameConfigRepository';
+import { GetGameConfigUseCase } from '#game/usecase/GetGameConfigUseCase';
 
 export const useCaseProviders: Provider[] = [
     {
@@ -27,7 +34,6 @@ export const useCaseProviders: Provider[] = [
             lobbyRepository: LobbyRepository,
             lobbyFactory: LobbyFactory,
             playerFactory: PlayerFactory,
-            lobbyConfigFactory: LobbyConfigFactory,
             outboxService: OutboxService,
             jwtTokenService: JwtTokenService
         ) =>
@@ -35,7 +41,6 @@ export const useCaseProviders: Provider[] = [
                 lobbyRepository,
                 lobbyFactory,
                 playerFactory,
-                lobbyConfigFactory,
                 outboxService,
                 jwtTokenService
             ),
@@ -43,9 +48,9 @@ export const useCaseProviders: Provider[] = [
             LOBBY_REPOSITORY,
             LobbyFactory,
             PlayerFactory,
-            LobbyConfigFactory,
             OutboxService,
             JWT_TOKEN_SERVICE,
+            GAME_GATEWAY,
         ],
     },
 
@@ -55,9 +60,17 @@ export const useCaseProviders: Provider[] = [
             lobbyRepository: LobbyRepository,
             playerFactory: PlayerFactory,
             outboxService: OutboxService,
-            jwtTokenService: JwtTokenService
-        ) => new JoinLobbyUseCase(lobbyRepository, playerFactory, outboxService, jwtTokenService),
-        inject: [LOBBY_REPOSITORY, PlayerFactory, OutboxService, JWT_TOKEN_SERVICE],
+            jwtTokenService: JwtTokenService,
+            gameGateway: IGameGateway
+        ) =>
+            new JoinLobbyUseCase(
+                lobbyRepository,
+                playerFactory,
+                outboxService,
+                jwtTokenService,
+                gameGateway
+            ),
+        inject: [LOBBY_REPOSITORY, PlayerFactory, OutboxService, JWT_TOKEN_SERVICE, GAME_GATEWAY],
     },
     {
         provide: LeaveLobbyUseCase,
@@ -67,14 +80,34 @@ export const useCaseProviders: Provider[] = [
     },
     {
         provide: MarkReadyUseCase,
-        useFactory: (lobbyRepository: LobbyRepository, outboxService: OutboxService) =>
-            new MarkReadyUseCase(lobbyRepository, outboxService),
-        inject: [LOBBY_REPOSITORY, OutboxService],
+        useFactory: (
+            lobbyRepository: LobbyRepository,
+            outboxService: OutboxService,
+            gameGateway: IGameGateway
+        ) => new MarkReadyUseCase(lobbyRepository, outboxService, gameGateway),
+        inject: [LOBBY_REPOSITORY, OutboxService, GAME_GATEWAY],
     },
     {
         provide: MarkPendingUseCase,
-        useFactory: (lobbyRepository: LobbyRepository, outboxService: OutboxService) =>
-            new MarkPendingUseCase(lobbyRepository, outboxService),
-        inject: [LOBBY_REPOSITORY, OutboxService],
+        useFactory: (
+            lobbyRepository: LobbyRepository,
+            outboxService: OutboxService,
+            gameGateway: IGameGateway
+        ) => new MarkPendingUseCase(lobbyRepository, outboxService, gameGateway),
+        inject: [LOBBY_REPOSITORY, OutboxService, GAME_GATEWAY],
+    },
+    {
+        provide: CreateGameConfigUseCase,
+        useFactory: (
+            gameConfigFactory: GameConfigFactory,
+            gameConfigRepository: GameConfigRepository
+        ) => new CreateGameConfigUseCase(gameConfigFactory, gameConfigRepository),
+        inject: [GameConfigFactory, GAME_CONFIG_REPOSITORY],
+    },
+    {
+        provide: GetGameConfigUseCase,
+        useFactory: (gameConfigRepository: GameConfigRepository) =>
+            new GetGameConfigUseCase(gameConfigRepository),
+        inject: [GAME_CONFIG_REPOSITORY],
     },
 ];

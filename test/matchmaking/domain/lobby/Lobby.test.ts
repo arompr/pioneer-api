@@ -10,21 +10,29 @@ import { LobbyHostChanged } from '#matchmaking/domain/lobby/events/LobbyHostChan
 import { LobbyStarted } from '#matchmaking/domain/lobby/events/LobbyStarted';
 import { PlayerMarkedReady } from '#matchmaking/domain/lobby/events/PlayerMarkedReady';
 import { PlayerMarkedPending } from '#matchmaking/domain/lobby/events/PlayerMarkedPending';
+import { LobbyGameConfig } from '#matchmaking/domain/lobby/LobbyGameConfig';
+
+const config = new LobbyGameConfig(2, 4);
 
 let lobby: Lobby;
 let player1: Player;
 let player2: Player;
-let player3: Player;
 
 describe('Lobby', () => {
     beforeEach(() => {
         const { lobby: l, players } = LobbyMother.baseLobby();
         lobby = l;
-        [player1, player2, player3] = players;
+        [player1, player2] = players;
     });
 
     describe('creation', () => {
         describe('when Lobby is created', () => {
+            beforeEach(() => {
+                const { lobby: l, players } = LobbyMother.baseLobby();
+                lobby = l;
+                [player1, player2] = players;
+            });
+
             it('the lobby players are set', () => {
                 expect(lobby.playerCount).toBe(1);
             });
@@ -32,13 +40,18 @@ describe('Lobby', () => {
             it('has the provided ID', () => {
                 expect(lobby.id).toBe(LobbyMother.DEFAULT_LOBBY_ID);
             });
+
+            it('gameConfigId is set to the provided value', () => {
+                expect(lobby.gameConfigId).toBeDefined();
+                expect(lobby.gameConfigId.equals(LobbyMother.DEFAULT_GAME_CONFIG_ID)).toBe(true);
+            });
         });
     });
 
     describe('join', () => {
         describe('when a player joins', () => {
             it('emits PlayerJoinedLobby', () => {
-                lobby.join(player2);
+                lobby.join(player2, config);
 
                 expect(lobby.pullDomainEvents().some((e) => e instanceof PlayerJoinedLobby)).toBe(
                     true
@@ -75,7 +88,7 @@ describe('Lobby', () => {
 
         describe('when the host leaves', () => {
             beforeEach(() => {
-                lobby.join(player2);
+                lobby.join(player2, config);
                 lobby.leave(player1.id);
             });
 
@@ -92,7 +105,7 @@ describe('Lobby', () => {
 
         describe('when a non-host player leaves', () => {
             it('does not change the host', () => {
-                lobby.join(player2);
+                lobby.join(player2, config);
 
                 lobby.leave(player2.id);
 
@@ -120,7 +133,7 @@ describe('Lobby', () => {
             it('emits LobbyStarted', () => {
                 lobby = LobbyMother.readyToStartLobby().lobby;
 
-                lobby.start(player1.id);
+                lobby.start(player1.id, config);
 
                 expect(lobby.pullDomainEvents().some((e) => e instanceof LobbyStarted)).toBe(true);
             });
@@ -130,7 +143,7 @@ describe('Lobby', () => {
     describe('markAsReady', () => {
         describe('when a player in the lobby is marked ready', () => {
             it('emits PlayerMarkedReady', () => {
-                lobby.markAsReady(player1.id);
+                lobby.markAsReady(player1.id, config);
 
                 expect(lobby.pullDomainEvents().some((e) => e instanceof PlayerMarkedReady)).toBe(
                     true
@@ -142,7 +155,7 @@ describe('Lobby', () => {
     describe('markAsPending', () => {
         describe('when a player in the lobby is marked pending', () => {
             it('emits PlayerMarkedPending', () => {
-                lobby.markAsPending(player1.id);
+                lobby.markAsPending(player1.id, config);
 
                 expect(lobby.pullDomainEvents().some((e) => e instanceof PlayerMarkedPending)).toBe(
                     true
@@ -168,7 +181,7 @@ describe('Lobby', () => {
 
         describe('when the player is not the first to join', () => {
             it('returns false', () => {
-                lobby.join(player2);
+                lobby.join(player2, config);
 
                 expect(lobby.isHost(player2.id));
             });
@@ -177,34 +190,6 @@ describe('Lobby', () => {
         describe('when the player is not in the lobby', () => {
             it('returns false', () => {
                 expect(lobby.isHost(player2.id)).toBe(false);
-            });
-        });
-    });
-
-    describe('isFull', () => {
-        describe('when the lobby has reached max capacity', () => {
-            it('returns true', () => {
-                lobby.join(player2);
-                lobby.join(player3);
-
-                expect(lobby.isFull()).toBe(true);
-            });
-        });
-
-        describe('when the lobby is not as max capacity', () => {
-            it('returns false', () => {
-                expect(lobby.isFull()).toBe(false);
-            });
-        });
-
-        describe('when a player leaves a full lobby', () => {
-            it('returns false again', () => {
-                lobby.join(player2);
-                lobby.join(player3);
-
-                lobby.leave(player1.id);
-
-                expect(lobby.isFull()).toBe(false);
             });
         });
     });
@@ -233,71 +218,10 @@ describe('Lobby', () => {
         });
     });
 
-    describe('hasReachedMinimum', () => {
-        describe('when the number of ready players exactly reaches the minimum', () => {
-            it('returns true', () => {
-                lobby.join(player2);
-
-                expect(lobby.hasReachedMinimum()).toBe(true);
-            });
-        });
-
-        describe('when the number of players is below the minimum', () => {
-            it('returns true', () => {
-                expect(lobby.hasReachedMinimum()).toBe(false);
-            });
-        });
-
-        describe('when the number of players exceeds the minimum', () => {
-            it('returns true', () => {
-                lobby.join(player2);
-                lobby.join(player3);
-
-                expect(lobby.hasReachedMinimum()).toBe(true);
-            });
-        });
-    });
-
-    describe('remainingPlaces', () => {
-        describe('when the lobby is empty', () => {
-            it('returns the maximum capacity', () => {
-                setupClosedLobby();
-
-                expect(lobby.remainingPlaces()).toBe(LobbyMother.DEFAULT_MAX_PLAYERS);
-            });
-        });
-
-        describe('when players join the lobby', () => {
-            it('decreases the count of remaining places', () => {
-                expect(lobby.remainingPlaces()).toBe(LobbyMother.DEFAULT_MAX_PLAYERS - 1);
-            });
-        });
-
-        describe('when the lobby is full', () => {
-            it('returns zero', () => {
-                lobby.join(player2);
-                lobby.join(player3);
-
-                expect(lobby.remainingPlaces()).toBe(0);
-            });
-        });
-
-        describe('when a player leaves', () => {
-            it('inscreases the count of remaining place again', () => {
-                lobby.join(player2);
-                lobby.join(player3);
-
-                lobby.leave(player3.id);
-
-                expect(lobby.remainingPlaces()).toBe(1);
-            });
-        });
-    });
-
     describe('allPlayers', () => {
         describe('when there are players in the lobby', () => {
             it('returns a list of all the players', () => {
-                lobby.join(player2);
+                lobby.join(player2, config);
 
                 const players = lobby.allPlayers;
 
@@ -320,7 +244,7 @@ describe('Lobby', () => {
     describe('playerCount', () => {
         describe('when there are players in the lobby', () => {
             it('returns the number of player', () => {
-                lobby.join(player2);
+                lobby.join(player2, config);
 
                 expect(lobby.playerCount).toBe(2);
             });
@@ -328,7 +252,7 @@ describe('Lobby', () => {
 
         describe('when a player leaves', () => {
             it('decreases the count', () => {
-                lobby.join(player2);
+                lobby.join(player2, config);
 
                 lobby.leave(player1.id);
 

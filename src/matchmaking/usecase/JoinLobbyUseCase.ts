@@ -6,6 +6,8 @@ import { OutboxService } from '#matchmaking/domain/outbox/OutboxService';
 import { JwtTokenService } from '#matchmaking/domain/auth/JwtTokenService';
 import { JoinLobbyDto } from './dto/JoinLobbyDto';
 import { LobbyNotFoundError } from './errors/LobbyNotFoundError';
+import type { IGameGateway } from '#matchmaking/domain/gateway/GameGateway';
+import { GameConfigId } from '#matchmaking/domain/gameConfig/GameConfigId';
 
 export type JoinLobbyResult = {
     lobby: LobbyAggregate;
@@ -18,17 +20,22 @@ export class JoinLobbyUseCase {
         private readonly lobbyRepository: LobbyRepository,
         private readonly playerFactory: PlayerFactory,
         private readonly outboxService: OutboxService,
-        private readonly jwtTokenService: JwtTokenService
+        private readonly jwtTokenService: JwtTokenService,
+        private readonly gameGateway: IGameGateway
     ) {}
 
-    execute(dto: JoinLobbyDto): JoinLobbyResult {
+    async execute(dto: JoinLobbyDto): Promise<JoinLobbyResult> {
         const lobby = this.lobbyRepository.findById(dto.lobbyId);
         if (!lobby) {
             throw new LobbyNotFoundError(dto.lobbyId);
         }
 
+        const config = await this.gameGateway.getMatchmakingGameConfig(
+            new GameConfigId(lobby.gameConfigId.value)
+        );
+
         const joinedPlayer = this.playerFactory.create(dto.playerName);
-        lobby.join(joinedPlayer);
+        lobby.join(joinedPlayer, config);
 
         this.lobbyRepository.save(lobby);
         this.outboxService.publishEvents(lobby);

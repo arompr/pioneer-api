@@ -1,6 +1,5 @@
 import { Lobby } from '#matchmaking/domain/lobby/Lobby';
-import { LobbyConfig } from '#matchmaking/domain/lobby/LobbyConfig/LobbyConfig';
-import { LobbyGameMode } from '#matchmaking/domain/lobby/LobbyConfig/LobbyGameMode';
+import { GameConfigId } from '#matchmaking/domain/gameConfig/GameConfigId';
 import { LobbyId } from '#matchmaking/domain/lobby/lobbyId/LobbyId';
 import { LobbyPlayers } from '#matchmaking/domain/lobby/LobbyPlayers';
 import { ClosedState } from '#matchmaking/domain/lobby/states/ClosedState';
@@ -11,36 +10,70 @@ import { WaitingForPlayersState } from '#matchmaking/domain/lobby/states/Waiting
 import { Player } from '#matchmaking/domain/player/Player';
 import { PlayerMother } from '../player/PlayerMother';
 
+/**
+ * Object Mother factory for creating Lobby instances with various configurations for testing.
+ */
 export class LobbyMother {
     static readonly DEFAULT_LOBBY_ID = new LobbyId('lobby-id');
-    static readonly DEFAULT_MIN_PLAYERS = 2;
-    static readonly DEFAULT_MAX_PLAYERS = 3;
-    private static readonly DEFAULT_LOBBY_CONFIG = new LobbyConfig(
-        LobbyGameMode.BASE,
-        LobbyMother.DEFAULT_MIN_PLAYERS,
-        LobbyMother.DEFAULT_MAX_PLAYERS
-    );
+    static readonly DEFAULT_GAME_CONFIG_ID = new GameConfigId('game-config-id');
 
+    private constructor() {
+        // Private constructor to enforce static factory methods
+    }
+
+    /**
+     * Creates a new LobbyMother instance for building lobbies.
+     *
+     * @returns {LobbyMother} A new builder instance.
+     */
+    static builder(): LobbyMother {
+        return new LobbyMother();
+    }
+
+    /**
+     * Builds a basic lobby with 1 player and no gameConfigId.
+     *
+     * @returns {{lobby: Lobby; players: Player[]}} The created lobby and its players.
+     */
     static baseLobby(): { lobby: Lobby; players: Player[] } {
-        return this.buildLobbyWithState(new WaitingForPlayersState(), 1, 0);
+        return this.buildLobbyWithState(
+            new WaitingForPlayersState(),
+            1,
+            0,
+            this.DEFAULT_GAME_CONFIG_ID
+        );
     }
 
     static inGameLobby(): { lobby: Lobby; players: Player[] } {
-        return this.buildLobbyWithState(new InGameState(), 3, 3);
+        return this.buildLobbyWithState(new InGameState(), 3, 3, this.DEFAULT_GAME_CONFIG_ID);
     }
 
     static inClosedLobby(): { lobby: Lobby; players: Player[] } {
-        return this.buildLobbyWithState(new ClosedState(), 0, 0);
+        return this.buildLobbyWithState(new ClosedState(), 0, 0, this.DEFAULT_GAME_CONFIG_ID);
     }
 
     static readyToStartLobby(): { lobby: Lobby; players: Player[] } {
-        return this.buildLobbyWithState(new ReadyToStartState(), 2, 2);
+        return this.buildLobbyWithState(new ReadyToStartState(), 2, 2, this.DEFAULT_GAME_CONFIG_ID);
+    }
+
+    /**
+     * Builds a lobby that is ready to start with gameConfigId.
+     *
+     * @param {GameConfigId} [gameConfigId] - Optional game config ID.
+     * @returns {{lobby: Lobby; players: Player[]}} The created lobby and its players.
+     */
+    static readyToStartLobbyWithGameConfigId(gameConfigId: GameConfigId): {
+        lobby: Lobby;
+        players: Player[];
+    } {
+        return this.buildLobbyWithState(new ReadyToStartState(), 2, 2, gameConfigId);
     }
 
     private static buildLobbyWithState(
         state: LobbyState,
         totalPlayersInLobby: number,
-        numberOfReadyPlayer: number
+        numberOfReadyPlayer: number,
+        gameConfigId: GameConfigId
     ) {
         const players: Player[] = PlayerMother.createMany(4, numberOfReadyPlayer);
 
@@ -51,10 +84,10 @@ export class LobbyMother {
 
         const lobby = new Lobby(
             this.DEFAULT_LOBBY_ID,
-            this.DEFAULT_LOBBY_CONFIG,
             players[0].id,
             lobbyPlayers,
-            state
+            state,
+            gameConfigId
         );
 
         return { lobby, players };

@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { applyDecorators, UseFilters } from '@nestjs/common';
-import { UnsupportedGameModeErrorFilter } from './domain/UnsupportedGameModeErrorFilter';
 import { InvalidLobbyStateErrorFilter } from './domain/InvalidLobbyStateErrorFilter';
-import { InvalidLobbyGameModeErrorFilter } from './domain/InvalidLobbyGameModeErrorFilter';
 import { PlayerIsNotHostErrorFilter } from './domain/PlayerIsNotHostErrorFilter';
 import { LobbyNotReadyToStartErrorFilter } from './domain/LobbyNotReadyToStartErrorFilter';
 import { LobbyFullErrorFilter } from './domain/LobbyFullErrorFilter';
@@ -17,9 +15,7 @@ import { InvalidPlayerStatusErrorFilter } from './domain/InvalidPlayerStatusErro
 export function UseDomainErrorFilters() {
     return applyDecorators(
         UseFilters(
-            UnsupportedGameModeErrorFilter,
             InvalidLobbyStateErrorFilter,
-            InvalidLobbyGameModeErrorFilter,
             PlayerIsNotHostErrorFilter,
             LobbyNotReadyToStartErrorFilter,
             LobbyFullErrorFilter,

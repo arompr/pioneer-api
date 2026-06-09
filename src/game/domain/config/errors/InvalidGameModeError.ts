@@ -1,10 +1,10 @@
 import { DomainError } from '#common/domain/DomainError';
 
-export class InvalidLobbyGameModeError extends DomainError {
+export class InvalidGameModeError extends DomainError {
     public readonly value: string;
 
     constructor(value: string) {
-        super(`Invalid LobbyGameMode: '${value}'`);
+        super(`Invalid GameMode: '${value}'`);
         this.value = value;
     }
 }

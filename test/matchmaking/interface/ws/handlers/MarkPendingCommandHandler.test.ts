@@ -21,7 +21,7 @@ const mockServer = {
     to: toMock,
 } as unknown as Server;
 
-const execute = vi.fn().mockReturnValue(lobby);
+const execute = vi.fn().mockResolvedValue(lobby);
 const mockUseCase: MarkPendingUseCase = {
     execute,
 } as unknown as MarkPendingUseCase;
@@ -34,10 +34,10 @@ beforeEach(() => {
 
 describe('MarkPendingCommandHandler', () => {
     describe('handle', () => {
-        it('marks the player pending and emits the updated lobby', () => {
+        it('marks the player pending and emits the updated lobby', async () => {
             const command = new MarkPendingCommand();
 
-            markPendingCommandHandler.handle(command, mockServer, mockClient);
+            await markPendingCommandHandler.handle(command, mockServer, mockClient);
 
             expect(execute).toBeCalledWith({
                 lobbyId: lobby.id,

@@ -1,11 +1,11 @@
 import { Player } from '#matchmaking/domain/player/Player';
 import { PlayerId } from '#common/domain/player/playerId/PlayerId';
-import { LobbyFullError } from '../errors/LobbyFullError';
 import { LobbyNotReadyToStartError } from '../errors/LobbyNotReadyToStartError';
 import { PlayerIsNotHostError } from '../errors/PlayerIsNotHostError';
 import { LobbyState } from './LobbyState';
 import { LobbyStateType } from './LobbyStateType';
 import { ReadyToStartState } from './ReadyToStartState';
+import type { LobbyGameConfig } from '../LobbyGameConfig';
 
 /**
  * Represents a lobby that is waiting for additional players before it can start.
@@ -20,15 +20,13 @@ export class WaitingForPlayersState extends LobbyState {
     public readonly stateType: LobbyStateType = LobbyStateType.WaitingForPlayers;
 
     /**
-     * Adds a player to the lobby if it is not full.
+     * Adds a player to the lobby.
      *
      * @param {Player} player - The player attempting to join.
-     * @throws {LobbyFullError} If the lobby has reached maximum capacity.
+     * @param {LobbyGameConfig} config - Game configuration governing capacity.
      */
-    join(player: Player): void {
-        if (this.lobby.isFull()) {
-            throw new LobbyFullError(this.lobby.id);
-        }
+    join(player: Player, config: LobbyGameConfig): void {
+        this.lobby.assertCanJoin(config);
         this.lobby.internalAddPlayer(player);
     }
 
@@ -39,10 +37,11 @@ export class WaitingForPlayersState extends LobbyState {
      * has not yet reached the minimum requirements.
      *
      * @param {PlayerId} playerId - The player attempting to start the match.
+     * @param {LobbyGameConfig} _config - Game configuration (unused).
      * @throws {PlayerIsNotHostError} If the player is not the host.
      * @throws {LobbyNotReadyToStartError}  Always thrown in this state, because the lobby does not yet meet the requirements to start.
      */
-    start(playerId: PlayerId): void {
+    start(playerId: PlayerId, _config: LobbyGameConfig): void {
         if (!this.lobby.isHost(playerId)) {
             throw new PlayerIsNotHostError(playerId, this.lobby.id);
         }
@@ -56,11 +55,12 @@ export class WaitingForPlayersState extends LobbyState {
      * it transitions to ReadyToStartState.
      *
      * @param {PlayerId} playerId - The player to mark as ready.
+     * @param {LobbyGameConfig} config - Game configuration governing start requirements.
      */
-    markAsReady(playerId: PlayerId): void {
+    markAsReady(playerId: PlayerId, config: LobbyGameConfig): void {
         this.lobby.internalMarkAsReady(playerId);
 
-        if (this.lobby.meetsRequirementsToStart()) {
+        if (this.lobby.meetsRequirementsToStart(config)) {
             this.lobby.transitionTo(new ReadyToStartState());
         }
     }
@@ -69,8 +69,9 @@ export class WaitingForPlayersState extends LobbyState {
      * Marks a player as pending (not ready).
      *
      * @param {PlayerId} playerId - The player to mark as pending.
+     * @param {LobbyGameConfig} _config - Game configuration (unused).
      */
-    markAsPending(playerId: PlayerId): void {
+    markAsPending(playerId: PlayerId, _config: LobbyGameConfig): void {
         this.lobby.internalMarkAsPending(playerId);
     }
 

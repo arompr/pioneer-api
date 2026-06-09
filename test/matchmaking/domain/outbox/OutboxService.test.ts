@@ -7,6 +7,7 @@ import { OutboxMessageIdFactory } from '#matchmaking/domain/outbox/outboxMessage
 import { LobbyDomainEventSerializer } from '#matchmaking/infrastructure/serializer/LobbyDomainEventSerializer';
 import type { Lobby } from '#matchmaking/domain/lobby/Lobby';
 import type { Player } from '#matchmaking/domain/player/Player';
+import { LobbyGameConfig } from '#matchmaking/domain/lobby/LobbyGameConfig';
 
 let outboxService: OutboxService;
 let outboxRepository: Partial<OutboxRepository>;
@@ -37,7 +38,8 @@ describe('OutboxService', () => {
     describe('publishEvents', () => {
         describe('when the aggregate has domain events', () => {
             it('saves one outbox message per domain event', () => {
-                lobby.join(player2);
+                const config = new LobbyGameConfig(2, 4);
+                lobby.join(player2, config);
                 lobby.leave(player2.id);
 
                 outboxService.publishEvents(lobby);

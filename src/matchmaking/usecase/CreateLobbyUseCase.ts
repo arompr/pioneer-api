@@ -1,5 +1,4 @@
 import { LobbyAggregate } from '#matchmaking/domain/lobby/LobbyAggregate.type';
-import { LobbyConfigFactory } from '#matchmaking/domain/lobby/LobbyConfig/LobbyConfigFactory';
 import { LobbyFactory } from '#matchmaking/domain/lobby/LobbyFactory';
 import { LobbyRepository } from '#matchmaking/domain/lobby/LobbyRepository';
 import { Player } from '#matchmaking/domain/player/Player';
@@ -19,15 +18,19 @@ export class CreateLobbyUseCase {
         private readonly lobbyRepository: LobbyRepository,
         private readonly lobbyFactory: LobbyFactory,
         private readonly playerFactory: PlayerFactory,
-        private readonly lobbyConfigFactory: LobbyConfigFactory,
         private readonly outboxService: OutboxService,
         private readonly jwtTokenService: JwtTokenService
     ) {}
 
-    execute(dto: CreateLobbyDto): CreateLobbyResult {
-        const lobbyConfig = this.lobbyConfigFactory.createFromGameMode(dto.gameMode);
+    /**
+     * Creates a new lobby.
+     *
+     * @param {CreateLobbyDto} dto - The DTO containing hostName and optional gameConfigId
+     * @returns {Promise<CreateLobbyResult>} The created lobby, host player, and JWT token
+     */
+    async execute(dto: CreateLobbyDto): Promise<CreateLobbyResult> {
         const createdHostPlayer = this.playerFactory.create(dto.hostName);
-        const createdLobby = this.lobbyFactory.create(lobbyConfig, createdHostPlayer);
+        const createdLobby = await this.lobbyFactory.create(createdHostPlayer);
 
         this.lobbyRepository.save(createdLobby);
         this.outboxService.publishEvents(createdLobby);

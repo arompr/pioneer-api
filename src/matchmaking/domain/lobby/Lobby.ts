@@ -1,6 +1,5 @@
 import type { LobbyId } from './lobbyId/LobbyId';
 import { LobbyPlayers } from './LobbyPlayers';
-import type { LobbyConfig } from './LobbyConfig/LobbyConfig';
 import type { Player } from '../player/Player';
 import { LobbyState } from './states/LobbyState';
 import { ClosedState } from './states/ClosedState';
@@ -17,6 +16,9 @@ import {
 } from './events';
 import { LobbyStateType } from './states/LobbyStateType';
 import { PlayerId } from '#common/domain/player/playerId/PlayerId';
+import type { GameConfigId } from '../gameConfig/GameConfigId';
+import { LobbyFullError } from './errors/LobbyFullError';
+import type { LobbyGameConfig } from './LobbyGameConfig';
 
 /**
  * Represents a matchmaking lobby.
@@ -24,30 +26,32 @@ import { PlayerId } from '#common/domain/player/playerId/PlayerId';
 export class Lobby extends AggregateRoot implements ILobby {
     private readonly _id: LobbyId;
     private readonly _players: LobbyPlayers;
-    private readonly _config: LobbyConfig;
     private _hostId: PlayerId;
     private _lobbyState: LobbyState;
+    private readonly _gameConfigId: GameConfigId;
 
     /**
      * Creates a new Lobby instance.
      *
      * @param {LobbyId} id - Unique identifier for the lobby.
-     * @param {LobbyConfig} config - The configuration containing mode and limits.
-     *
+     * @param {PlayerId} hostId - The unique identifier of the lobby host.
+     * @param {LobbyPlayers} players - The collection of players in the lobby.
+     * @param {LobbyState} lobbyState - The current state of the lobby.
+     * @param {GameConfigId} [gameConfigId] - Optional unique identifier for the game configuration.
      */
     constructor(
         id: LobbyId,
-        config: LobbyConfig,
         hostId: PlayerId,
         players: LobbyPlayers,
-        lobbyState: LobbyState
+        lobbyState: LobbyState,
+        gameConfigId: GameConfigId
     ) {
         super();
         this._id = id;
-        this._config = config;
         this._hostId = hostId;
         this._players = players;
         this._lobbyState = lobbyState;
+        this._gameConfigId = gameConfigId;
         this.transitionTo(lobbyState);
     }
 
@@ -61,12 +65,12 @@ export class Lobby extends AggregateRoot implements ILobby {
     }
 
     /**
-     * Gets the lobby configuration (min/max players, mode).
+     * Gets the game configuration identifier.
      *
-     * @returns {LobbyConfig} The immutable configuration of the lobby.
+     * @returns {GameConfigId} The game configuration ID.
      */
-    get config(): LobbyConfig {
-        return this._config;
+    get gameConfigId(): GameConfigId {
+        return this._gameConfigId;
     }
 
     /**
@@ -98,14 +102,17 @@ export class Lobby extends AggregateRoot implements ILobby {
     }
 
     /**
-     * Adds a player to the lobby if there is still room.
+     * Adds a player to the lobby.
      *
      * @param {Player} player - The player to add to the lobby.
-     * @throws {LobbyFullError} If the lobby has already reached its maximum capacity.
+     * @param {LobbyGameConfig} config - Game configuration governing capacity.
+     * @throws {LobbyFullError} If the lobby has reached its maximum player capacity.
      * @throws {PlayerAlreadyInLobbyError} If the player is already present in the lobby.
+     * @throws {LobbyClosedError} If the lobby is closed.
+     * @throws {LobbyAlreadyInGameError} If the lobby is in-game.
      */
-    join(player: Player): void {
-        this._lobbyState.join(player);
+    join(player: Player, config: LobbyGameConfig): void {
+        this._lobbyState.join(player, config);
         this.record(new PlayerJoinedLobby(player.id));
     }
 
@@ -131,11 +138,12 @@ export class Lobby extends AggregateRoot implements ILobby {
      * (minimum players and readiness) must be met.
      *
      * @param {PlayerId} playerId - The identifier of the player attempting to start the match.
+     * @param {LobbyGameConfig} config - Game configuration governing start requirements.
      * @throws {PlayerIsNotHostError} If the provided playerId does not belong to the lobby host.
      * @throws {LobbyNotReadyToStartError} If the lobby status is not READY_TO_START.
      */
-    start(playerId: PlayerId): void {
-        this._lobbyState.start(playerId);
+    start(playerId: PlayerId, config: LobbyGameConfig): void {
+        this._lobbyState.start(playerId, config);
         this.record(new LobbyStarted());
     }
 
@@ -143,10 +151,11 @@ export class Lobby extends AggregateRoot implements ILobby {
      * Mark a player as ready.
      *
      * @param {PlayerId} playerId - The player to mark as ready.
+     * @param {LobbyGameConfig} config - Game configuration governing start requirements.
      * @throws {PlayerNotFoundInLobbyError} If the player is not in the lobby.
      */
-    markAsReady(playerId: PlayerId): void {
-        this._lobbyState.markAsReady(playerId);
+    markAsReady(playerId: PlayerId, config: LobbyGameConfig): void {
+        this._lobbyState.markAsReady(playerId, config);
         this.record(new PlayerMarkedReady(playerId));
     }
 
@@ -154,10 +163,11 @@ export class Lobby extends AggregateRoot implements ILobby {
      * Mark a player as pending.
      *
      * @param {PlayerId} playerId - The player to mark as pending.
+     * @param {LobbyGameConfig} config - Game configuration governing start requirements.
      * @throws {PlayerNotFoundInLobbyError} If the player is not in the lobby.
      */
-    markAsPending(playerId: PlayerId): void {
-        this._lobbyState.markAsPending(playerId);
+    markAsPending(playerId: PlayerId, config: LobbyGameConfig): void {
+        this._lobbyState.markAsPending(playerId, config);
         this.record(new PlayerMarkedPending(playerId));
     }
 
@@ -181,39 +191,12 @@ export class Lobby extends AggregateRoot implements ILobby {
     }
 
     /**
-     * Checks if the lobby has reached or exceeded its maximum capacity.
-     *
-     * @returns {boolean} True if the lobby is full, false otherwise.
-     */
-    isFull(): boolean {
-        return this.remainingPlaces() === 0;
-    }
-
-    /**
      * Checks if the lobby is empty and can be safely deleted.
      *
      * @returns {boolean} True if the lobby is empty, false otherwise.
      */
     isEmpty(): boolean {
         return this._players.isEmpty();
-    }
-
-    /**
-     * Checks if the lobby has reached the minimum required players to start.
-     *
-     * @returns {boolean} True if the lobby has reached the minimum capacity, false otherwise.
-     */
-    hasReachedMinimum(): boolean {
-        return this._players.count >= this._config.getMinPlayers();
-    }
-
-    /**
-     * Calculates the number of available places remaining in the lobby.
-     *
-     * @returns {number} The number of players that can still join.
-     */
-    remainingPlaces(): number {
-        return Math.max(0, this._config.getMaxPlayers() - this._players.count);
     }
 
     /**
@@ -259,10 +242,24 @@ export class Lobby extends AggregateRoot implements ILobby {
      * 1. The player count must meet the minimum defined in the config.
      * 2. Every player currently in the lobby must have marked themselves as ready.
      *
-     * @returns {boolean} True if player count and readiness requirements are satisfied.
+     * @param {LobbyGameConfig} config - Game configuration governing start requirements.
+     * @returns {boolean} True if all conditions are met.
      */
-    meetsRequirementsToStart(): boolean {
-        return this.hasReachedMinimum() && this._players.areAllReady();
+    meetsRequirementsToStart(config: LobbyGameConfig): boolean {
+        return this._players.areAllReady() && this._players.count >= config.minPlayers;
+    }
+
+    /**
+     * Asserts that a new player can join the lobby.
+     *
+     * @param {LobbyGameConfig} config - Game configuration governing join (max players).
+     * @throws {LobbyFullError} If the lobby has reached its maximum player capacity.
+     * @internal
+     */
+    assertCanJoin(config: LobbyGameConfig): void {
+        if (this._players.count >= config.maxPlayers) {
+            throw new LobbyFullError(this._id);
+        }
     }
 
     /**

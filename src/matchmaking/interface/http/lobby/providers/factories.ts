@@ -1,5 +1,4 @@
 import { Provider } from '@nestjs/common';
-import { LobbyConfigFactory } from '#matchmaking/domain/lobby/LobbyConfig/LobbyConfigFactory';
 import { LobbyFactory } from '#matchmaking/domain/lobby/LobbyFactory';
 import { PlayerFactory } from '#matchmaking/domain/player/PlayerFactory';
 import { LobbyIdFactory } from '#matchmaking/domain/lobby/lobbyId/LobbyIdFactory';
@@ -9,9 +8,10 @@ import { OutboxMessageFactory } from '#matchmaking/domain/outbox/OutboxMessageFa
 import { OutboxService } from '#matchmaking/domain/outbox/OutboxService';
 import { OUTBOX_REPOSITORY, OutboxRepository } from '#matchmaking/domain/outbox/OutboxRepository';
 import { LobbyDomainEventSerializer } from '#matchmaking/infrastructure/serializer/LobbyDomainEventSerializer';
+import { GAME_GATEWAY, IGameGateway } from '#matchmaking/domain/gateway/GameGateway';
+import { GameConfigFactory } from '#game/domain/config/GameConfigFactory';
 
 export const factoryProviders: Provider[] = [
-    LobbyConfigFactory,
     PlayerIdFactory,
     LobbyIdFactory,
     OutboxMessageIdFactory,
@@ -23,14 +23,19 @@ export const factoryProviders: Provider[] = [
     },
     {
         provide: LobbyFactory,
-        useFactory: (lobbyIdFactory: LobbyIdFactory) => new LobbyFactory(lobbyIdFactory),
-        inject: [LobbyIdFactory],
+        useFactory: (lobbyIdFactory: LobbyIdFactory, gameGateway: IGameGateway) =>
+            new LobbyFactory(lobbyIdFactory, gameGateway),
+        inject: [LobbyIdFactory, GAME_GATEWAY],
     },
     {
         provide: OutboxMessageFactory,
         useFactory: (outboxMessageIdFactory: OutboxMessageIdFactory) =>
             new OutboxMessageFactory(outboxMessageIdFactory),
         inject: [OutboxMessageIdFactory],
+    },
+    {
+        provide: GameConfigFactory,
+        useFactory: () => new GameConfigFactory(),
     },
     {
         provide: OutboxService,

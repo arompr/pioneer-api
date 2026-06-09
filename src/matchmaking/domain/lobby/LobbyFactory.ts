@@ -1,7 +1,8 @@
+import { GameConfigId } from '../gameConfig/GameConfigId';
+import { IGameGateway } from '../gateway/GameGateway';
 import { Player } from '../player/Player';
 import { Lobby } from './Lobby';
 import { LobbyAggregate } from './LobbyAggregate.type';
-import { LobbyConfig } from './LobbyConfig/LobbyConfig';
 import { LobbyId } from './lobbyId/LobbyId';
 import { LobbyIdFactory } from './lobbyId/LobbyIdFactory';
 import { LobbyPlayers } from './LobbyPlayers';
@@ -9,22 +10,27 @@ import { WaitingForPlayersState } from './states/WaitingForPlayersState';
 
 export class LobbyFactory {
     private readonly lobbyIdFactory: LobbyIdFactory;
+    private readonly gameGateway: IGameGateway;
 
-    constructor(lobbyIdFactory: LobbyIdFactory) {
+    constructor(lobbyIdFactory: LobbyIdFactory, gameGateway: IGameGateway) {
         this.lobbyIdFactory = lobbyIdFactory;
+        this.gameGateway = gameGateway;
     }
 
     /**
      * Creates a new Lobby with a host player.
      *
-     * @param hostName Optional name for the host. If not provided, a default name will be used.
-     * @param config The configuration for the lobby.
+     * @param {Player} host - The host player for the lobby.
+     * @returns {LobbyAggregate} A new lobby instance.
      */
-    create(config: LobbyConfig, host: Player): LobbyAggregate {
+    async create(host: Player): Promise<LobbyAggregate> {
+        const gameConfig = await this.gameGateway.createConfig('BASE');
+        const gameConfigId = new GameConfigId(gameConfig.configId);
+
         const lobbyId: LobbyId = this.lobbyIdFactory.generate();
         const players = new LobbyPlayers();
         players.add(host);
 
-        return new Lobby(lobbyId, config, host.id, players, new WaitingForPlayersState());
+        return new Lobby(lobbyId, host.id, players, new WaitingForPlayersState(), gameConfigId);
     }
 }

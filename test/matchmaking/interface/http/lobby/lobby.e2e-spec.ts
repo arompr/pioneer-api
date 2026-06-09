@@ -24,7 +24,7 @@ describe('LobbyController e2e', () => {
         it('creates a lobby and returns lobby and host player', async () => {
             const response = await request(app.getHttpServer())
                 .post('/lobby')
-                .send({ hostName: 'Alice', gameMode: 'BASE' })
+                .send({ hostName: 'Alice' })
                 .expect(201);
 
             expect(response.body).toMatchObject({
@@ -34,7 +34,7 @@ describe('LobbyController e2e', () => {
                     players: expect.arrayContaining([
                         expect.objectContaining({ name: 'Alice', isHost: true }),
                     ]),
-                    config: { gameMode: 'BASE' },
+                    gameConfigId: expect.any(String),
                 },
                 selfPlayer: {
                     id: expect.any(String),
@@ -50,7 +50,7 @@ describe('LobbyController e2e', () => {
         it('joins an existing lobby and returns updated lobby and joining player', async () => {
             const createResponse = await request(app.getHttpServer())
                 .post('/lobby')
-                .send({ hostName: 'Alice', gameMode: 'BASE' })
+                .send({ hostName: 'Alice' })
                 .expect(201);
 
             const lobbyId = createResponse.body.lobby.id as string;
@@ -112,7 +112,7 @@ describe('LobbyController e2e', () => {
         it('returns the lobby by its id', async () => {
             const createResponse = await request(app.getHttpServer())
                 .post('/lobby')
-                .send({ hostName: 'Alice', gameMode: 'BASE' })
+                .send({ hostName: 'Alice' })
                 .expect(201);
 
             const lobbyId = createResponse.body.lobby.id as string;
@@ -126,7 +126,7 @@ describe('LobbyController e2e', () => {
                 players: expect.arrayContaining([
                     expect.objectContaining({ name: 'Alice', isHost: true }),
                 ]),
-                config: expect.objectContaining({ gameMode: 'BASE' }),
+                gameConfigId: expect.any(String),
             });
         });
     });
