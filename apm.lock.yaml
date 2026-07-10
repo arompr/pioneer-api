@@ -1,0 +1,18 @@
+lockfile_version: '1'
+generated_at: '2026-07-04T14:53:41.144307+00:00'
+apm_version: 0.23.1
+dependencies:
+- repo_url: arompr/team-skills
+  name: team-skills
+  host: github.com
+  resolved_commit: 1b4dee58278d08b482268a0af0add0422b321426
+  version: 1.0.0
+  package_type: apm_package
+  deployed_files:
+  - .agents/skills/pr-description
+  - .agents/skills/pr-description/SKILL.md
+  - .opencode/agents/reviewer.md
+  deployed_file_hashes:
+    .agents/skills/pr-description/SKILL.md: sha256:ee43c0120d872500660bc927c6001e798bd3daef949e15658d73cb8654c015a7
+    .opencode/agents/reviewer.md: sha256:760269448b33b214d35e757d2529be9a42d698f763366d717c11e65f77fa2caf
+  content_hash: sha256:1c05616138fc969cf0897c36795908b8d8f8410f97bd72d472d52b24bbfd430e

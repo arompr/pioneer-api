@@ -63,3 +63,7 @@ review**.md
 
 # Generated types package
 /generated
+
+
+# APM dependencies
+apm_modules/

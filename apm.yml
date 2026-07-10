@@ -1,0 +1,10 @@
+name: pioneer-api
+version: 1.0.0
+description: APM project for pioneer-api
+author: Anthony Rompre
+dependencies:
+  apm:
+  - arompr/team-skills
+  mcp: []
+includes: auto
+scripts: {}
